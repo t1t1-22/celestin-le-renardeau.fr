@@ -31,7 +31,11 @@ compose() {
 
 compose config --quiet
 compose build --pull web
-if ! compose up -d --no-build --wait --wait-timeout 60; then
+set --
+if [ "${CELESTIN_FORCE_RECREATE:-0}" = 1 ]; then
+  set -- --force-recreate
+fi
+if ! compose up -d --no-build --wait --wait-timeout 60 "$@"; then
   compose ps >&2 || true
   compose logs --tail=100 web >&2 || true
   exit 1

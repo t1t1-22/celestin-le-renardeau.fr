@@ -1,6 +1,6 @@
 # celestin-le-renardeau.fr
 
-Le dépôt contient une page minimale pour valider la chaîne de déploiement. Le conteneur HTTP écoute sur `celestin-web:8080` sur le réseau Docker `celestin_proxy`. Le Nginx de Factify relaie le trafic public et termine le TLS.
+Le dépôt contient une page minimale pour valider la chaîne de déploiement. Le conteneur HTTP écoute sur `celestin-web:8080` sur le réseau Docker `celestin_proxy`. Le projet indépendant [ubuntu-edge](https://github.com/t1t1-22/ubuntu-edge) relaie le trafic public et termine le TLS. Le dossier local `cert/` est exclu de Git.
 
 ## CI et production
 
@@ -19,4 +19,4 @@ Dans **Settings → Secrets and variables → Actions**, ajouter les secrets du 
 
 Ajouter la variable `CELESTIN_DEPLOY_PATH` avec le chemin absolu du checkout. La variable `CELESTIN_SSH_PORT` est facultative et vaut 22 par défaut. Lancer ensuite **CI et déploiement Célestin** depuis l'onglet **Actions**, sur `main`, ou pousser un changement sur cette branche.
 
-Après le premier déploiement du conteneur, activer le domaine et son certificat dans Factify avec `sh scripts/deploy-prod.sh --with-celestin`, depuis le checkout Factcast. Cette activation est nécessaire une fois.
+Pour la mise en service du domaine et son certificat, suivre la procédure du dépôt [ubuntu-edge](https://github.com/t1t1-22/ubuntu-edge).

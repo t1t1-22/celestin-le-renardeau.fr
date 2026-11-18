@@ -14,7 +14,7 @@ Dans **Settings → Secrets and variables → Actions**, ajouter les secrets du 
 | --- | --- |
 | `CELESTIN_SSH_HOST` | Nom d'hôte ou IP du serveur Ubuntu |
 | `CELESTIN_SSH_USER` | Compte de déploiement Ubuntu |
-| `CELESTIN_SSH_KEY` | Clé privée dédiée à GitHub Actions. Ajouter sa clé publique côté serveur dans `authorized_keys`. |
+| `CELESTIN_SSH_PASSWORD` | Mot de passe du compte SSH Ubuntu. |
 | `CELESTIN_SSH_KNOWN_HOSTS` | Ligne `known_hosts` de l'hôte Ubuntu vérifiée via une session de confiance. Pour un port personnalisé, utiliser le format `[hôte]:port`. |
 
 Ajouter la variable `CELESTIN_DEPLOY_PATH` avec le chemin absolu du checkout. La variable `CELESTIN_SSH_PORT` est facultative et vaut 22 par défaut. Lancer ensuite **CI et déploiement Célestin** depuis l'onglet **Actions**, sur `main`, ou pousser un changement sur cette branche.

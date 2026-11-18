@@ -41,11 +41,15 @@ jobs:
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
+      - name: Installer sshpass
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sshpass
       - name: Déployer le commit testé sur Ubuntu
         env:
           SSH_HOST: ${{ secrets.CELESTIN_SSH_HOST }}
           SSH_USER: ${{ secrets.CELESTIN_SSH_USER }}
-          SSH_KEY: ${{ secrets.CELESTIN_SSH_KEY }}
+          SSHPASS: ${{ secrets.CELESTIN_SSH_PASSWORD }}
           SSH_KNOWN_HOSTS: ${{ secrets.CELESTIN_SSH_KNOWN_HOSTS }}
           SSH_PORT: ${{ vars.CELESTIN_SSH_PORT || '22' }}
           DEPLOY_PATH: ${{ vars.CELESTIN_DEPLOY_PATH }}
@@ -53,7 +57,7 @@ jobs:
           set -eu
           : "${SSH_HOST:?Secret CELESTIN_SSH_HOST absent}"
           : "${SSH_USER:?Secret CELESTIN_SSH_USER absent}"
-          : "${SSH_KEY:?Secret CELESTIN_SSH_KEY absent}"
+          : "${SSHPASS:?Secret CELESTIN_SSH_PASSWORD absent}"
           : "${SSH_KNOWN_HOSTS:?Secret CELESTIN_SSH_KNOWN_HOSTS absent}"
           : "${DEPLOY_PATH:?Variable CELESTIN_DEPLOY_PATH absente}"
           if [[ ! "$DEPLOY_PATH" =~ ^/[a-zA-Z0-9._/-]+$ ]]; then
@@ -63,9 +67,9 @@ jobs:
           umask 077
           ssh_dir=$(mktemp -d)
           trap 'rm -rf "$ssh_dir"' EXIT
-          printf '%s\n' "$SSH_KEY" > "$ssh_dir/key"
           printf '%s\n' "$SSH_KNOWN_HOSTS" > "$ssh_dir/known_hosts"
-          ssh -T -p "$SSH_PORT" -l "$SSH_USER" -i "$ssh_dir/key" \
-            -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
+          sshpass -e ssh -T -p "$SSH_PORT" -l "$SSH_USER" \
+            -o PreferredAuthentications=password,keyboard-interactive -o NumberOfPasswordPrompts=1 \
+            -o StrictHostKeyChecking=yes \
             -o UserKnownHostsFile="$ssh_dir/known_hosts" -o ConnectTimeout=15 \
             -- "$SSH_HOST" "sh -s -- '$DEPLOY_PATH' '$GITHUB_SHA'" < scripts/deploy.sh

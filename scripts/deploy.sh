@@ -4,7 +4,11 @@ set -eu
 cd "${1:?Chemin du dépôt requis}"
 tested_sha=${2:?SHA testé requis}
 
-if [ "$(git branch --show-current)" != main ] || [ -n "$(git status --porcelain)" ]; then
+branch=$(git branch --show-current)
+tracked_changes=$(git status --porcelain --untracked-files=no)
+# L'ancien checkout peut encore voir cert/ avant le premier fast-forward.
+untracked_changes=$(git ls-files --others --exclude-standard -- . ':(exclude,top)cert/')
+if [ "$branch" != main ] || [ -n "$tracked_changes$untracked_changes" ]; then
   echo "Le checkout du serveur doit être sur main et sans modifications locales." >&2
   exit 1
 fi

@@ -1,6 +1,6 @@
 # celestin-le-renardeau.fr
 
-Le dépôt contient une page minimale pour valider la chaîne de déploiement. Le conteneur HTTP écoute sur `celestin-web:8080` sur le réseau Docker `celestin_proxy`. Le projet indépendant [ubuntu-edge](https://github.com/t1t1-22/ubuntu-edge) relaie le trafic public et termine le TLS. Le dossier local `cert/` est exclu de Git.
+Le site présente l’univers de Célestin le renardeau, la collection de livres, des mini-histoires à lire et un coloriage A4 à télécharger. La page et ses ressources se trouvent dans `public/`. Le conteneur HTTP écoute sur `celestin-web:8080` sur le réseau Docker `celestin_proxy`. Le projet indépendant [ubuntu-edge](https://github.com/t1t1-22/ubuntu-edge) relaie le trafic public et termine le TLS. Le dossier local `cert/` est exclu de Git.
 
 ## CI et production
 

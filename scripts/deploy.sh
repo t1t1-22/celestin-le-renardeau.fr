@@ -82,6 +82,11 @@ if ! compose exec -T web wget -q -O /dev/null http://127.0.0.1:8080/wp-admin/ins
   echo "Le routage /wp-admin/install.php n'est pas fonctionnel." >&2
   exit 1
 fi
+echo "Vérification du moteur d'images WordPress et du dossier uploads."
+if ! compose exec -T --user www-data wordpress php /usr/local/share/celestin/check-wordpress-images.php; then
+  echo "Impossible de traiter les images : voir les diagnostics ci-dessus." >&2
+  exit 1
+fi
 touch "$marker"
 chmod 600 "$marker"
 compose ps

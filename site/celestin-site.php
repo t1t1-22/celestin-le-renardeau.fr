@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Célestin — Site et contenus
  * Description: Accueil, univers, histoires, livres, activités, personnages et lieux pour Astra.
- * Version: 1.0.0
+ * Version: 1.0.1
  */
 defined('ABSPATH') || exit;
 
@@ -36,8 +36,17 @@ add_action('init', function () {
     ]);
 });
 
-add_action('admin_init', function() {
-    if (get_option('cel_site_initialized')) return;
+add_action('wp_loaded', function() {
+    // Initialise aussi lors des visites publiques : aucune visite à wp-admin nécessaire.
+    if (!is_blog_installed() || wp_installing()) return;
+    if (get_option('cel_site_initialized')) {
+        $home = get_page_by_path('accueil');
+        if ($home && ((int)get_option('page_on_front') !== (int)$home->ID || get_option('show_on_front') !== 'page')) {
+            update_option('show_on_front','page');
+            update_option('page_on_front',$home->ID);
+        }
+        return;
+    }
     $pages = [
         'accueil'=>['Accueil','Bienvenue dans l’univers de Célestin le renardeau.'],
         'fleuriville'=>['Fleuriville','Découvrez les habitants et les lieux de Fleuriville.'],
@@ -179,7 +188,7 @@ function cel_front_page() {
     <?php wp_footer();?></body></html><?php
 }
 add_action('template_redirect', function() {
-    if (is_front_page() && !is_admin() && !is_feed() && !is_preview() && !is_customize_preview()) {
+    if ((is_front_page() || is_home()) && !is_admin() && !is_feed() && !is_preview() && !is_customize_preview()) {
         status_header(200); cel_front_page(); exit;
     }
 },1);

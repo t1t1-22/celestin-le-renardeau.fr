@@ -34,7 +34,6 @@ services:
     volumes:
       - wordpress_blank_v1:/var/www/html
       - ./php-uploads.ini:/usr/local/etc/php/conf.d/zz-celestin-uploads.ini:ro
-      - ./site/celestin-site.php:/var/www/html/wp-content/mu-plugins/celestin-site.php:ro
     healthcheck:
       test: ["CMD-SHELL", "php -r '$$r=@get_headers(\"http://127.0.0.1/wp-login.php\"); if (!$$r || !preg_match(\"~^HTTP/[^ ]+ (200|302)~\", $$r[0])) exit(1);'"]
       interval: 10s

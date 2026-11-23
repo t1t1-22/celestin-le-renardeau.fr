@@ -55,6 +55,8 @@ jobs:
           done
           docker compose -p celestin-ci exec -T web wget -q -O - http://127.0.0.1:8080/_health | grep -Fq ok
           docker compose -p celestin-ci exec -T web wget -q -O /dev/null http://127.0.0.1:8080/images/logo.webp
+          test -s public/images/hero-fleurville.webp
+          docker compose -p celestin-ci exec -T web wget -q -O /dev/null http://127.0.0.1:8080/images/hero-fleurville.webp
           docker compose -p celestin-ci exec -T web wget -q -O /dev/null http://127.0.0.1:8080/wp-admin/install.php
       - name: Journaux en cas de panne et nettoyage CI
         if: always()

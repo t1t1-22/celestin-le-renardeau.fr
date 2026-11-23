@@ -20,8 +20,8 @@ body.home .site-header:after{content:"";pointer-events:none;position:absolute;to
 .clst-site img{display:block;width:auto;max-width:100%;height:auto}
 .clst-home{position:relative;width:100vw;max-width:none!important;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw)}
 .clst-shell{width:min(1230px,calc(100% - 64px));max-width:1230px;margin:0 auto}
-.clst-hero{height:475px;min-height:420px;position:relative;background:#b2e8ff;isolation:isolate;overflow:hidden;display:flex;align-items:flex-start;justify-content:center}
-.clst-hero-background{position:absolute;inset:0;z-index:-2;background-repeat:no-repeat;background-size:cover;background-position:center 47%}
+.clst-hero{height:clamp(440px,50vw,760px);min-height:440px;position:relative;background:#b2e8ff;isolation:isolate;overflow:hidden;display:flex;align-items:flex-start;justify-content:center}
+.clst-hero-background{position:absolute;inset:0;z-index:-2;background-repeat:no-repeat;background-size:cover;background-position:center 48%}
 .clst-hero:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#fff0 0%,#faffff45 26%,#fffef0c4 51%,#ffffff40 75%,#fff0 100%)}
 .clst-hero:after{content:"";position:absolute;z-index:0;bottom:-4px;left:0;right:0;height:42px;background:radial-gradient(circle at 34px 44px,var(--clst-cream) 38px,transparent 39px) repeat-x;background-size:68px 48px}
 .clst-hero-inner{position:relative;text-align:center;padding:47px 0 85px}
@@ -85,8 +85,8 @@ body.home .site-header:after{content:"";pointer-events:none;position:absolute;to
 }
 @media(max-width:650px){
 .clst-home{margin-left:calc(50% - 50vw)}
-.clst-hero{height:auto;min-height:425px}
-.clst-hero-background{background-position:32% 45%}
+.clst-hero{height:450px;min-height:450px}
+.clst-hero-background{background-position:23% 46%}
 .clst-hero:before{background:#ffffff9e}
 .clst-hero-inner{padding:65px 8px 80px}
 .clst-site .clst-hero h1{font-size:clamp(2.15rem,8.5vw,3.1rem)}

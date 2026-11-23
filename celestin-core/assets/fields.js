@@ -15,6 +15,24 @@ jQuery(function($){
   $(document).on('click','.cel-remove-extra',function(){
     $(this).closest('.cel-extra-row').remove();
   });
+  $(document).on('click','.cel-select-section-image',function(e){
+    e.preventDefault();
+    const container=$(this).closest('.cel-section-image');
+    const picker=wp.media({title:'Choisir une illustration',button:{text:'Utiliser cette illustration'},library:{type:'image'},multiple:false});
+    picker.on('select',function(){
+      const image=picker.state().get('selection').first().toJSON();
+      container.find('.cel-section-image-id').val(image.id);
+      const thumb=image.sizes&&image.sizes.medium?image.sizes.medium.url:image.url;
+      container.find('.cel-section-image-preview').attr('src',thumb).show();
+    });
+    picker.open();
+  });
+  $(document).on('click','.cel-remove-section-image',function(e){
+    e.preventDefault();
+    const container=$(this).closest('.cel-section-image');
+    container.find('.cel-section-image-id').val('');
+    container.find('.cel-section-image-preview').hide().attr('src','');
+  });
   $(document).on('click','.cel-pick-media',function(e){
     e.preventDefault();
     const row=$(this).closest('.cel-field');

@@ -1,6 +1,6 @@
 #!/bin/sh
 # Déploiement de l'infrastructure du site Célestin seulement.
-# Les extensions WordPress sont désormais administrées via WP Pusher.
+# Célestin Core est déployé depuis ce dépôt ; autres extensions administrées dans WordPress.
 # Ne touche pas à Factify, DEPRAT, ubuntu-edge ou leurs volumes.
 set -eu
 umask 077
@@ -47,6 +47,22 @@ fi
 test ! -e "$legacy"
 '
 compose exec -T wordpress php -r 'require "/var/www/html/wp-load.php"; if (function_exists("cel_initialize_site")) { fwrite(STDERR,"Ancien module toujours actif\n"); exit(1); } echo "Ancien module Célestin désactivé ; installation WP Pusher possible.\n";'
+# Déploiement de la seule extension Célestin Core depuis le dépôt versionné.
+# Aucun autre plugin, thème, donnée ou volume n'est modifié.
+compose exec -T wordpress mkdir -p /var/www/html/wp-content/plugins/celestin-core
+tar -C celestin-core -cf - . | compose exec -T wordpress tar -C /var/www/html/wp-content/plugins/celestin-core -xf -
+compose exec -T wordpress sh -c 'chown -R www-data:www-data /var/www/html/wp-content/plugins/celestin-core'
+compose exec -T wordpress php -r '
+require "/var/www/html/wp-load.php";
+require_once ABSPATH . "wp-admin/includes/plugin.php";
+$plugin = "celestin-core/celestin-core.php";
+if (!is_plugin_active($plugin)) {
+  $result = activate_plugin($plugin);
+  if (is_wp_error($result)) { fwrite(STDERR, $result->get_error_message()."\n"); exit(1); }
+}
+if (!class_exists("Celestin_Home")) { fwrite(STDERR, "Accueil Célestin indisponible\n"); exit(1); }
+echo "Célestin Core activé, accueil personnalisé disponible.\n";
+'
 compose exec -T web wget -q -O /dev/null http://127.0.0.1:8080/wp-admin/install.php
 
 # Vérification sans mutation de l'infrastructure partagée.

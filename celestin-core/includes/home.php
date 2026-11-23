@@ -156,17 +156,19 @@ final class Celestin_Home {
         $items=get_posts($args);
         return $items?$items[0]:null;
     }
+    // Accueil : uniquement les fiches explicitement cochées dans leur administration.
+    // Les quatre types de contenus sont mélangés et triés par date de publication.
     static function cards(): array {
-        $q=new WP_Query(['post_type'=>['cel_coloriage','cel_livre','cel_histoire'],'post_status'=>'publish',
-            'posts_per_page'=>4,'meta_query'=>[['key'=>'_cel_en_nouveaute','value'=>'1']],'orderby'=>'date','order'=>'DESC']);
-        $posts=$q->posts; wp_reset_postdata();
-        if(count($posts)<4){
-            $ids=array_map(fn($p)=>$p->ID,$posts);
-            $more=get_posts(['post_type'=>['cel_coloriage','cel_livre','cel_histoire'],'post_status'=>'publish',
-                'posts_per_page'=>4-count($posts),'post__not_in'=>$ids,'orderby'=>'date','order'=>'DESC']);
-            $posts=array_merge($posts,$more);
-        }
-        return $posts;
+        return get_posts([
+            'post_type' => ['cel_coloriage', 'cel_personnage', 'cel_livre', 'cel_histoire'],
+            'post_status' => 'publish',
+            'posts_per_page' => 8,
+            'meta_key' => '_cel_en_nouveaute',
+            'meta_value' => '1',
+            'orderby' => 'date',
+            'order' => 'DESC',
+            'suppress_filters' => false,
+        ]);
     }
     static function url(string $type): string {
         $url=get_post_type_archive_link($type);

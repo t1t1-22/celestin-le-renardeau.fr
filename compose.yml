@@ -7,6 +7,7 @@ services:
       PORT: 8080
       DATA_DIR: /app/data
       ADMIN_PASSWORD: ${CELESTIN_ADMIN_PASSWORD:-}
+      ADMIN_USERNAME: ${CELESTIN_ADMIN_USERNAME:-admin}
     volumes:
       - celestin_content:/app/data
     healthcheck:

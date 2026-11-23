@@ -46,27 +46,34 @@ $links=[
 </nav>
 <section id="cel-decouvrir" class="cel-section cel-news" aria-labelledby="cel-news-h">
   <h2 id="cel-news-h" class="cel-section-title"><span>✦</span> Les nouveautés <span>✦</span></h2>
+  <?php if($news): ?>
   <div class="cel-cards">
     <?php foreach($news as $item):
-      $kind=$item->post_type==='cel_livre'?'Livre':($item->post_type==='cel_histoire'?'Mini-histoire audio':'Activité');
-      $fallback=$item->post_type==='cel_livre'?'book':($item->post_type==='cel_histoire'?'story':'activity');
-      $img=get_the_post_thumbnail_url($item->ID,'medium_large')?:Celestin_Home::image($fallback);
+      $kind = [
+        'cel_coloriage' => 'Activité',
+        'cel_personnage' => 'Personnage',
+        'cel_livre' => 'Livre',
+        'cel_histoire' => 'Mini-histoire audio',
+      ][$item->post_type] ?? 'Découverte';
+      // Illustration de la fiche uniquement : ne pas présenter une autre illustration à sa place.
+      $img = get_the_post_thumbnail_url($item->ID, 'medium_large');
+      $summary = $item->post_excerpt ?: wp_strip_all_tags(strip_shortcodes($item->post_content));
     ?>
       <a class="cel-card" href="<?php echo esc_url(get_permalink($item)); ?>">
         <div class="cel-card-image">
          <?php if($img): ?><img src="<?php echo esc_url($img); ?>" alt="" loading="lazy"><?php else: ?><div class="cel-card-placeholder" aria-hidden="true">✦</div><?php endif; ?>
          <span class="cel-card-type"><?php echo esc_html($kind); ?></span>
         </div>
-        <div class="cel-card-body"><h3><?php echo esc_html($item->post_title); ?></h3><p><?php echo esc_html(wp_trim_words($item->post_excerpt?:wp_strip_all_tags($item->post_content),12)); ?></p><span class="cel-arrow" aria-hidden="true">→</span></div>
+        <div class="cel-card-body"><h3><?php echo esc_html(get_the_title($item)); ?></h3>
+          <?php if($summary): ?><p><?php echo esc_html(wp_trim_words($summary, 16)); ?></p><?php endif; ?>
+          <span class="cel-arrow" aria-hidden="true">→</span>
+        </div>
       </a>
     <?php endforeach; ?>
-    <?php if(!$news): ?>
-      <?php foreach([['Mini-histoire audio','La prochaine aventure à écouter','story'],['Activité','Un coloriage à découvrir','activity'],['Livre','Une histoire à feuilleter','book']] as $demo): ?>
-      <article class="cel-card cel-card-empty"><div class="cel-card-image"><?php echo Celestin_Home::render_image($demo[2],$demo[0]); ?><span class="cel-card-type"><?php echo esc_html($demo[0]); ?></span></div>
-      <div class="cel-card-body"><h3><?php echo esc_html($demo[1]); ?></h3><p>À découvrir prochainement !</p></div></article>
-      <?php endforeach; ?>
-    <?php endif; ?>
   </div>
+  <?php else: ?>
+  <p class="cel-news-empty">Les prochaines nouveautés de Célestin arrivent bientôt !</p>
+  <?php endif; ?>
 </section>
 <section class="cel-section cel-story-section" aria-labelledby="cel-story-title">
  <h2 id="cel-story-title" class="cel-section-title"><span>✦</span> Mini-histoires audio <span>✦</span></h2>

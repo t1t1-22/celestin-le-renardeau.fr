@@ -143,8 +143,8 @@ final class Celestin_Home {
     }
     static function assets(): void {
         if (!is_front_page()) return;
-        wp_enqueue_style('celestin-home', plugins_url('../assets/home.css',__FILE__), [], '0.2.1');
-        wp_enqueue_script('celestin-home', plugins_url('../assets/home.js',__FILE__), [], '0.2.1', true);
+        wp_enqueue_style('celestin-home', plugins_url('../assets/home.css',__FILE__), [], '0.3.0');
+        wp_enqueue_script('celestin-home', plugins_url('../assets/home.js',__FILE__), [], '0.3.0', true);
     }
     static function template(string $template): string {
         if (is_front_page() && !is_admin() && !is_feed() && !is_embed() && !is_preview()) return __DIR__.'/front-page.php';
@@ -176,7 +176,8 @@ final class Celestin_Home {
     }
     static function story_text(?WP_Post $story): string {
         if(!$story) return 'Retrouve bientôt les premières mini-histoires de Célestin, à écouter et à lire en famille.';
-        return wp_strip_all_tags($story->post_content);
+        $structured = class_exists('Celestin_Fields') ? Celestin_Fields::value($story->ID, 'texte') : '';
+        return $structured ?: wp_strip_all_tags($story->post_content);
     }
 }
 Celestin_Home::init();

@@ -14,20 +14,28 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: Tester la configuration
-        run: |
-          sh -n scripts/deploy.sh
-          docker compose config --quiet
-          docker build -t celestin-ci .
-          docker run --rm celestin-ci nginx -t
-      - name: Tester le site en HTTP
+      - name: Vérifier le code et Docker
         run: |
           set -eu
-          container=$(docker run -d -p 127.0.0.1::8080 celestin-ci)
+          sh -n scripts/deploy.sh
+          node --check server.mjs
+          node --check public/site.js
+          node --check public/admin.js
+          docker compose config --quiet
+          docker build -t celestin-ci .
+      - name: Tester les pages, les API et la connexion admin
+        run: |
+          set -eu
+          container=$(docker run -d -e ADMIN_PASSWORD="Test-Secure-Password-1234" -p 127.0.0.1::8080 celestin-ci)
           trap 'docker logs "$container"; docker rm -f "$container"' EXIT
           address=$(docker port "$container" 8080/tcp)
-          curl --retry 8 --retry-connrefused --retry-delay 1 --max-time 5 -fsS "http://$address/" > "$RUNNER_TEMP/celestin.html"
-          grep -Fq '<h1>Célestin le renardeau</h1>' "$RUNNER_TEMP/celestin.html"
+          curl --retry 10 --retry-connrefused --retry-delay 1 --max-time 5 -fsS "http://$address/" > "$RUNNER_TEMP/celestin.html"
+          grep -Fq "Pars à l'aventure" "$RUNNER_TEMP/celestin.html"
+          curl -fsS "http://$address/admin" | grep -Fq 'L\x27ATELIER' || curl -fsS "http://$address/admin" | grep -Fq 'login-form'
+          curl -fsS "http://$address/health" | grep -Fq '"ok":true'
+          curl -fsS "http://$address/api/content" | grep -Fq '"items"'
+          status=$(curl --max-time 5 -sS -o /dev/null -w '%{http_code}' "http://$address/api/admin/items")
+          test "$status" = 401
           status=$(curl --max-time 5 -sS -o /dev/null -w '%{http_code}' "http://$address/__ci_missing_page__")
           test "$status" = 404
 

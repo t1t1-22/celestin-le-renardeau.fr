@@ -24,3 +24,16 @@ body.cel-page #page,body.cel-page .site{max-width:none!important}
 
 /* Une actualité correspond toujours à une fiche publiée et cochée dans l’admin. */
 .cel-news-empty{text-align:center;max-width:720px;margin:15px auto 35px;padding:25px;background:#fff2e3;border:1px solid #f3debf;border-radius:20px;color:#875333;font-weight:600}
+
+/* Rubriques de l'accueil alimentées directement par les fiches WordPress. */
+.cel-home-empty{padding:24px;background:#fff4e5;border:1px solid #f0d9bb;border-radius:19px;text-align:center;color:#80552e;font-size:15px}
+.cel-featured-activity{display:grid;grid-template-columns:minmax(180px,33%) 1fr;align-items:center;gap:26px;padding:25px;background:#fff0dd;border-radius:26px}
+.cel-featured-activity-image{display:block;max-height:270px;overflow:hidden;border-radius:18px;background:#fff8ee}
+.cel-featured-activity-image img,.cel-featured-activity-image .cel-illustration-placeholder{display:block;width:100%;height:250px;object-fit:contain}
+.cel-featured-activity h3{font:26px 'Courgette',cursive;margin:0 0 12px}
+.cel-featured-activity p{line-height:1.6}
+.cel-home-associated{display:flex;flex-direction:column;gap:7px;background:#fff0d9;border-radius:16px;padding:15px;margin-top:14px}
+.cel-home-associated a{color:#904718;font-size:14px;font-weight:700}
+.cel-city-image a,.cel-story-image{display:block}
+.cel-city-image a img{height:230px;width:100%;object-fit:cover}
+@media(max-width:650px){.cel-featured-activity{grid-template-columns:1fr;padding:17px}.cel-featured-activity-image img{height:190px}}

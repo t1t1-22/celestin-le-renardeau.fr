@@ -2,21 +2,23 @@
 
 Le site `celestin-le-renardeau.fr` utilise **WordPress** (PHP/Apache), **MariaDB**, un frontal **Nginx**, et un thème sur mesure **Célestin**. Il reste indépendant de `factcast` et du dépôt `ubuntu-edge`.
 
-## Avant la fusion GitHub : 2 secrets SQL côté serveur
+## Déploiement automatique : aucune intervention manuelle sur Ubuntu
 
-La mise en production **remplacera le conteneur Nginx statique actuel** par un frontal Nginx envoyant les requêtes vers WordPress. **Ne pas fusionner la Pull Request tant que les secrets ci-dessous ne sont pas en place et que les vérifications ne sont pas vertes.**
+Les modifications de Célestin sont testées par GitHub Actions, puis déployées en SSH **automatiquement** après fusion sur `main`, avec les identifiants SSH déjà configurés dans les paramètres GitHub du dépôt.
 
-1. Se connecter au serveur Ubuntu en SSH.
-2. Aller dans **le dossier du checkout Célestin** : le chemin utilisé dans le paramètre GitHub Actions `CELESTIN_DEPLOY_PATH` du dépôt.
-3. Créer un fichier `.env` **dans ce dossier**, par exemple en partant de `.env.example` après déploiement, ou en le saisissant directement avant :
-   ```dotenv
-   CELESTIN_DB_PASSWORD=SECRET_SQL_ALEATOIRE_UNIQUE_32_CARACTERES
-   CELESTIN_DB_ROOT_PASSWORD=AUTRE_SECRET_ROOT_ALEATOIRE_32_CARACTERES
-   ```
-   Générer **deux secrets différents et aléatoires**. Pour obtenir deux valeurs sans les afficher dans cette documentation : exécuter deux fois `openssl rand -hex 24` sur le serveur, puis les saisir dans `nano .env`.
-4. Exécuter `chmod 600 .env`. Ce fichier est exclu de Git. Ne pas publier les secrets dans une issue, une Pull Request ou dans le chat.
+Le script `scripts/deploy.sh` réalise toutes les opérations suivantes sans assistance :
 
-Le workflow de déploiement vérifie la présence de ces secrets **avant de mettre à jour le code** du checkout serveur.
+1. Vérifie le checkout Git et récupère le commit GitHub testé.
+2. Crée si nécessaire `.env` sur Ubuntu avec **deux mots de passe SQL aléatoires distincts de 64 caractères hexadécimaux** générés par `openssl`. Un mot de passe déjà défini est conservé à tous les déploiements.
+3. Construit les images Nginx et WordPress **avant** de supprimer l'ancien conteneur.
+4. À la première migration uniquement, détecte les conteneurs ayant **exactement** le label Docker Compose `com.docker.compose.project=celestin`, vérifie leur appartenance et les supprime. Les **volumes Docker, réseaux externes, conteneurs Factify et conteneur ubuntu-edge** ne sont jamais supprimés.
+5. Démarre la stack Compose `celestin` : Nginx `celestin-web:8080`, WordPress PHP et MariaDB.
+6. Vérifie la disponibilité de l'installation WordPress par HTTP puis inscrit un marqueur idempotent `.celestin-wordpress-migrated`.
+
+**Aucune commande SSH ni modification de fichier n'est nécessaire pour créer les secrets SQL.** Il faut toutefois que les secrets SSH GitHub Actions existants restent valides et que le serveur dispose de Docker, Compose, Git et OpenSSL (déjà requis par le système de déploiement).
+
+**Important :** l'ancien site est statique. La base MariaDB et les médias WordPress sont sauvegardés dans des volumes Docker persistants. Cette migration peut causer une courte indisponibilité du **site Célestin uniquement**.
+
 
 ## Déploiement
 

@@ -1,22 +1,80 @@
-# celestin-le-renardeau.fr
+# Célestin le renardeau — WordPress + Fleurville
 
-Le site présente l’univers de Célestin le renardeau, la collection de livres, des mini-histoires à lire et un coloriage A4 à télécharger. La page et ses ressources se trouvent dans `public/`. Le conteneur HTTP écoute sur `celestin-web:8080` sur le réseau Docker `celestin_proxy`. Le projet indépendant [ubuntu-edge](https://github.com/t1t1-22/ubuntu-edge) relaie le trafic public et termine le TLS. Le dossier local `cert/` est exclu de Git.
+Le site `celestin-le-renardeau.fr` utilise **WordPress** (PHP/Apache), **MariaDB**, un frontal **Nginx**, et un thème sur mesure **Célestin**. Il reste indépendant de `factcast` et du dépôt `ubuntu-edge`.
 
-## CI et production
+## Avant la fusion GitHub : 2 secrets SQL côté serveur
 
-GitHub Actions contrôle la syntaxe des configurations, construit l'image, vérifie la réponse de la page d'accueil et teste une URL introuvable. Après les tests, chaque push sur `main` déclenche le déploiement SSH du commit testé. Le script met à jour le checkout du serveur en fast-forward, reconstruit le conteneur et attend que sa vérification HTTP passe.
+La mise en production **remplacera le conteneur Nginx statique actuel** par un frontal Nginx envoyant les requêtes vers WordPress. **Ne pas fusionner la Pull Request tant que les secrets ci-dessous ne sont pas en place et que les vérifications ne sont pas vertes.**
 
-Préparer une fois le serveur Ubuntu avec Git, Docker et Docker Compose v2. Cloner ce dépôt privé sur `main` dans un chemin absolu, par exemple `/srv/celestin-le-renardeau`. Le compte SSH de déploiement doit pouvoir lire et modifier ce checkout, exécuter Docker et effectuer un `git fetch origin main` sans invite. Configurer côté serveur un accès en lecture au dépôt privé, par exemple une clé de déploiement GitHub dédiée.
+1. Se connecter au serveur Ubuntu en SSH.
+2. Aller dans **le dossier du checkout Célestin** : le chemin utilisé dans le paramètre GitHub Actions `CELESTIN_DEPLOY_PATH` du dépôt.
+3. Créer un fichier `.env` **dans ce dossier**, par exemple en partant de `.env.example` après déploiement, ou en le saisissant directement avant :
+   ```dotenv
+   CELESTIN_DB_PASSWORD=SECRET_SQL_ALEATOIRE_UNIQUE_32_CARACTERES
+   CELESTIN_DB_ROOT_PASSWORD=AUTRE_SECRET_ROOT_ALEATOIRE_32_CARACTERES
+   ```
+   Générer **deux secrets différents et aléatoires**. Pour obtenir deux valeurs sans les afficher dans cette documentation : exécuter deux fois `openssl rand -hex 24` sur le serveur, puis les saisir dans `nano .env`.
+4. Exécuter `chmod 600 .env`. Ce fichier est exclu de Git. Ne pas publier les secrets dans une issue, une Pull Request ou dans le chat.
 
-Dans **Settings → Secrets and variables → Actions**, ajouter les secrets du dépôt suivants.
+Le workflow de déploiement vérifie la présence de ces secrets **avant de mettre à jour le code** du checkout serveur.
 
-| Secret | Valeur |
-| --- | --- |
-| `CELESTIN_SSH_HOST` | Nom d'hôte ou IP du serveur Ubuntu |
-| `CELESTIN_SSH_USER` | Compte de déploiement Ubuntu |
-| `CELESTIN_SSH_PASSWORD` | Mot de passe du compte SSH Ubuntu. |
-| `CELESTIN_SSH_KNOWN_HOSTS` | Ligne `known_hosts` de l'hôte Ubuntu vérifiée via une session de confiance. Pour un port personnalisé, utiliser le format `[hôte]:port`. |
+## Déploiement
 
-Ajouter la variable `CELESTIN_DEPLOY_PATH` avec le chemin absolu du checkout. La variable `CELESTIN_SSH_PORT` est facultative et vaut 22 par défaut. Lancer ensuite **CI et déploiement Célestin** depuis l'onglet **Actions**, sur `main`, ou pousser un changement sur cette branche.
+1. Vérifier les tests GitHub Actions sur la Pull Request WordPress.
+2. Après la sauvegarde du site initial et la configuration de `.env`, fusionner la Pull Request dans `main`.
+3. Le workflow CI et déploiement déploiera automatiquement les conteneurs `web`, `wordpress` et `db` sur le réseau Docker existant `celestin_proxy`. Le frontal garde l'alias `celestin-web` et le port **8080**. Aucune modification DNS n'est prévue.
+4. Ouvrir **https://celestin-le-renardeau.fr/wp-admin/install.php** : sélectionner le français et créer le premier compte administrateur WordPress. Utiliser un identifiant personnel (éviter `admin`), un mot de passe fort et une adresse email valide. Le mot de passe WordPress **n'est pas** le secret SQL.
+5. Une fois connecté, ouvrir **https://celestin-le-renardeau.fr/wp-admin**. Le thème **Célestin** et les rubriques personnalisées seront activés automatiquement au premier chargement après installation.
+6. Dans **Réglages → Permaliens**, choisir « Titre de la publication » puis **Enregistrer** pour activer les adresses conviviales.
+7. Dans **Apparence → Personnaliser → 🦊 Accueil Célestin**, téléverser l'illustration finale de la bannière **sans texte**. Le texte et les boutons sont générés en HTML par WordPress.
 
-Pour la mise en service du domaine et son certificat, suivre la procédure du dépôt [ubuntu-edge](https://github.com/t1t1-22/ubuntu-edge).
+## Utilisation de l'administration
+
+Dans le menu gauche, quatre rubriques dédiées :
+
+- **Livres** : titre, résumé, contenu, image mise en avant et PDF ou lien externe. Affichage automatique dans la section « Livres ».
+- **Mini-histoires** : titre, histoire en texte enrichi, extrait et illustration. Chaque mini-histoire possède sa propre page de lecture.
+- **Coloriages** : image mise en avant + fichier PDF (ou image) choisi dans le bloc « Fichier téléchargeable et liens ». Bouton de téléchargement sur le site.
+- **Personnages** : Célestin, Octet, Maman renard, Papa renard et habitants de Fleurville, avec portrait et biographie.
+
+Tu peux utiliser les états natifs WordPress **Brouillon**, **En attente**, **Publié**, **Corbeille**. Les pages publiques montrent uniquement les publications publiées. Les photos, couvertures et PDF sont gérés dans **Médias**.
+
+Le thème récupère automatiquement les **4 dernières publications** de chaque type sur la page d'accueil, puis l'archive de chaque type affiche les autres.
+
+## Reprise du site actuel
+
+- Une copie du site précédent reste disponible sous **/ancien-site/** dans le nouveau frontal Nginx, pour vérification. Elle est exclue de l'indexation.
+- Les images historiques sont préservées sous **/images/**.
+- Les mini-histoires « Une soirée pas comme les autres » et « Une luge pour Célestin » sont **importées une fois** depuis la copie HTML lors du premier démarrage de WordPress installé.
+- Deux présentations de livres (« Le stand de muguet », « Le trou dans le jardin ») et un coloriage historique sont également créés à titre de reprise. Ils restent entièrement modifiables depuis l'administration.
+- Les images finales des personnages, les couvertures précises et la grande illustration de la maquette sont **à télécharger via Médias après installation** : aucun visuel n'est inventé.
+- L'ancien site n'est pas un WordPress : il n'y a donc pas de base WordPress préexistante à migrer.
+
+## Données persistantes et sauvegardes
+
+Le compose crée :
+- Volume `celestin_celestin_wordpress` : fichiers WordPress, thèmes, plugins et médias ;
+- Volume `celestin_celestin_db` : MariaDB.
+
+Le code du thème et du plugin obligatoire `Atelier de Fleurville` est recopié dans les volumes au démarrage du conteneur, ce qui permet de les mettre à jour via GitHub. Les autres plugins et les uploads restent dans le volume.
+
+**Sauvegarder impérativement les deux volumes** régulièrement. Ne jamais faire `docker compose down -v` sur le serveur de production.
+
+En cas de problème au premier déploiement, conserver le backup, restaurer le checkout Git **et** les volumes dans un environnement contrôlé ; ne pas écraser une base WordPress déjà utilisée.
+
+## Développement et vérification
+
+Pour tester avec Docker localement :
+```bash
+cp .env.example .env
+# Modifier les deux mots de passe dans .env
+docker network create celestin_proxy
+docker compose -p celestin up -d --build --wait
+```
+Le projet n'ouvre aucun port public directement : le reverse-proxy `ubuntu-edge` route vers `celestin-web:8080`. Pour tester localement, utiliser un conteneur de diagnostic connecté au réseau `celestin_proxy` ou un port temporaire de développement.
+
+## Sécurité
+
+Seul Nginx est relié au réseau externe de reverse proxy ; WordPress et MariaDB ne publient **aucun port**. L'endpoint XML-RPC est bloqué. L'éditeur de fichiers de thèmes/plugins WordPress est désactivé. WordPress est derrière TLS via `ubuntu-edge` et reconnaît le header `X-Forwarded-Proto`.
+
+Mettre régulièrement à jour WordPress, les extensions et MariaDB avec sauvegarde préalable. Privilégier des mots de passe uniques et activer une authentification à deux facteurs pour les comptes administrateurs.

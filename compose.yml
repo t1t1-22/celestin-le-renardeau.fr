@@ -2,17 +2,76 @@ services:
   web:
     build: .
     restart: unless-stopped
+    depends_on:
+      wordpress:
+        condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/"]
-      interval: 5s
-      timeout: 3s
-      retries: 6
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/_health"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
     networks:
       celestin_proxy:
         aliases:
           - celestin-web
+      celestin_internal: {}
+
+  wordpress:
+    build:
+      context: .
+      dockerfile: Dockerfile.wordpress
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: celestin
+      WORDPRESS_DB_USER: celestin
+      WORDPRESS_DB_PASSWORD: ${CELESTIN_DB_PASSWORD:?Définir CELESTIN_DB_PASSWORD dans .env}
+      WORDPRESS_TABLE_PREFIX: clst_
+      WORDPRESS_CONFIG_EXTRA: |
+        if (isset($$_SERVER['HTTP_X_FORWARDED_PROTO']) && str_contains($$_SERVER['HTTP_X_FORWARDED_PROTO'], 'https')) {
+          $$_SERVER['HTTPS'] = 'on';
+        }
+        define('DISALLOW_FILE_EDIT', true);
+        define('WP_AUTO_UPDATE_CORE', 'minor');
+    volumes:
+      - celestin_wordpress:/var/www/html
+    healthcheck:
+      test: ["CMD-SHELL", "php -r '$$h=@get_headers(\"http://127.0.0.1/wp-login.php\"); if (!$$h || !preg_match(\"~^HTTP/[^ ]+ (200|302)~\", $$h[0])) exit(1);'"]
+      interval: 10s
+      timeout: 5s
+      retries: 18
+      start_period: 40s
+    networks:
+      celestin_internal: {}
+
+  db:
+    image: mariadb:11.4
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: celestin
+      MARIADB_USER: celestin
+      MARIADB_PASSWORD: ${CELESTIN_DB_PASSWORD:?Définir CELESTIN_DB_PASSWORD dans .env}
+      MARIADB_ROOT_PASSWORD: ${CELESTIN_DB_ROOT_PASSWORD:?Définir CELESTIN_DB_ROOT_PASSWORD dans .env}
+    volumes:
+      - celestin_db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
+    networks:
+      celestin_internal: {}
+
+volumes:
+  celestin_wordpress: {}
+  celestin_db: {}
 
 networks:
+  celestin_internal: {}
   celestin_proxy:
     external: true
     name: celestin_proxy

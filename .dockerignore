@@ -1,4 +1,10 @@
 *
+!Dockerfile
+!Dockerfile.wordpress
+!wp-entrypoint.sh
+!php-uploads.ini
 !nginx.conf
 !public/
 !public/**
+!wp-content/
+!wp-content/**

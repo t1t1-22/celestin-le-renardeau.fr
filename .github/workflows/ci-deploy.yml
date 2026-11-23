@@ -11,25 +11,40 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 18
+    env:
+      CELESTIN_DB_PASSWORD: ci_test_wordpress_2026_secret
+      CELESTIN_DB_ROOT_PASSWORD: ci_root_wordpress_2026_secret
     steps:
       - uses: actions/checkout@v4
-      - name: Tester la configuration
-        run: |
-          sh -n scripts/deploy.sh
-          docker compose config --quiet
-          docker build -t celestin-ci .
-          docker run --rm celestin-ci nginx -t
-      - name: Tester le site en HTTP
+      - name: Vérifier les scripts et Compose
         run: |
           set -eu
-          container=$(docker run -d -p 127.0.0.1::8080 celestin-ci)
-          trap 'docker logs "$container"; docker rm -f "$container"' EXIT
-          address=$(docker port "$container" 8080/tcp)
-          curl --retry 8 --retry-connrefused --retry-delay 1 --max-time 5 -fsS "http://$address/" > "$RUNNER_TEMP/celestin.html"
-          grep -Fq '<h1>Célestin le renardeau</h1>' "$RUNNER_TEMP/celestin.html"
-          status=$(curl --max-time 5 -sS -o /dev/null -w '%{http_code}' "http://$address/__ci_missing_page__")
-          test "$status" = 404
+          sh -n scripts/deploy.sh
+          sh -n wp-entrypoint.sh
+          docker compose config --quiet
+      - name: Démarrer WordPress et MariaDB en conteneurs isolés
+        run: |
+          set -eu
+          docker network create celestin_proxy
+          docker compose -p celestin-ci up -d --build --wait --wait-timeout 240
+      - name: Vérifier la syntaxe du thème et les pages
+        run: |
+          set -eu
+          docker compose -p celestin-ci exec -T web nginx -t
+          docker compose -p celestin-ci exec -T wordpress php -l /var/www/html/wp-content/mu-plugins/celestin-content.php
+          for page in functions.php front-page.php header.php footer.php archive.php single.php index.php 404.php; do
+            docker compose -p celestin-ci exec -T wordpress php -l "/var/www/html/wp-content/themes/celestin/$page"
+          done
+          docker compose -p celestin-ci exec -T web wget -q -O - http://127.0.0.1:8080/_health | grep -Fq ok
+          docker compose -p celestin-ci exec -T web wget -q -O /dev/null http://127.0.0.1:8080/images/logo.webp
+          docker compose -p celestin-ci exec -T web wget -q -O /dev/null http://127.0.0.1:8080/wp-admin/install.php
+      - name: Journaux en cas de panne et nettoyage CI
+        if: always()
+        run: |
+          docker compose -p celestin-ci ps || true
+          docker compose -p celestin-ci logs --tail=75 wordpress db web || true
+          docker compose -p celestin-ci down -v || true
 
   deploy:
     needs: test

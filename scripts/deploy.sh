@@ -41,5 +41,14 @@ compose exec -T web wget -q -O /dev/null http://127.0.0.1:8080/wp-admin/install.
 # Le frontal HTTPS ubuntu-edge partage Nginx avec Factify. Ne modifier que
 # le fichier du domaine Célestin, vérifier nginx -t, puis recharger sans restart.
 sh scripts/enable-celestin-proxy-uploads.sh
+
+# Diagnostic non destructif du routage WordPress et de l'accueil.
+echo '=== Diagnostic Célestin ==='
+compose exec -T wordpress php -r 'require "/var/www/html/wp-load.php"; echo "home=".get_option("home")." show_on_front=".get_option("show_on_front")." page_on_front=".get_option("page_on_front")." initialized=".get_option("cel_site_initialized")." mu=".(function_exists("cel_front_page")?"yes":"no").PHP_EOL;'
+if compose exec -T web sh -c 'wget -qO- http://127.0.0.1:8080/ | grep -q "cel-hero"'; then
+  echo 'DIAGNOSTIC: le template Célestin est servi par le conteneur web.'
+else
+  echo 'DIAGNOSTIC: le template Célestin est absent du conteneur web.' >&2
+fi
 compose ps
 echo "WordPress avec module Célestin en ligne sur celestin-web:8080. Données WordPress et Factify conservées."

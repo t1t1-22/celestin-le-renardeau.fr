@@ -83,7 +83,7 @@ if ! compose exec -T web wget -q -O /dev/null http://127.0.0.1:8080/wp-admin/ins
   exit 1
 fi
 echo "Vérification du moteur d'images WordPress et du dossier uploads."
-if ! compose exec -T --user www-data wordpress php /usr/local/share/celestin/check-wordpress-images.php; then
+if ! compose exec -T --user www-data wordpress php < scripts/check-wordpress-images.php; then
   echo "Impossible de traiter les images : voir les diagnostics ci-dessus." >&2
   exit 1
 fi

@@ -47,7 +47,7 @@ jobs:
           docker compose -p celestin-ci exec -T web nginx -t
           docker compose -p celestin-ci exec -T wordpress php -l /var/www/html/wp-content/mu-plugins/celestin-content.php
           docker compose -p celestin-ci exec -T wordpress php -l /usr/local/share/celestin/check-wordpress-images.php
-          docker compose -p celestin-ci exec -T --user www-data wordpress php /usr/local/share/celestin/check-wordpress-images.php
+          docker compose -p celestin-ci exec -T --user www-data wordpress php < scripts/check-wordpress-images.php
           docker compose -p celestin-ci exec -T wordpress php -l /var/www/html/wp-content/mu-plugins/celestin-astra.php
           docker compose -p celestin-ci exec -T wordpress sh -c 'su -s /bin/sh www-data -c "test -r /var/www/html/wp-content/mu-plugins/celestin-astra/site.css"'
           docker compose -p celestin-ci exec -T web wget -q -O - http://127.0.0.1:8080/wp-content/mu-plugins/celestin-astra/site.css | grep -Fq '.clst-site'

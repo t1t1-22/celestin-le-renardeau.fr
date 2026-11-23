@@ -25,8 +25,8 @@ docker network inspect celestin_proxy >/dev/null 2>&1 || docker network create c
 compose() { docker compose -p celestin -f compose.yml "$@"; }
 compose config --quiet
 
-# Les nouveaux volumes ne contiennent ni anciennes pages, ni thème Astra,
-# ni plugin Célestin. Les anciens volumes sont conservés, jamais effacés.
+# Les données du site et Astra restent dans les volumes persistants.
+# Le module Célestin est monté en lecture seule depuis ce dépôt.
 compose build --pull web
 if ! compose up -d --remove-orphans --wait --wait-timeout 240; then
   compose ps >&2 || true
@@ -36,10 +36,10 @@ fi
 
 # Teste la page d'installation de WordPress *vierge* et l'absence
 # des modules Célestin dans la nouvelle installation.
-compose exec -T wordpress sh -c 'test ! -e /var/www/html/wp-content/mu-plugins/celestin-content.php && test ! -e /var/www/html/wp-content/themes/celestin'
+compose exec -T wordpress sh -c 'test -r /var/www/html/wp-content/mu-plugins/celestin-site.php && php -l /var/www/html/wp-content/mu-plugins/celestin-site.php'
 compose exec -T web wget -q -O /dev/null http://127.0.0.1:8080/wp-admin/install.php
 # Le frontal HTTPS ubuntu-edge partage Nginx avec Factify. Ne modifier que
 # le fichier du domaine Célestin, vérifier nginx -t, puis recharger sans restart.
 sh scripts/enable-celestin-proxy-uploads.sh
 compose ps
-echo "WordPress vierge en ligne sur celestin-web:8080. Anciennes données conservées dans leurs volumes inactifs."
+echo "WordPress avec module Célestin en ligne sur celestin-web:8080. Données WordPress et Factify conservées."

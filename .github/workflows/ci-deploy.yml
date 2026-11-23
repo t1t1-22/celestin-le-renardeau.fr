@@ -34,7 +34,6 @@ jobs:
           sh scripts/ensure-wordpress-secrets.sh "$temp_dir"
           test "$(sha256sum "$temp_dir/.env" | cut -d' ' -f1)" = "$original_hash"
           docker compose config --quiet
-          docker compose config --quiet
       - name: Démarrer WordPress et MariaDB en conteneurs isolés
         run: |
           set -eu
@@ -47,6 +46,10 @@ jobs:
           docker compose -p celestin-ci exec -T web wget -q -O - http://127.0.0.1:8080/wp-content/themes/celestin/style.css | grep -Fq 'Theme Name: Célestin'
           docker compose -p celestin-ci exec -T web nginx -t
           docker compose -p celestin-ci exec -T wordpress php -l /var/www/html/wp-content/mu-plugins/celestin-content.php
+          docker compose -p celestin-ci exec -T wordpress php -l /var/www/html/wp-content/mu-plugins/celestin-astra.php
+          docker compose -p celestin-ci exec -T wordpress sh -c 'su -s /bin/sh www-data -c "test -r /var/www/html/wp-content/mu-plugins/celestin-astra/site.css"'
+          docker compose -p celestin-ci exec -T web wget -q -O - http://127.0.0.1:8080/wp-content/mu-plugins/celestin-astra/site.css | grep -Fq '.clst-site'
+          ! grep -q 'switch_theme' wp-content/mu-plugins/celestin-content.php
           for page in functions.php front-page.php header.php footer.php archive.php single.php index.php 404.php; do
             docker compose -p celestin-ci exec -T wordpress php -l "/var/www/html/wp-content/themes/celestin/$page"
           done

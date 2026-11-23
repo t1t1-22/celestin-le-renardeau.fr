@@ -94,14 +94,7 @@ add_action('wp_dashboard_setup', function () {
     });
 });
 
-// Active le thème Célestin automatiquement, une seule fois après l'installation initiale.
-add_action('init', function () {
-    if (!is_blog_installed() || get_option('clst_theme_initialized')) { return; }
-    $theme = wp_get_theme('celestin');
-    if (!$theme->exists()) { return; }
-    switch_theme('celestin');
-    update_option('clst_theme_initialized', '1', false);
-}, 80);
+// Ne jamais changer le thème actif. Astra est choisi par le propriétaire du site.
 
 // Recopie les deux mini-histoires du site d'origine lors de la première installation.
 add_action('init', function () {

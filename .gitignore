@@ -1,1 +1,6 @@
 /cert/
+/.env
+/.env.*
+!/.env.example
+/data/
+/wp-data/

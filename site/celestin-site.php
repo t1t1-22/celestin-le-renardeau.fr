@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Célestin — Site et contenus
  * Description: Accueil, univers, histoires, livres, activités, personnages et lieux pour Astra.
- * Version: 1.0.2
+ * Version: 1.1.0
  */
 defined('ABSPATH') || exit;
 
@@ -188,8 +188,123 @@ function cel_front_page() {
     <footer class="cel-footer"><div class="cel-footgrid"><div><?php if($logo):?><img class="cel-logo" src="<?php echo esc_url($logo);?>" alt="Célestin le renardeau"><?php else:?><span class="cel-logo-text">Célestin<small>le renardeau</small></span><?php endif;?></div><div><h3>Explorer</h3><a href="<?php echo esc_url(home_url('/'));?>">Accueil</a><a href="<?php echo esc_url(get_post_type_archive_link('cel_activite'));?>">Activités</a><a href="<?php echo esc_url(get_post_type_archive_link('cel_livre'));?>">Livres</a><a href="<?php echo esc_url(get_post_type_archive_link('cel_histoire'));?>">Histoires</a></div><div><h3>À propos</h3><a href="<?php echo cel_url('fleuriville');?>">Fleuriville</a><a href="<?php echo cel_url('notre-histoire');?>">Notre histoire</a><a href="<?php echo cel_url('contact');?>">Nous contacter</a></div><div><h3>La newsletter de Fleuriville</h3><p>Recevez les nouveautés, les histoires et les coloriages exclusifs.</p><p>Inscription disponible prochainement.</p></div></div><div class="cel-legal">© <?php echo esc_html(date('Y'));?> Célestin le renardeau · Mentions légales · Politique de confidentialité</div></footer>
     <?php wp_footer();?></body></html><?php
 }
-add_action('template_redirect', function() {
-    if ((is_front_page() || is_home()) && !is_admin() && !is_feed() && !is_preview() && !is_customize_preview()) {
-        status_header(200); cel_front_page(); exit;
+// Astra stays responsible for the WordPress page document.
+// The front-page sections below are normal Gutenberg shortcode blocks.
+
+
+/**
+ * Editable front page: one Gutenberg shortcode block for each visual section.
+ * Admin controls illustration slots in Site Célestin; WP page editor controls ordering.
+ */
+function cel_home_default_blocks() {
+    $parts=['celestin_header','celestin_hero','celestin_navigation',
+        'celestin_nouveautes','celestin_fleuriville','celestin_footer'];
+    $out='';
+    foreach ($parts as $name) {
+        $out .= '<!-- wp:shortcode -->'."\n".'['.$name.']'."\n".'<!-- /wp:shortcode -->'."\n\n";
     }
-},1);
+    return trim($out);
+}
+function cel_setup_home_content() {
+    $page=get_page_by_path('accueil');
+    if (!$page || $page->post_type!=='page') return false;
+    $current=trim($page->post_content);
+    $default=['','Bienvenue dans l’univers de Célestin le renardeau.'];
+    $is_managed=get_post_meta($page->ID,'_cel_home_blocks_seeded',true);
+    if (!$is_managed && !in_array($current,$default,true)) return true; // Respect existing authored page
+    if (!$is_managed) {
+        $updated=wp_update_post(['ID'=>$page->ID,'post_content'=>cel_home_default_blocks()],true);
+        if (is_wp_error($updated)) return false;
+        update_post_meta($page->ID,'_cel_home_blocks_seeded',1);
+    }
+    update_post_meta($page->ID,'_wp_page_template','default');
+    update_post_meta($page->ID,'site-sidebar-layout','no-sidebar');
+    update_post_meta($page->ID,'site-content-layout','page-builder');
+    update_option('show_on_front','page');
+    update_option('page_on_front',(int)$page->ID);
+    return true;
+}
+add_action('admin_init',function() {
+    if (get_option('cel_site_initialized')) cel_setup_home_content();
+},20);
+
+function cel_home_capture($fn) {
+    ob_start();
+    $fn();
+    return ob_get_clean();
+}
+function cel_home_logo() {
+    $src=cel_asset('logo');
+    if ($src) return '<img class="cel-logo" src="'.esc_url($src).'" alt="Célestin le renardeau">';
+    return '<span class="cel-logo-text">Célestin<small>le renardeau</small></span>';
+}
+add_shortcode('celestin_header',function(){
+    return '<header class="cel-top"><a href="'.esc_url(home_url('/')).'" aria-label="Célestin le renardeau">'.cel_home_logo().'</a><a class="cel-join" href="'.cel_url('rejoins-l-aventure').'">★ Rejoins l’aventure !</a></header>';
+});
+add_shortcode('celestin_hero',function(){
+    $bg=cel_asset('hero');
+    $style=$bg ? ' style="--cel-hero:url('.esc_url($bg).')"' : '';
+    return '<section class="cel-hero"'.$style.'><div class="cel-hero-text"><h1>'.
+        esc_html(cel_setting('headline','Pars à l’aventure à Fleuriville !')).'</h1><a class="cel-btn" href="'.
+        cel_url('fleuriville').'">'.esc_html(cel_setting('button','Découvrir l’univers')).' →</a></div></section>';
+});
+add_shortcode('celestin_navigation',function(){
+    $items=['cel_personnage'=>'Les personnages','cel_activite'=>'Mes petites activités',
+        'cel_livre'=>'Les livres','cel_histoire'=>'Les histoires'];
+    $out='<nav class="cel-menu" aria-label="Explorer l’univers">';
+    foreach($items as $type=>$name) $out.='<a href="'.esc_url(get_post_type_archive_link($type)).'">'.esc_html($name).'</a>';
+    return $out.'</nav>';
+});
+add_shortcode('celestin_nouveautes',function(){
+    return cel_home_capture(function(){
+        echo '<section class="cel-main cel-new"><h2>Les nouveautés</h2>';
+        cel_latest_cards();
+        echo '</section>';
+    });
+});
+add_shortcode('celestin_fleuriville',function(){
+    $town=cel_asset('fleuriville');
+    $image=$town?'<img src="'.esc_url($town).'" alt="Vue de Fleuriville">':'<div class="cel-town-blank" aria-hidden="true"></div>';
+    return '<section class="cel-main cel-town-wrap"><div class="cel-town">'.$image.
+        '<div class="cel-town-body"><h2>Bienvenue à Fleuriville !</h2><p>'.
+        esc_html(cel_setting('intro','Un petit coin de nature plein de charme où Célestin vit de grandes et de petites aventures avec ses amis.')).
+        '</p><a class="cel-btn" href="'.cel_url('fleuriville').'">Découvrir Fleuriville →</a></div></div></section>';
+});
+add_shortcode('celestin_footer',function(){
+    $left=cel_asset('footer_left');$right=cel_asset('footer_right');
+    $a=$left?'<img src="'.esc_url($left).'" alt="Paysage de Fleuriville">':'';
+    $b=$right?'<img src="'.esc_url($right).'" alt="Célestin et Octet">':'';
+    $navigation='<a href="'.esc_url(home_url('/')).'">Accueil</a><a href="'.
+      esc_url(get_post_type_archive_link('cel_activite')).'">Activités</a><a href="'.
+      esc_url(get_post_type_archive_link('cel_livre')).'">Livres</a><a href="'.
+      esc_url(get_post_type_archive_link('cel_histoire')).'">Histoires</a>';
+    return '<div class="cel-bottom-scene"><div>'.$a.'</div><div><h2>Bienvenue à Fleuriville !</h2><p>'.
+      esc_html(cel_setting('footer_intro','Un petit coin de nature plein de charme où Célestin vit de grandes et de petites aventures avec Octet, son fidèle compagnon.')).
+      '</p><a class="cel-btn" href="'.cel_url('fleuriville').'">Découvrir Fleuriville →</a></div><div>'.$b.
+      '</div></div><footer class="cel-footer"><div class="cel-footgrid"><div>'.cel_home_logo().
+      '</div><div><h3>Explorer</h3>'.$navigation.'</div><div><h3>À propos</h3><a href="'.
+      cel_url('fleuriville').'">Fleuriville</a><a href="'.cel_url('notre-histoire').
+      '">Notre histoire</a><a href="'.cel_url('contact').
+      '">Nous contacter</a></div><div><h3>La newsletter de Fleuriville</h3><p>Recevez les nouveautés, les histoires et les coloriages exclusifs.</p><p>Inscription disponible prochainement.</p></div></div><div class="cel-legal">© '.
+      esc_html(wp_date('Y')).' Célestin le renardeau · Mentions légales · Politique de confidentialité</div></footer>';
+});
+add_action('wp_head',function() {
+    if (!is_front_page()) return;
+    cel_front_styles();
+    echo '<style id="cel-override-astra">
+    body.home {background:#fffaf5}
+    body.home #masthead,body.home #colophon {display:none!important}
+    body.home .site-content > .ast-container {display:block!important;width:100%;max-width:none!important;margin:0!important;padding:0!important}
+    body.home #primary,body.home .site-main,body.home .entry-content,body.home .ast-article-single {margin:0!important;padding:0!important;width:100%!important;max-width:none!important}
+    body.home .entry-header,body.home .entry-title {display:none!important}
+    body.home .entry-content > .wp-block-shortcode {margin:0!important;padding:0!important}
+    body.home .entry-content > .wp-block-shortcode > * {margin-top:0}
+    body.home .cel-main.cel-new {margin:62px auto 70px!important}
+    body.home .cel-town-wrap {margin:0 auto 80px!important}
+    body.home .cel-town {margin:0!important}
+    body.home .cel-footer {margin:0!important}
+    body.home .cel-top a {text-decoration:none}
+    body.home .cel-hero:before {background-image:var(--cel-hero);background-size:cover;background-position:center}
+    @media(max-width:800px){body.home .cel-main.cel-new{margin:40px auto!important}body.home .cel-town-wrap{margin:0 auto 50px!important}}
+    </style>';
+},99);

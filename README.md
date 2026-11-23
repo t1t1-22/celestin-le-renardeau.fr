@@ -1,25 +1,14 @@
-# WordPress vierge
+# Site Célestin le renardeau — WordPress / Astra
 
-Ce dépôt déploie **WordPress officiel et MariaDB**, derrière un Nginx technique relié au reverse-proxy HTTPS existant. Aucun thème, extension, page ou contenu spécifique n'est fourni.
+Le dépôt déploie WordPress et MariaDB avec les volumes persistants existants. Le module personnalisé `site/celestin-site.php` est monté en lecture seule dans les mu-plugins WordPress. Aucun conteneur Factify n'est modifié.
 
-## Installation
+## Dans l'administration
+Ouvrir **Site Célestin** dans le menu de gauche pour choisir les illustrations depuis la médiathèque et modifier les textes du slide et de Fleuriville.
 
-Une fois le job GitHub Actions `deploy` réussi, ouvrir :
+Les rubriques WordPress dédiées sont : **Livres, Mini-histoires, Mes petites activités, Personnages et Lieux de Fleuriville**. L'accueil présente les trois dernières publications. Les pages **Accueil, Fleuriville, Notre histoire, Rejoins l'aventure et Nous contacter** sont créées à la première visite de l'administration si elles n'existent pas déjà.
 
-https://celestin-le-renardeau.fr/wp-admin/install.php
+## Images
+Le dépôt contient la mise en page et les emplacements d'images, pas les illustrations finales : importez des images depuis **Médias > Ajouter**, puis sélectionnez-les dans **Site Célestin**. Les dessins de maquette restent provisoires : remplacer par les créations originales avant la publication.
 
-Créer un **nouveau** compte administrateur WordPress dans le navigateur. Aucune ancienne connexion WordPress n'est réutilisée.
-
-## Données
-
-Cette réinitialisation utilise deux **nouveaux volumes isolés** :
-- `celestin_wordpress_blank_v1` (fichiers et médias WordPress neufs)
-- `celestin_db_blank_v1` (base MariaDB neuve)
-
-Les volumes précédents ne sont pas montés et **ne sont pas supprimés** (retour arrière possible). Ni Factify ni le reverse-proxy `ubuntu-edge` ne sont modifiés. Le domaine et l'alias Docker `celestin-web:8080` restent identiques.
-
-Les secrets SQL sont créés automatiquement et conservés sur le serveur dans `.env`, hors Git, avec le script `scripts/ensure-wordpress-secrets.sh`. Aucun travail SSH manuel n'est nécessaire.
-
-**Ne pas exécuter `docker compose down -v` sur la production** sans sauvegarde préalable.
-
-Ce dépôt ne contient plus le site Célestin ; seul le WordPress standard est proposé.
+## Déploiement
+Le workflow existant déploie le projet Docker. Les volumes WordPress et MariaDB sont conservés. **Ne pas exécuter docker compose down -v** sur le serveur.

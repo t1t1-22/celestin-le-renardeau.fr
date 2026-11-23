@@ -2,8 +2,15 @@ services:
   web:
     build: .
     restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 8080
+      DATA_DIR: /app/data
+      ADMIN_PASSWORD: ${CELESTIN_ADMIN_PASSWORD:-}
+    volumes:
+      - celestin_content:/app/data
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/"]
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8080/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
       interval: 5s
       timeout: 3s
       retries: 6
@@ -11,6 +18,9 @@ services:
       celestin_proxy:
         aliases:
           - celestin-web
+
+volumes:
+  celestin_content:
 
 networks:
   celestin_proxy:

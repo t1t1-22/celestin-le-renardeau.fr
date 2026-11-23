@@ -28,6 +28,10 @@ compose config --quiet
 # Les données du site et Astra restent dans les volumes persistants.
 # Le module Célestin est monté en lecture seule depuis ce dépôt.
 compose build --pull web
+# Git remplace l'inode du fichier PHP, tandis que le bind-mount Docker
+# conserve l'ancien inode jusqu'à la recréation du conteneur.
+# Recréer UNIQUEMENT wordpress, jamais la base DB ni Factify.
+compose up -d --no-deps --force-recreate wordpress
 if ! compose up -d --remove-orphans --wait --wait-timeout 240; then
   compose ps >&2 || true
   compose logs --tail=60 web wordpress db >&2 || true

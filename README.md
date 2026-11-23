@@ -22,13 +22,12 @@ Le script `scripts/deploy.sh` réalise toutes les opérations suivantes sans ass
 
 ## Déploiement
 
-1. Vérifier les tests GitHub Actions sur la Pull Request WordPress.
-2. Après la sauvegarde du site initial et la configuration de `.env`, fusionner la Pull Request dans `main`.
-3. Le workflow CI et déploiement déploiera automatiquement les conteneurs `web`, `wordpress` et `db` sur le réseau Docker existant `celestin_proxy`. Le frontal garde l'alias `celestin-web` et le port **8080**. Aucune modification DNS n'est prévue.
-4. Ouvrir **https://celestin-le-renardeau.fr/wp-admin/install.php** : sélectionner le français et créer le premier compte administrateur WordPress. Utiliser un identifiant personnel (éviter `admin`), un mot de passe fort et une adresse email valide. Le mot de passe WordPress **n'est pas** le secret SQL.
-5. Une fois connecté, ouvrir **https://celestin-le-renardeau.fr/wp-admin**. Le thème **Célestin** et les rubriques personnalisées seront activés automatiquement au premier chargement après installation.
-6. Dans **Réglages → Permaliens**, choisir « Titre de la publication » puis **Enregistrer** pour activer les adresses conviviales.
-7. Dans **Apparence → Personnaliser → 🦊 Accueil Célestin**, téléverser l'illustration finale de la bannière **sans texte**. Le texte et les boutons sont générés en HTML par WordPress.
+1. Vérifier que les tests GitHub Actions passent avant fusion sur `main`.
+2. GitHub Actions déploie les trois conteneurs `web`, `wordpress` et `db` automatiquement. Le frontal conserve l'alias `celestin-web:8080` sur `celestin_proxy` et le domaine actuel : aucun DNS à modifier.
+3. Ouvrir **https://celestin-le-renardeau.fr/wp-admin/install.php** et créer le premier administrateur WordPress **dans le navigateur**, avec un identifiant personnel, un mot de passe fort et un e-mail valide.
+4. Se connecter ensuite à **https://celestin-le-renardeau.fr/wp-admin/**. WordPress active le thème Célestin et les rubriques administrables automatiquement.
+5. Dans **Réglages → Permaliens**, sélectionner « Titre de la publication », puis **Enregistrer**.
+6. Dans **Apparence → Personnaliser → 🦊 Accueil Célestin**, ajouter l'illustration finale de la bannière **sans texte**.
 
 ## Utilisation de l'administration
 

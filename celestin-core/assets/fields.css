@@ -8,3 +8,9 @@
 .cel-extra-row{display:grid;grid-template-columns:180px 1fr 1fr 40px;gap:9px;margin-bottom:10px}.cel-extra-row input,.cel-extra-row select{max-width:100%;min-width:0;width:100%}.cel-extra-row button{font-size:21px;color:#a13b2a}
 .cel-relations-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}.cel-relation-field select{min-height:150px;height:auto}.cel-relation-field p{font-size:12px}
 @media(max-width:780px){.cel-field-grid,.cel-relations-grid{grid-template-columns:1fr}.cel-extra-row{grid-template-columns:1fr 1fr}.cel-extra-row button{width:40px}}
+
+.cel-section-image{margin:26px 0 8px;padding:18px 20px;border:1px solid #e4c7a6;background:#fffbf5;border-radius:13px}
+.cel-section-image h4{font-size:16px;margin:0 0 8px;color:#74421e}
+.cel-section-image .description{margin:0 0 12px}
+.cel-section-image-preview{display:block;max-width:330px;max-height:245px;width:auto;height:auto;object-fit:contain;background:white;border:1px solid #ead9c5;border-radius:10px;padding:6px;margin:10px 0 14px}
+.cel-section-image-actions{display:flex;flex-wrap:wrap;gap:9px}

@@ -83,7 +83,10 @@ add_action('admin_menu',function(){
 add_action('admin_enqueue_scripts',function($hook) {
     if ($hook!=='toplevel_page_celestin-site') return;
     wp_enqueue_media();
-    wp_add_inline_script('jquery-core', "jQuery(function($){$(document).on('click','.cel-select-media',function(e){e.preventDefault();let el=$(this).closest('.cel-image-row');let picker=wp.media({title:'Choisir une illustration',button:{text:'Utiliser cette image'},multiple:false});picker.on('select',function(){let a=picker.state().get('selection').first().toJSON();el.find('input').val(a.id);el.find('img').attr('src',a.url).show();});picker.open();});$(document).on('click','.cel-clear-media',function(e){e.preventDefault();let el=$(this).closest('.cel-image-row');el.find('input').val('');el.find('img').hide();});});");
+    wp_add_inline_script('jquery-core', <<<'CEL_JS'
+jQuery(function($){$(document).on('click','.cel-select-media',function(e){e.preventDefault();let el=$(this).closest('.cel-image-row');let picker=wp.media({title:'Choisir une illustration',button:{text:'Utiliser cette image'},multiple:false});picker.on('select',function(){let a=picker.state().get('selection').first().toJSON();el.find('input').val(a.id);el.find('img').attr('src',a.url).show();});picker.open();});$(document).on('click','.cel-clear-media',function(e){e.preventDefault();let el=$(this).closest('.cel-image-row');el.find('input').val('');el.find('img').hide();});});
+CEL_JS
+    );
 });
 function cel_admin_settings() {
     if (!current_user_can('manage_options')) return;

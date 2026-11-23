@@ -51,10 +51,11 @@ sh scripts/enable-celestin-proxy-uploads.sh
 # Diagnostic non destructif du routage WordPress et de l'accueil.
 echo '=== Diagnostic Célestin ==='
 compose exec -T wordpress php -r 'require "/var/www/html/wp-load.php"; echo "home=".get_option("home")." show_on_front=".get_option("show_on_front")." page_on_front=".get_option("page_on_front")." initialized=".get_option("cel_site_initialized")." mu=".(function_exists("cel_front_page")?"yes":"no")." blog_installed=".(is_blog_installed()?"yes":"no")." wp_installing=".(wp_installing()?"yes":"no")." wp_loaded=".did_action("wp_loaded").PHP_EOL;'
-if compose exec -T web sh -c 'wget -qO- http://127.0.0.1:8080/ | grep -q "cel-hero"'; then
+if compose exec -T web sh -c 'wget -qO- --header="Host: celestin-le-renardeau.fr" --header="X-Forwarded-Proto: https" http://127.0.0.1:8080/ | grep -q "cel-hero"'; then
   echo 'DIAGNOSTIC: le template Célestin est servi par le conteneur web.'
 else
-  echo 'DIAGNOSTIC: le template Célestin est absent du conteneur web.' >&2
+  echo 'DIAGNOSTIC: réponse HTTP et début de page :' >&2
+  compose exec -T web sh -c 'wget -S -O - --header="Host: celestin-le-renardeau.fr" --header="X-Forwarded-Proto: https" http://127.0.0.1:8080/ 2>&1 | head -c 1800' >&2 || true
   exit 1
 fi
 compose ps

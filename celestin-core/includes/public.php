@@ -32,6 +32,11 @@ final class Celestin_Public {
         if(has_post_thumbnail($id))return get_the_post_thumbnail($id,$size,['loading'=>'lazy']);
         return '<div class="cel-content-placeholder" aria-label="Illustration bientôt disponible">✦<small>Illustration à découvrir bientôt</small></div>';
     }
+    static function section_illustration(int $id,string $section): string {
+        $image_id=absint(get_post_meta($id,'_cel_section_image_'.$section,true));
+        if(!$image_id || !wp_attachment_is_image($image_id))return '';
+        return '<figure class="cel-section-illustration">'.wp_get_attachment_image($image_id,'large',false,['loading'=>'lazy']).'</figure>';
+    }
     static function fact(int $id,string $key,string $label): string {
         $val=Celestin_Fields::value($id,$key);
         return $val!==''?'<div class="cel-fact"><dt>'.esc_html($label).'</dt><dd>'.nl2br(esc_html($val)).'</dd></div>':'';
@@ -69,7 +74,9 @@ final class Celestin_Public {
             foreach($extras as $extra)if(($extra['category']??'')===$tag && !empty($extra['label'])){
                 $additional.='<div class="cel-fact"><dt>'.esc_html($extra['label']).'</dt><dd>'.nl2br(esc_html($extra['value']??'')).'</dd></div>';
             }
-            if($rows||$additional)echo '<section class="cel-detail-section"><h2>'.esc_html($section).'</h2>'.($rows?:'').($additional?'<dl class="cel-facts">'.$additional.'</dl>':'').'</section>';
+            $section_images=['Portrait physique'=>'physique','Personnalité'=>'caractere','Pour mieux me connaître'=>'univers'];
+            $illustration=self::section_illustration($id,$section_images[$section]??'');
+            if($rows||$additional||$illustration)echo '<section class="cel-detail-section"><h2>'.esc_html($section).'</h2>'.$illustration.($rows?:'').($additional?'<dl class="cel-facts">'.$additional.'</dl>':'').'</section>';
         }
         $extra_identite='';
         foreach($extras as $extra)if(($extra['category']??'')==='identite'&&!empty($extra['label'])){

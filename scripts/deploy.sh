@@ -37,6 +37,8 @@ fi
 # Teste la page d'installation de WordPress *vierge* et l'absence
 # des modules Célestin dans la nouvelle installation.
 compose exec -T wordpress sh -c 'test -r /var/www/html/wp-content/mu-plugins/celestin-site.php && php -l /var/www/html/wp-content/mu-plugins/celestin-site.php'
+# Initialise explicitement les pages et la page d’accueil après le démarrage de WordPress.
+compose exec -T wordpress php -r 'require "/var/www/html/wp-load.php"; if (!function_exists("cel_initialize_site")) { fwrite(STDERR,"Module Célestin indisponible\\n"); exit(1); } cel_initialize_site(); $p=get_page_by_path("accueil"); if (!$p || get_option("show_on_front")!=="page" || (int)get_option("page_on_front")!==(int)$p->ID) { fwrite(STDERR,"Accueil Célestin non configuré\\n"); exit(1); } echo "Accueil Célestin activé : ".$p->ID.PHP_EOL;'
 compose exec -T web wget -q -O /dev/null http://127.0.0.1:8080/wp-admin/install.php
 # Le frontal HTTPS ubuntu-edge partage Nginx avec Factify. Ne modifier que
 # le fichier du domaine Célestin, vérifier nginx -t, puis recharger sans restart.
@@ -49,6 +51,7 @@ if compose exec -T web sh -c 'wget -qO- http://127.0.0.1:8080/ | grep -q "cel-he
   echo 'DIAGNOSTIC: le template Célestin est servi par le conteneur web.'
 else
   echo 'DIAGNOSTIC: le template Célestin est absent du conteneur web.' >&2
+  exit 1
 fi
 compose ps
 echo "WordPress avec module Célestin en ligne sur celestin-web:8080. Données WordPress et Factify conservées."

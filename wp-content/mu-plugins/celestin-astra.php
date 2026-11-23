@@ -106,7 +106,7 @@ add_shortcode('celestin_catalogue', function ($atts) {
        clst_astra_list($atts['type'], intval($atts['nombre'])) . '</div></div>';
 });
 add_shortcode('celestin_accueil', function () {
-    $hero_image = clst_astra_image_url('clst_astra_hero_image', 'jardin.webp');
+    $hero_image = clst_astra_image_url('clst_astra_hero_image', 'banniere-celestin-fleurville.webp');
     $village_image = clst_astra_image_url('clst_astra_village_image', 'jardin.webp');
     $intro = clst_astra_text('clst_astra_intro', 'Des histoires douces, des coloriages et de jolies découvertes pour les petits curieux !');
     ob_start(); ?>
@@ -245,7 +245,7 @@ function clst_astra_settings_page() {
       <form method="post" action="options.php"><?php settings_fields('clst_astra_options'); ?>
       <table class="form-table">
         <?php foreach ([
-           'clst_astra_hero_image' => ['Grande illustration du bandeau', 'jardin.webp'],
+           'clst_astra_hero_image' => ['Grande illustration du bandeau', 'banniere-celestin-fleurville.webp'],
            'clst_astra_village_image' => ['Illustration de Fleurville', 'jardin.webp'],
         ] as $key => $image_info) :
           $id = absint(get_option($key, 0));
@@ -288,6 +288,15 @@ add_filter('astra_logo', function ($html) {
     $image = esc_url(home_url('/images/logo.webp'));
     return '<a class="clst-astra-brand" href="' . esc_url(home_url('/')) . '" aria-label="Célestin le renardeau, accueil"><img src="' . $image . '" alt="Célestin le renardeau"></a>';
 }, 10, 1);
+
+// Application unique de la nouvelle bannière demandée pour l'accueil.
+// L'ancien choix reste conservé dans la médiathèque, et l'utilisateur peut
+// toujours changer l'image depuis « Univers Célestin » après ce déploiement.
+add_action('init', function () {
+    if (!clst_astra_active() || get_option('clst_hero_fleurville_20261123_applied') === '1') { return; }
+    update_option('clst_astra_hero_image', 0, false);
+    update_option('clst_hero_fleurville_20261123_applied', '1', false);
+}, 110);
 
 // Les fichiers PDF et liens de vente restent visibles sur les fiches Astra.
 add_filter('the_content', function ($content) {

@@ -43,34 +43,87 @@ final class Celestin_Home {
     static function admin_assets($hook): void {
         if ($hook !== 'celestin-core_page_celestin-design') return;
         wp_enqueue_media();
-        wp_enqueue_script('celestin-media', plugins_url('../assets/admin.js',__FILE__), ['jquery'], '0.2.1', true);
+        wp_enqueue_script('celestin-media', plugins_url('../assets/admin.js',__FILE__), ['jquery'], '0.2.2', true);
+        wp_enqueue_style('celestin-admin', plugins_url('../assets/admin.css',__FILE__), [], '0.2.2');
+    }
+    static function image_setting(string $key, string $label, array $options): void {
+        $id = absint($options[$key] ?? 0);
+        $url = $id ? wp_get_attachment_image_url($id, 'medium') : '';
+        echo '<div class="cel-media-setting"><h3>' . esc_html($label) . '</h3>';
+        echo '<input type="hidden" class="cel-media-id" name="design[' . esc_attr($key) . ']" value="' . $id . '">';
+        echo '<img class="cel-media-preview" src="' . esc_url($url ?: '') . '" alt="" style="display:' . ($url ? 'block' : 'none') . '">';
+        echo '<div class="cel-media-actions"><button type="button" class="button cel-media-choose">Choisir une image</button> <button type="button" class="button cel-media-remove">Retirer</button></div></div>';
+    }
+    static function text_setting(string $key, string $label, array $options, bool $multiline=false): void {
+        echo '<div class="cel-text-setting"><label for="cel_' . esc_attr($key) . '"><strong>' . esc_html($label) . '</strong></label>';
+        if ($multiline) echo '<textarea rows="4" name="design[' . esc_attr($key) . ']" id="cel_' . esc_attr($key) . '">' . esc_textarea($options[$key] ?? '') . '</textarea>';
+        else echo '<input type="text" name="design[' . esc_attr($key) . ']" id="cel_' . esc_attr($key) . '" value="' . esc_attr($options[$key] ?? '') . '">';
+        echo '</div>';
     }
     static function settings(): void {
         if (!current_user_can('manage_options')) return;
-        $o=self::options();
-        $images=['logo'=>'Logo du haut (utilisé aussi en bas par défaut)', 'footer_logo'=>'Logo du pied de page (facultatif : sans sélection, reprend le logo du haut)', 'hero'=>'Grande illustration d’accueil (sans texte)', 'activity'=>'Visuel des activités',
-                 'story'=>'Illustration de mini-histoire', 'book'=>'Illustration du livre ouvert',
-                 'character'=>'Portrait de Célestin', 'city'=>'Carte illustrée de Fleuriville',
-                 'footer'=>'Bannière Bienvenue à Fleuriville'];
-        echo '<div class="wrap"><h1>Célestin — Apparence du site</h1><p>Les textes, rubriques et mises en page sont codés. Ici, tu remplaces librement les illustrations par tes dessins originaux.</p>';
-        if (isset($_GET['saved'])) echo '<div class="notice notice-success"><p>Apparence enregistrée.</p></div>';
-        echo '<form action="' . esc_url(admin_url('admin-post.php')) . '" method="post">';
+        $o = self::options();
+        $tabs = [
+            'identite' => ['Identité visuelle', 'dashicons-admin-appearance'],
+            'accueil' => ['Page d’accueil', 'dashicons-admin-home'],
+            'rubriques' => ['Rubriques', 'dashicons-screenoptions'],
+            'fleuriville' => ['Fleuriville & pied de page', 'dashicons-location-alt'],
+            'newsletter' => ['Newsletter', 'dashicons-email-alt']
+        ];
+        $active = isset($_GET['tab']) ? sanitize_key(wp_unslash($_GET['tab'])) : 'identite';
+        if (!isset($tabs[$active])) $active = 'identite';
+        echo '<div class="wrap cel-design-admin"><h1>Apparence du site</h1>';
+        echo '<p class="cel-admin-intro">Personnalise les images et les textes de ton site. Tes illustrations restent dans la médiathèque WordPress.</p>';
+        if (isset($_GET['saved'])) echo '<div class="notice notice-success is-dismissible"><p>Les paramètres ont été enregistrés.</p></div>';
+        echo '<form id="cel-design-form" action="' . esc_url(admin_url('admin-post.php')) . '" method="post">';
         echo '<input type="hidden" name="action" value="celestin_save_design">';
+        echo '<input type="hidden" name="cel_active_tab" id="cel-active-tab" value="' . esc_attr($active) . '">';
         wp_nonce_field('celestin_save_design');
-        foreach($images as $key=>$label) {
-            $id=absint($o[$key]??0);
-            $url=$id?wp_get_attachment_image_url($id,'medium'):'';
-            echo '<div class="cel-media-setting" style="background:white;border:1px solid #ddd;border-radius:12px;padding:15px;margin:12px 0;max-width:700px"><h3>' . esc_html($label) . '</h3>';
-            echo '<input type="hidden" class="cel-media-id" name="design[' . esc_attr($key) . ']" value="' . $id . '">';
-            echo '<img class="cel-media-preview" src="' . esc_url($url ?: '') . '" alt="" style="max-width:260px;max-height:130px;display:' . ($url?'block':'none') . ';margin-bottom:12px;object-fit:contain">';
-            echo '<button type="button" class="button cel-media-choose">Choisir une image</button> <button type="button" class="button cel-media-remove">Retirer</button></div>';
+        echo '<nav class="cel-design-tabs" role="tablist" aria-label="Catégories des paramètres">';
+        foreach ($tabs as $key => [$title, $icon]) {
+            echo '<button type="button" class="cel-design-tab' . ($active === $key ? ' is-active' : '') .
+                '" id="cel-tab-' . esc_attr($key) . '" role="tab" aria-controls="cel-panel-' . esc_attr($key) . '" aria-selected="' .
+                ($active === $key ? 'true' : 'false') . '" tabindex="' . ($active === $key ? '0' : '-1') .
+                '" data-cel-tab="' . esc_attr($key) . '"><span class="dashicons ' . esc_attr($icon) . '" aria-hidden="true"></span>' .
+                esc_html($title) . '</button>';
         }
-        foreach(['headline'=>'Grand titre de l’accueil','welcome'=>'Texte de bienvenue','newsletter'=>'Lien vers la newsletter (facultatif)'] as $key=>$label){
-            echo '<p><label for="cel_' . esc_attr($key) . '"><strong>' . esc_html($label) . '</strong></label></p>';
-            if ($key==='welcome') echo '<p><textarea rows="3" style="width:700px;max-width:95%" name="design[' . esc_attr($key) . ']" id="cel_' . esc_attr($key) . '">' . esc_textarea($o[$key]) . '</textarea></p>';
-            else echo '<p><input style="width:700px;max-width:95%" type="text" name="design[' . esc_attr($key) . ']" id="cel_' . esc_attr($key) . '" value="' . esc_attr($o[$key]) . '"></p>';
-        }
-        submit_button('Enregistrer mon site');
+        echo '</nav>';
+
+        echo '<section id="cel-panel-identite" class="cel-design-panel" role="tabpanel" aria-labelledby="cel-tab-identite"' . ($active !== 'identite' ? ' hidden' : '') . '>';
+        echo '<h2>Identité visuelle</h2><p>Le logo en haut du site est aussi utilisé dans le pied de page si aucun autre n’est sélectionné.</p>';
+        self::image_setting('logo', 'Logo principal (haut du site)', $o);
+        self::image_setting('footer_logo', 'Logo alternatif pour le pied de page (facultatif)', $o);
+        echo '</section>';
+
+        echo '<section id="cel-panel-accueil" class="cel-design-panel" role="tabpanel" aria-labelledby="cel-tab-accueil"' . ($active !== 'accueil' ? ' hidden' : '') . '>';
+        echo '<h2>Page d’accueil</h2><p>Personnalise la grande illustration d’ouverture et son titre.</p>';
+        self::image_setting('hero', 'Illustration principale de l’accueil (sans texte)', $o);
+        self::text_setting('headline', 'Grand titre de l’accueil', $o);
+        echo '</section>';
+
+        echo '<section id="cel-panel-rubriques" class="cel-design-panel" role="tabpanel" aria-labelledby="cel-tab-rubriques"' . ($active !== 'rubriques' ? ' hidden' : '') . '>';
+        echo '<h2>Visuels des rubriques</h2><p>Images de présentation. Les contenus publiés utilisent en priorité leur propre image à la une.</p>';
+        self::image_setting('activity', 'Mes petites activités', $o);
+        self::image_setting('story', 'Mini-histoires audio', $o);
+        self::image_setting('book', 'Les livres', $o);
+        self::image_setting('character', 'Fiches personnages', $o);
+        echo '</section>';
+
+        echo '<section id="cel-panel-fleuriville" class="cel-design-panel" role="tabpanel" aria-labelledby="cel-tab-fleuriville"' . ($active !== 'fleuriville' ? ' hidden' : '') . '>';
+        echo '<h2>Fleuriville & bienvenue</h2><p>Configure les visuels de Fleuriville et la bannière de bienvenue, juste avant le pied de page.</p>';
+        self::image_setting('city', 'Carte illustrée de Fleuriville', $o);
+        self::image_setting('footer', 'Bannière « Bienvenue à Fleuriville »', $o);
+        self::text_setting('welcome', 'Texte de bienvenue', $o, true);
+        echo '</section>';
+
+        echo '<section id="cel-panel-newsletter" class="cel-design-panel" role="tabpanel" aria-labelledby="cel-tab-newsletter"' . ($active !== 'newsletter' ? ' hidden' : '') . '>';
+        echo '<h2>Newsletter</h2><p>Si le lien est vide, le site affiche « Bientôt disponible ».</p>';
+        self::text_setting('newsletter', 'Lien vers le formulaire de newsletter (facultatif)', $o);
+        echo '</section>';
+
+        echo '<div class="cel-design-actions">';
+        submit_button('Enregistrer les paramètres', 'primary', 'submit', false);
+        echo '<span>Les modifications de tous les onglets sont enregistrées ensemble.</span></div>';
         echo '</form></div>';
     }
     static function save_design(): void {
@@ -82,7 +135,10 @@ final class Celestin_Home {
         foreach(['headline','welcome'] as $key) $out[$key]=sanitize_textarea_field($raw[$key]??$out[$key]);
         $out['newsletter']=esc_url_raw($raw['newsletter']??'');
         update_option(self::OPTION,$out);
-        wp_safe_redirect(add_query_arg('saved','1',admin_url('admin.php?page=celestin-design')));
+        $allowed_tabs = ['identite', 'accueil', 'rubriques', 'fleuriville', 'newsletter'];
+        $active = isset($_POST['cel_active_tab']) ? sanitize_key(wp_unslash($_POST['cel_active_tab'])) : 'identite';
+        if (!in_array($active, $allowed_tabs, true)) $active = 'identite';
+        wp_safe_redirect(add_query_arg(['saved' => '1', 'tab' => $active], admin_url('admin.php?page=celestin-design')));
         exit;
     }
     static function assets(): void {

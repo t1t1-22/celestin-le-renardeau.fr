@@ -1,5 +1,9 @@
 #!/bin/sh
+# Déploiement entièrement automatisé du seul projet Docker "celestin".
+# Ne touche jamais aux projets factcast, factify ou ubuntu-edge.
 set -eu
+umask 077
+
 cd "${1:?Chemin du dépôt requis}"
 tested_sha=${2:?SHA testé requis}
 
@@ -7,41 +11,68 @@ branch=$(git branch --show-current)
 tracked_changes=$(git status --porcelain --untracked-files=no)
 untracked_changes=$(git ls-files --others --exclude-standard -- . ':(exclude,top)cert/')
 if [ "$branch" != main ] || [ -n "$tracked_changes$untracked_changes" ]; then
-  echo "Le checkout serveur doit être sur main, sans modifications suivies." >&2
+  echo "Le checkout Célestin doit être sur main et sans modifications locales suivies." >&2
   exit 1
 fi
-
-# Pas de migration WordPress sans les deux secrets définis côté serveur.
-if [ ! -f .env ]; then
-  echo "Créer le fichier .env avec les identifiants SQL avant fusion." >&2
-  exit 1
-fi
-set -a
-. ./.env
-set +a
-: "${CELESTIN_DB_PASSWORD:?Secret SQL absent}"
-: "${CELESTIN_DB_ROOT_PASSWORD:?Secret root SQL absent}"
 
 git fetch origin main
 remote_sha=$(git rev-parse origin/main)
 if [ "$tested_sha" != "$remote_sha" ]; then
-  echo "Un commit plus récent existe ; son déploiement sera lancé séparément."
+  echo "Un commit plus récent existe : pas de déploiement d'un ancien commit."
   exit 0
 fi
-
 git merge --ff-only "$tested_sha"
 test "$(git rev-parse HEAD)" = "$tested_sha"
 
-docker network inspect celestin_proxy >/dev/null 2>&1 || docker network create celestin_proxy >/dev/null
+# Les secrets SQL sont créés une fois sur Ubuntu et réutilisés aux déploiements suivants.
+# Aucun secret ne transite dans les logs, GitHub ou la conversation.
+sh scripts/ensure-wordpress-secrets.sh "$PWD"
 
-compose() { docker compose -p celestin "$@"; }
+# Réseau existant partagé avec le frontal HTTPS ubuntu-edge.
+# On ne le recrée qu'en cas d'absence et on ne le supprime jamais.
+docker network inspect celestin_proxy >/dev/null 2>&1 ||
+  docker network create celestin_proxy >/dev/null
+
+compose() { docker compose -p celestin -f compose.yml "$@"; }
 compose config --quiet
+# Une image valide est préparée avant toute suppression d'ancien conteneur.
 compose build --pull web wordpress
-# L'option --no-build maintient le même commit testé.
-if ! compose up -d --no-build --wait --wait-timeout 240; then
+
+marker=".celestin-wordpress-migrated"
+if [ ! -f "$marker" ]; then
+  # Docker Compose ajoute ce label à tous les anciens conteneurs Célestin.
+  # Cette sélection stricte ne peut pas inclure Factify ni ubuntu-edge.
+  obsolete=$(docker ps -aq --filter "label=com.docker.compose.project=celestin")
+  if [ -n "$obsolete" ]; then
+    echo "Retrait des anciens conteneurs du projet Docker celestin (volumes conservés)."
+    for id in $obsolete; do
+      project=$(docker inspect --format '{{index .Config.Labels "com.docker.compose.project"}}' "$id")
+      if [ "$project" != "celestin" ]; then
+        echo "Conteneur hors du projet Célestin : opération refusée." >&2
+        exit 1
+      fi
+    done
+    # Conteneurs seulement ; pas de docker volume rm, ni de down -v, ni de prune.
+    docker rm -f $obsolete >/dev/null
+  fi
+fi
+
+# --remove-orphans agit seulement sur le projet Compose explicitement ciblé.
+if ! compose up -d --no-build --remove-orphans --wait --wait-timeout 240; then
   compose ps >&2 || true
-  compose logs --tail=80 web wordpress db >&2 || true
+  compose logs --tail=100 web wordpress db >&2 || true
   exit 1
 fi
+
+# Valider WordPress lui-même et pas seulement la réponse statique de Nginx.
+if ! compose exec -T web wget -q -O /dev/null http://127.0.0.1:8080/wp-admin/install.php; then
+  compose ps >&2 || true
+  compose logs --tail=100 web wordpress db >&2 || true
+  echo "Le routage /wp-admin/install.php n'est pas fonctionnel." >&2
+  exit 1
+fi
+touch "$marker"
+chmod 600 "$marker"
 compose ps
-echo "WordPress Célestin déployé : $tested_sha"
+echo "WordPress Célestin et MariaDB fonctionnent sur celestin-web:8080 ($tested_sha)."
+echo "Factify et ubuntu-edge n'ont pas été modifiés."

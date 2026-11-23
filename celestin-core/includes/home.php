@@ -16,7 +16,7 @@ final class Celestin_Home {
     }
     static function defaults(): array {
         return [
-            'logo'=>0, 'hero'=>0, 'footer'=>0, 'story'=>0, 'book'=>0,
+            'logo'=>0, 'footer_logo'=>0, 'hero'=>0, 'footer'=>0, 'story'=>0, 'book'=>0,
             'character'=>0, 'city'=>0, 'activity'=>0,
             'headline'=>'Pars à l’aventure à Fleuriville',
             'welcome'=>'Un petit coin de nature plein de charme où Célestin vit de grandes et de petites aventures avec Octet, son fidèle compagnon.',
@@ -43,12 +43,12 @@ final class Celestin_Home {
     static function admin_assets($hook): void {
         if ($hook !== 'celestin-core_page_celestin-design') return;
         wp_enqueue_media();
-        wp_enqueue_script('celestin-media', plugins_url('../assets/admin.js',__FILE__), ['jquery'], '0.2.0', true);
+        wp_enqueue_script('celestin-media', plugins_url('../assets/admin.js',__FILE__), ['jquery'], '0.2.1', true);
     }
     static function settings(): void {
         if (!current_user_can('manage_options')) return;
         $o=self::options();
-        $images=['logo'=>'Logo Célestin', 'hero'=>'Grande illustration d’accueil (sans texte)', 'activity'=>'Visuel des activités',
+        $images=['logo'=>'Logo du haut (utilisé aussi en bas par défaut)', 'footer_logo'=>'Logo du pied de page (facultatif : sans sélection, reprend le logo du haut)', 'hero'=>'Grande illustration d’accueil (sans texte)', 'activity'=>'Visuel des activités',
                  'story'=>'Illustration de mini-histoire', 'book'=>'Illustration du livre ouvert',
                  'character'=>'Portrait de Célestin', 'city'=>'Carte illustrée de Fleuriville',
                  'footer'=>'Bannière Bienvenue à Fleuriville'];
@@ -78,7 +78,7 @@ final class Celestin_Home {
         check_admin_referer('celestin_save_design');
         $raw=isset($_POST['design'])&&is_array($_POST['design'])?wp_unslash($_POST['design']):[];
         $out=self::defaults();
-        foreach(['logo','hero','footer','story','book','character','city','activity'] as $key) $out[$key]=absint($raw[$key]??0);
+        foreach(['logo','footer_logo','hero','footer','story','book','character','city','activity'] as $key) $out[$key]=absint($raw[$key]??0);
         foreach(['headline','welcome'] as $key) $out[$key]=sanitize_textarea_field($raw[$key]??$out[$key]);
         $out['newsletter']=esc_url_raw($raw['newsletter']??'');
         update_option(self::OPTION,$out);
@@ -87,8 +87,8 @@ final class Celestin_Home {
     }
     static function assets(): void {
         if (!is_front_page()) return;
-        wp_enqueue_style('celestin-home', plugins_url('../assets/home.css',__FILE__), [], '0.2.0');
-        wp_enqueue_script('celestin-home', plugins_url('../assets/home.js',__FILE__), [], '0.2.0', true);
+        wp_enqueue_style('celestin-home', plugins_url('../assets/home.css',__FILE__), [], '0.2.1');
+        wp_enqueue_script('celestin-home', plugins_url('../assets/home.js',__FILE__), [], '0.2.1', true);
     }
     static function template(string $template): string {
         if (is_front_page() && !is_admin() && !is_feed() && !is_embed() && !is_preview()) return __DIR__.'/front-page.php';

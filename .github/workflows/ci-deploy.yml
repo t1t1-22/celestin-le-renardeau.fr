@@ -38,6 +38,8 @@ jobs:
           docker compose -p celestin-ci exec -T web wget -q -O /dev/null http://127.0.0.1:8080/wp-admin/install.php
           docker compose -p celestin-ci exec -T wordpress sh -c 'test ! -e /var/www/html/wp-content/mu-plugins/celestin-content.php && test ! -e /var/www/html/wp-content/themes/celestin'
           docker compose -p celestin-ci exec -T wordpress php -r 'if (!extension_loaded("gd")) exit(1);'
+          docker compose -p celestin-ci exec -T wordpress php -r 'if (ini_get("upload_max_filesize") !== "64M" || ini_get("post_max_size") !== "72M" || ini_get("memory_limit") !== "256M") { fwrite(STDERR, "Limites PHP invalides\n"); exit(1); }'
+          docker compose -p celestin-ci exec -T wordpress sh -c 'test -r /usr/local/etc/php/conf.d/zz-celestin-uploads.ini'
       - name: Nettoyage de la seule stack de test
         if: always()
         run: |

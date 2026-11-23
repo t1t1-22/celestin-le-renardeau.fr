@@ -137,7 +137,12 @@ $links=[
 </main>
 <footer class="cel-footer">
  <div class="cel-footer-columns">
- <div class="cel-footer-brand"><span class="cel-script">Célestin<small>le renardeau</small></span></div>
+ <div class="cel-footer-brand"><a href="<?php echo esc_url(home_url('/')); ?>" aria-label="Accueil — Célestin le renardeau"><?php
+   // Le logo spécifique du pied de page est facultatif : à défaut, reprendre celui de l'en-tête.
+   $footer_logo=Celestin_Home::image('footer_logo') ?: Celestin_Home::image('logo');
+   if($footer_logo) echo '<img class="cel-footer-logo" src="'.esc_url($footer_logo).'" alt="Célestin le renardeau" loading="lazy">';
+   else echo '<span class="cel-script">Célestin<small>le renardeau</small></span>';
+ ?></a></div>
  <div><h3>Explorer</h3><a href="<?php echo esc_url(home_url('/')); ?>">Accueil</a><?php foreach($links as $label=>$v): ?><a href="<?php echo esc_url($v['url']); ?>"><?php echo esc_html($label); ?></a><?php endforeach; ?></div>
  <div><h3>À propos</h3><p>L’univers de Célestin et toutes ses petites aventures.</p></div>
  <div><h3>La newsletter de Fleuriville</h3><p>Retrouve les nouvelles histoires, les livres et les activités !</p><?php if($options['newsletter']): ?><a class="cel-button" href="<?php echo esc_url($options['newsletter']); ?>">S’inscrire →</a><?php else: ?><p class="cel-footer-note">Bientôt disponible</p><?php endif; ?></div>

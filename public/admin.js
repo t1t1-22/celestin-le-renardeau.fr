@@ -62,7 +62,7 @@ $('login-form').addEventListener('submit', async event => {
   $('login-error').textContent = '';
   const btn = event.target.querySelector('button'); btn.disabled = true;
   try {
-    await api('/api/admin/login','POST',{ password: $('password').value });
+    await api('/api/admin/login','POST',{ username: $('username').value, password: $('password').value });
     $('password').value = '';
     showApp();
   } catch(e) { $('login-error').textContent = e.message; }

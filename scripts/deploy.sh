@@ -33,8 +33,19 @@ if ! compose up -d --wait --wait-timeout 240; then
   exit 1
 fi
 
-# Le fichier d'extension ne doit plus être monté, ni actif en MU-plugin.
-compose exec -T wordpress sh -c 'if test -e /var/www/html/wp-content/mu-plugins/celestin-site.php; then echo "Ancien module encore présent : arrêt de sécurité" >&2; exit 1; fi'
+# Un fichier laissé dans le volume persistant peut subsister après retrait du montage.
+# Conserver la copie à l'écart de mu-plugins : aucun effacement de données.
+compose exec -T wordpress sh -c '
+set -eu
+legacy=/var/www/html/wp-content/mu-plugins/celestin-site.php
+if test -f "$legacy"; then
+  mkdir -p /var/www/html/wp-content/celestin-legacy-backups
+  cp "$legacy" /var/www/html/wp-content/celestin-legacy-backups/celestin-site-avant-wp-pusher.php.bak
+  rm "$legacy"
+  echo "Module Célestin archivé et désactivé."
+fi
+test ! -e "$legacy"
+'
 compose exec -T wordpress php -r 'require "/var/www/html/wp-load.php"; if (function_exists("cel_initialize_site")) { fwrite(STDERR,"Ancien module toujours actif\n"); exit(1); } echo "Ancien module Célestin désactivé ; installation WP Pusher possible.\n";'
 compose exec -T web wget -q -O /dev/null http://127.0.0.1:8080/wp-admin/install.php
 

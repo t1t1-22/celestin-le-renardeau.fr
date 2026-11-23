@@ -18,9 +18,10 @@ Le texte des deux mini-histoires de l'ancien site est importé lors de la **prem
 
 ## Mot de passe administrateur : configuration indispensable
 
-Aucun mot de passe n'est créé dans le code ou dans Git. Sur le **serveur Ubuntu**, créer à la racine du dépôt déployé un fichier nommé `.env` :
+L'identifiant est `admin` par défaut et peut être personnalisé avec `CELESTIN_ADMIN_USERNAME`. Aucun mot de passe n'est créé dans le code ou dans Git. Sur le **serveur Ubuntu**, créer à la racine du dépôt déployé un fichier nommé `.env` :
 
 ```dotenv
+CELESTIN_ADMIN_USERNAME=admin
 CELESTIN_ADMIN_PASSWORD=choisir-ici-un-mot-de-passe-unique-et-long
 ```
 

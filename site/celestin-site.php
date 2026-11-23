@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Célestin — Site et contenus
  * Description: Accueil, univers, histoires, livres, activités, personnages et lieux pour Astra.
- * Version: 1.0.1
+ * Version: 1.0.2
  */
 defined('ABSPATH') || exit;
 
@@ -36,14 +36,14 @@ add_action('init', function () {
     ]);
 });
 
-add_action('wp_loaded', function() {
+function cel_initialize_site() {
     // Initialise aussi lors des visites publiques : aucune visite à wp-admin nécessaire.
     if (!is_blog_installed() || wp_installing()) return;
     if (get_option('cel_site_initialized')) {
         $home = get_page_by_path('accueil');
-        if ($home && ((int)get_option('page_on_front') !== (int)$home->ID || get_option('show_on_front') !== 'page')) {
+        if ($home) {
             update_option('show_on_front','page');
-            update_option('page_on_front',$home->ID);
+            update_option('page_on_front',(int)$home->ID);
         }
         return;
     }
@@ -60,7 +60,7 @@ add_action('wp_loaded', function() {
             $id=wp_insert_post(['post_type'=>'page','post_title'=>$info[0],'post_name'=>$slug,
                 'post_content'=>$info[1],'post_status'=>'publish']);
         } else $id=$page->ID;
-        if ($slug==='accueil' && !get_option('page_on_front') && !is_wp_error($id)) {
+        if ($slug==='accueil' && !is_wp_error($id)) {
             update_option('show_on_front','page');
             update_option('page_on_front',$id);
         }
@@ -76,7 +76,8 @@ add_action('wp_loaded', function() {
     }
     update_option('cel_site_initialized',1);
     flush_rewrite_rules(false);
-});
+}
+add_action('init','cel_initialize_site',99);
 function cel_setting($key,$fallback='') {
     $settings=get_option('cel_site_settings',[]);
     return isset($settings[$key]) && $settings[$key]!=='' ? $settings[$key] : $fallback;

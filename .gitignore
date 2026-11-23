@@ -4,3 +4,7 @@
 !/.env.example
 /data/
 /wp-data/
+
+# Déploiement automatisé Célestin (état local uniquement)
+.celestin-wordpress-migrated
+.celestin-env.*

@@ -64,6 +64,17 @@ if ! compose up -d --no-build --remove-orphans --wait --wait-timeout 240; then
   exit 1
 fi
 
+# Vérifier que le thème est lisible par l'utilisateur web, depuis le
+# volume Docker persistant, et accessible depuis le frontal Nginx.
+if ! compose exec -T wordpress sh -c 'su -s /bin/sh www-data -c "test -r /var/www/html/wp-content/themes/celestin/style.css"'; then
+  echo "Theme Célestin : style.css illisible par le serveur web." >&2
+  exit 1
+fi
+if ! compose exec -T web sh -c "wget -q -O - http://127.0.0.1:8080/wp-content/themes/celestin/style.css | grep -Fq 'Theme Name: Célestin'"; then
+  echo "Le theme Célestin n'est pas servi correctement par HTTP." >&2
+  exit 1
+fi
+
 # Valider WordPress lui-même et pas seulement la réponse statique de Nginx.
 if ! compose exec -T web wget -q -O /dev/null http://127.0.0.1:8080/wp-admin/install.php; then
   compose ps >&2 || true

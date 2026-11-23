@@ -1,0 +1,23 @@
+.cel-design-admin{max-width:1120px}
+.cel-design-admin h1{font-size:28px;margin:20px 0 8px}
+.cel-admin-intro{font-size:14px;color:#646970;margin-bottom:22px}
+.cel-design-tabs{display:flex;flex-wrap:wrap;gap:5px;border-bottom:1px solid #d0d7de;margin-top:25px;padding:0 0 0 6px}
+.cel-design-tab{font-size:14px;display:inline-flex;align-items:center;gap:9px;border:1px solid transparent;border-radius:9px 9px 0 0;padding:13px 17px;color:#515358;background:transparent;cursor:pointer;font-weight:600;margin-bottom:-1px}
+.cel-design-tab:hover{background:#f3efe9;color:#6e421e}
+.cel-design-tab.is-active{background:#fff;border-color:#d0d7de;border-bottom-color:#fff;color:#b45b16}
+.cel-design-tab .dashicons{color:#d17b30}
+.cel-design-tab:focus-visible{outline:2px solid #2271b1;outline-offset:-3px}
+.cel-design-panel{background:#fff;padding:28px 30px 30px;border:1px solid #d0d7de;border-top:0;border-radius:0 0 14px 14px;min-height:250px}
+.cel-design-panel[hidden]{display:none!important}
+.cel-design-panel h2{margin:0 0 10px;font-size:22px}
+.cel-design-panel>p{color:#646970;margin:0 0 22px}
+.cel-media-setting{background:#fffdfa;border:1px solid #e7e1db;border-radius:12px;padding:17px 20px;margin:14px 0;max-width:680px}
+.cel-media-setting h3{margin:0 0 13px;font-size:15px;font-weight:600}
+.cel-media-preview{max-width:min(320px,100%);max-height:155px;object-fit:contain;object-position:left; margin:0 0 14px}
+.cel-media-actions{display:flex;flex-wrap:wrap;gap:9px}
+.cel-text-setting{max-width:680px;margin:23px 0 4px}
+.cel-text-setting label{display:block;margin:0 0 9px}
+.cel-text-setting input,.cel-text-setting textarea{display:block;width:100%;max-width:100%;padding:8px}
+.cel-design-actions{position:sticky;bottom:0;display:flex;align-items:center;flex-wrap:wrap;gap:18px;padding:15px 22px;background:#fff;border:1px solid #d0d7de;border-radius:0 0 12px 12px;box-shadow:0 -4px 12px #00000008;z-index:2}
+.cel-design-actions span{color:#646970;font-size:12px}
+@media(max-width:780px){.cel-design-panel{padding:20px 16px}.cel-design-tabs{gap:2px}.cel-design-tab{font-size:12px;padding:10px 9px;gap:5px}.cel-design-tab .dashicons{font-size:17px;width:17px;height:17px}}

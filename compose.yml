@@ -71,8 +71,7 @@ volumes:
   celestin_db: {}
 
 networks:
-  celestin_internal:
-    internal: true
+  celestin_internal: {}
   celestin_proxy:
     external: true
     name: celestin_proxy

@@ -1,0 +1,10 @@
+.cel-form-head{background:#fff5e8;border:1px solid #f0ddc7;padding:12px 16px;margin:10px 0;border-radius:9px;color:#704a2a}
+.cel-form-tabs{display:flex;flex-wrap:wrap;gap:5px;margin:15px 0 0;border-bottom:2px solid #e3c6a4}
+.cel-form-tab{border:0;background:#f7f0e9;border-radius:10px 10px 0 0;padding:12px 15px;font-weight:700;color:#715034;cursor:pointer}
+.cel-form-tab:hover{background:#ffe2b7}.cel-form-tab.active{background:#e98a33;color:white}
+.cel-form-panel{padding:20px 8px 16px}.cel-form-panel[hidden]{display:none!important}.cel-form-panel h3{font-size:19px;margin:6px 0 19px;color:#66381e}
+.cel-field-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.cel-field{min-width:0}.cel-field-wide{grid-column:1/-1}.cel-field label,.cel-relation-field label{display:block;font-weight:700;font-size:13px;color:#583c2e;margin-bottom:8px}
+.cel-field input,.cel-field textarea,.cel-relation-field select{width:100%;max-width:100%;padding:9px;border:1px solid #d2c2b1;border-radius:8px}.cel-field textarea{line-height:1.6;min-height:105px}.cel-input-row{display:flex;gap:8px;align-items:center}.cel-input-row input{min-width:0;flex:1}.cel-input-row button{flex-shrink:0}
+.cel-extra-row{display:grid;grid-template-columns:180px 1fr 1fr 40px;gap:9px;margin-bottom:10px}.cel-extra-row input,.cel-extra-row select{max-width:100%;min-width:0;width:100%}.cel-extra-row button{font-size:21px;color:#a13b2a}
+.cel-relations-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}.cel-relation-field select{min-height:150px;height:auto}.cel-relation-field p{font-size:12px}
+@media(max-width:780px){.cel-field-grid,.cel-relations-grid{grid-template-columns:1fr}.cel-extra-row{grid-template-columns:1fr 1fr}.cel-extra-row button{width:40px}}

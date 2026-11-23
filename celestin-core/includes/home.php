@@ -143,17 +143,33 @@ final class Celestin_Home {
     }
     static function assets(): void {
         if (!is_front_page()) return;
-        wp_enqueue_style('celestin-home', plugins_url('../assets/home.css',__FILE__), [], '0.3.0');
-        wp_enqueue_script('celestin-home', plugins_url('../assets/home.js',__FILE__), [], '0.3.0', true);
+        wp_enqueue_style('celestin-home', plugins_url('../assets/home.css',__FILE__), [], '0.3.1');
+        wp_enqueue_script('celestin-home', plugins_url('../assets/home.js',__FILE__), [], '0.3.1', true);
     }
     static function template(string $template): string {
         if (is_front_page() && !is_admin() && !is_feed() && !is_embed() && !is_preview()) return __DIR__.'/front-page.php';
         return $template;
     }
-    static function latest(string $type, bool $featured=false): ?WP_Post {
-        $args=['post_type'=>$type,'post_status'=>'publish','posts_per_page'=>1,'orderby'=>'date'];
-        if($featured) $args['meta_query']=[['key'=>'_cel_en_nouveaute','value'=>'1']];
-        $items=get_posts($args);
+    // Les rubriques de l’accueil utilisent exclusivement les fiches cochées
+    // « Afficher cette fiche sur la page d’accueil ».
+    static function featured(string $type, int $limit=8): array {
+        if (!in_array($type, array_keys(Celestin_Core::TYPES), true)) return [];
+        return get_posts([
+            'post_type' => $type,
+            'post_status' => 'publish',
+            'posts_per_page' => max(1, min(24, $limit)),
+            'meta_key' => '_cel_feature_home',
+            'meta_value' => '1',
+            'orderby' => 'date',
+            'order' => 'DESC',
+        ]);
+    }
+    static function latest(string $type, bool $featured=true): ?WP_Post {
+        if($featured) {
+            $items=self::featured($type,1);
+        } else {
+            $items=get_posts(['post_type'=>$type,'post_status'=>'publish','posts_per_page'=>1,'orderby'=>'date','order'=>'DESC']);
+        }
         return $items?$items[0]:null;
     }
     // Accueil : uniquement les fiches explicitement cochées dans leur administration.

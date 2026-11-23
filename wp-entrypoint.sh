@@ -42,6 +42,12 @@ fi
 chown www-data:www-data "$wp_content"
 chmod 755 "$wp_content" "$wp_content/themes" "$mu_target"
 
+# Permettre au compte Apache www-data de créer les dossiers mensuels et
+# les miniatures, sans toucher aux volumes de Factify ou aux autres sites.
+mkdir -p "$wp_content/uploads"
+chown www-data:www-data "$wp_content/uploads"
+chmod 775 "$wp_content/uploads"
+
 for file in "$mu_target/celestin-astra.php" "$mu_target/celestin-astra/site.css"; do
   if ! su -s /bin/sh www-data -c "test -r '$file' && test -s '$file'"; then
     echo "Erreur : module Célestin Astra illisible : $file" >&2

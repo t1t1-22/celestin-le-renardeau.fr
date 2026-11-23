@@ -3,6 +3,8 @@
 !Dockerfile.wordpress
 !wp-entrypoint.sh
 !php-uploads.ini
+!scripts/
+!scripts/check-wordpress-images.php
 !nginx.conf
 !public/
 !public/**

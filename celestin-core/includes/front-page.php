@@ -5,6 +5,8 @@ $story=Celestin_Home::latest('cel_histoire');
 $book=Celestin_Home::latest('cel_livre');
 $character=Celestin_Home::latest('cel_personnage');
 $city=Celestin_Home::latest('cel_lieu');
+$places=Celestin_Home::featured('cel_lieu',5);
+$activity=Celestin_Home::latest('cel_coloriage');
 $news=Celestin_Home::cards();
 $links=[
  'Personnages'=>['url'=>Celestin_Home::url('cel_personnage'),'symbol'=>'✿'],
@@ -78,64 +80,111 @@ $links=[
 </section>
 <section class="cel-section cel-story-section" aria-labelledby="cel-story-title">
  <h2 id="cel-story-title" class="cel-section-title"><span>✦</span> Mini-histoires audio <span>✦</span></h2>
+ <?php if($story):
+   $story_image=get_the_post_thumbnail_url($story->ID,'large');
+   $mp3=Celestin_Fields::value($story->ID,'audio');
+   $story_text=Celestin_Home::story_text($story);
+   $story_summary=Celestin_Fields::value($story->ID,'resume');
+ ?>
  <div class="cel-story-panel">
-  <div class="cel-story-image"><?php
-   if($story && has_post_thumbnail($story)) echo get_the_post_thumbnail($story,'large');
-   else echo Celestin_Home::render_image('story','Illustration de mini-histoire');
-  ?></div>
+  <a class="cel-story-image" href="<?php echo esc_url(get_permalink($story)); ?>">
+   <?php if($story_image): ?><img src="<?php echo esc_url($story_image); ?>" alt="<?php echo esc_attr($story->post_title); ?>" loading="lazy"><?php else: ?><div class="cel-illustration-placeholder"><span aria-hidden="true">✦</span><span>Illustration de l’histoire à venir</span></div><?php endif; ?>
+  </a>
   <div class="cel-story-player">
-    <h3><?php echo esc_html($story?$story->post_title:'Une petite histoire de Célestin'); ?></h3>
-    <?php $mp3=$story?(string)get_post_meta($story->ID,'_cel_story_mp3',true):''; ?>
-    <?php if($mp3): ?><audio controls preload="metadata" src="<?php echo esc_url($mp3); ?>" aria-label="Écouter la mini-histoire"></audio><?php else: ?><div class="cel-audio-fallback"><span aria-hidden="true">▶</span> Une histoire arrive bientôt</div><?php endif; ?>
-    <p>Écoute la mini-histoire et suis le texte pas à pas !</p>
-    <a class="cel-text-link" href="<?php echo esc_url($story?get_permalink($story):Celestin_Home::url('cel_histoire')); ?>">Découvrir les mini-histoires →</a>
+    <h3><?php echo esc_html($story->post_title); ?></h3>
+    <?php if($mp3): ?><audio controls preload="metadata" src="<?php echo esc_url($mp3); ?>" aria-label="Écouter <?php echo esc_attr($story->post_title); ?>"></audio><?php else: ?><p>Le fichier audio sera bientôt disponible.</p><?php endif; ?>
+    <?php if($story_summary): ?><p><?php echo esc_html($story_summary); ?></p><?php endif; ?>
+    <a class="cel-text-link" href="<?php echo esc_url(get_permalink($story)); ?>">Écouter ou lire cette histoire →</a>
   </div>
-  <div class="cel-story-text"><div class="cel-story-scroll"><?php echo wp_kses_post(wpautop(esc_html(wp_trim_words(Celestin_Home::story_text($story),90,'…')))); ?></div></div>
+  <div class="cel-story-text"><div class="cel-story-scroll"><?php echo wp_kses_post(wpautop(esc_html(wp_trim_words($story_text,110,'…')))); ?></div></div>
  </div>
+ <?php else: ?><p class="cel-home-empty">Choisis une mini-histoire dans son administration pour la présenter ici.</p><?php endif; ?>
 </section>
 <section class="cel-section cel-books" aria-labelledby="cel-book-title">
  <h2 id="cel-book-title" class="cel-section-title"><span>✦</span> Les livres <span>✦</span></h2>
+ <?php if($book):
+   $book_image=get_the_post_thumbnail_url($book->ID,'large');
+   $book_resume=Celestin_Fields::value($book->ID,'resume');
+   $book_month=Celestin_Fields::value($book->ID,'mois');
+   $book_collection=Celestin_Fields::value($book->ID,'collection');
+   $book_activities=Celestin_Fields::linked($book->ID,'cel_coloriage');
+ ?>
  <div class="cel-books-layout">
    <div class="cel-book-preview">
      <div class="cel-book-spread">
-      <div class="cel-book-page">
-       <?php if(Celestin_Home::image('book')) echo Celestin_Home::render_image('book','Une histoire de Célestin'); elseif($book && has_post_thumbnail($book)) echo get_the_post_thumbnail($book,'large'); else echo '<span aria-hidden="true">✦</span>'; ?>
-      </div>
-      <div class="cel-book-page"><div class="cel-book-text">Un monde rempli<br>de découvertes,<br>de douceur<br>et d’aventures !</div><span aria-hidden="true" class="cel-book-flower">✿</span></div>
+       <div class="cel-book-page">
+         <?php if($book_image): ?><img src="<?php echo esc_url($book_image); ?>" alt="<?php echo esc_attr('Couverture de '.$book->post_title); ?>" loading="lazy"><?php else: ?><span aria-hidden="true">✦</span><?php endif; ?>
+       </div>
+       <div class="cel-book-page"><div class="cel-book-text"><?php echo esc_html(wp_trim_words($book_resume ?: $book->post_title,22,'…')); ?></div><span aria-hidden="true" class="cel-book-flower">✿</span></div>
      </div>
-     <?php if($book): ?><a class="cel-button cel-book-read" href="<?php echo esc_url(get_permalink($book)); ?>">Feuilleter ce livre →</a><?php endif; ?>
+     <a class="cel-button cel-book-read" href="<?php echo esc_url(get_permalink($book)); ?>">Découvrir ce livre →</a>
    </div>
    <div class="cel-book-description">
-    <h3>Des livres carrés à lire en double-page</h3>
-    <p>De jolies histoires illustrées adaptées aux enfants, à lire comme un vrai livre : page après page.</p>
-    <div class="cel-chips"><span>📖 Aventure</span><span>🌿 Nature</span><span>♡ Amitié</span><span>✦ Découverte</span></div>
-    <a class="cel-activity-banner" href="<?php echo esc_url(Celestin_Home::url('cel_coloriage')); ?>"><span>✎</span><span><strong>Prolonge la lecture avec des activités !</strong><small>Coloriages, jeux, bricolages et découvertes…</small></span><span aria-hidden="true">→</span></a>
+    <h3><?php echo esc_html($book->post_title); ?></h3>
+    <?php if($book_resume): ?><p><?php echo nl2br(esc_html($book_resume)); ?></p><?php endif; ?>
+    <?php if($book_month || $book_collection): ?><div class="cel-chips"><?php if($book_month): ?><span>📅 <?php echo esc_html($book_month); ?></span><?php endif; ?><?php if($book_collection): ?><span>📖 <?php echo esc_html($book_collection); ?></span><?php endif; ?></div><?php endif; ?>
+    <?php if($book_activities): ?>
+    <div class="cel-home-associated"><strong>Les activités de ce livre</strong>
+      <?php foreach(array_slice($book_activities,0,3) as $related): ?>
+        <a href="<?php echo esc_url(get_permalink($related)); ?>"><?php echo esc_html($related->post_title); ?> →</a>
+      <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
     <a class="cel-text-link" href="<?php echo esc_url(Celestin_Home::url('cel_livre')); ?>">Voir tous les livres →</a>
    </div>
  </div>
+ <?php else: ?><p class="cel-home-empty">Sélectionne un livre depuis sa fiche WordPress pour l’afficher ici.</p><?php endif; ?>
 </section>
+<?php if($activity): ?>
+<section class="cel-section cel-home-activity" aria-labelledby="cel-activity-title">
+ <h2 id="cel-activity-title" class="cel-section-title"><span>✦</span> Mes petites activités <span>✦</span></h2>
+ <div class="cel-featured-activity">
+  <a href="<?php echo esc_url(get_permalink($activity)); ?>" class="cel-featured-activity-image">
+   <?php if(has_post_thumbnail($activity)): echo get_the_post_thumbnail($activity->ID,'medium_large'); else: ?><div class="cel-illustration-placeholder"><span>✎</span><span>Illustration à ajouter</span></div><?php endif; ?>
+  </a>
+  <div><h3><?php echo esc_html($activity->post_title); ?></h3>
+   <p><?php echo esc_html(Celestin_Fields::value($activity->ID,'resume')); ?></p>
+   <a class="cel-button cel-primary" href="<?php echo esc_url(get_permalink($activity)); ?>">Découvrir cette activité →</a>
+  </div>
+ </div>
+</section>
+<?php endif; ?>
 <div class="cel-two-columns">
  <section class="cel-info-panel" aria-labelledby="cel-character-title">
    <h2 id="cel-character-title" class="cel-section-title small">Fiches personnages</h2>
+   <?php if($character):
+      $character_desc=Celestin_Fields::value($character->ID,'description');
+      $character_prenom=Celestin_Fields::value($character->ID,'prenom');
+      $character_age=Celestin_Fields::value($character->ID,'age');
+   ?>
    <div class="cel-character-wrap">
-    <div class="cel-character-image"><?php if($character && has_post_thumbnail($character)) echo get_the_post_thumbnail($character,'medium'); else echo Celestin_Home::render_image('character','Portrait de Célestin'); ?></div>
-    <div><h3><?php echo esc_html($character?$character->post_title:'Célestin'); ?></h3>
-    <p><strong>Prénom :</strong> Célestin</p><p><strong>Âge :</strong> 6 ans</p>
-    <p class="cel-character-desc"><?php echo esc_html($character?wp_trim_words(Celestin_Fields::value($character->ID,'description') ?: wp_strip_all_tags($character->post_content),30):'Un petit renardeau curieux, joyeux et toujours prêt pour de nouvelles aventures !'); ?></p>
-    <a class="cel-text-link" href="<?php echo esc_url($character?get_permalink($character):Celestin_Home::url('cel_personnage')); ?>">Rencontrer les personnages →</a>
+    <div class="cel-character-image"><?php if(has_post_thumbnail($character))echo get_the_post_thumbnail($character->ID,'medium');else echo '<div class="cel-illustration-placeholder"><span>✦</span><span>Portrait à ajouter</span></div>'; ?></div>
+    <div><h3><?php echo esc_html($character->post_title); ?></h3>
+    <?php if($character_prenom): ?><p><strong>Prénom :</strong> <?php echo esc_html($character_prenom); ?></p><?php endif; ?>
+    <?php if($character_age): ?><p><strong>Âge :</strong> <?php echo esc_html($character_age); ?></p><?php endif; ?>
+    <?php if($character_desc): ?><p class="cel-character-desc"><?php echo esc_html(wp_trim_words($character_desc,30,'…')); ?></p><?php endif; ?>
+    <a class="cel-text-link" href="<?php echo esc_url(get_permalink($character)); ?>">Découvrir sa fiche →</a>
     </div>
    </div>
+   <?php else: ?><p class="cel-home-empty">Choisis un personnage à présenter sur l’accueil.</p><?php endif; ?>
  </section>
  <section class="cel-info-panel" aria-labelledby="cel-city-title">
    <h2 id="cel-city-title" class="cel-section-title small">Fleuriville</h2>
+   <?php if($places): ?>
    <div class="cel-city-wrap">
-     <div class="cel-city-image"><?php echo Celestin_Home::render_image('city','Carte illustrée de Fleuriville'); ?></div>
-     <div><h3>Découvre Fleuriville !</h3><p>Un petit coin de nature plein de charme, où Célestin vit de grandes et de petites aventures.</p>
-     <a class="cel-city-link" href="<?php echo esc_url(Celestin_Home::url('cel_lieu')); ?>">⌂ Le village →</a>
-     <a class="cel-city-link" href="<?php echo esc_url(Celestin_Home::url('cel_lieu')); ?>">♣ La forêt →</a>
-     <a class="cel-city-link" href="<?php echo esc_url(Celestin_Home::url('cel_lieu')); ?>">≈ La rivière →</a>
+     <div class="cel-city-image">
+       <?php if($city && has_post_thumbnail($city)): ?><a href="<?php echo esc_url(get_permalink($city)); ?>"><?php echo get_the_post_thumbnail($city->ID,'medium_large'); ?></a>
+       <?php else: ?><div class="cel-illustration-placeholder"><span aria-hidden="true">⌂</span><span>Illustration du lieu à ajouter</span></div><?php endif; ?>
+     </div>
+     <div><h3>Découvre les lieux de Fleuriville</h3>
+       <?php if($city): ?><p><?php echo esc_html(wp_trim_words(Celestin_Fields::value($city->ID,'resume'),23,'…')); ?></p><?php endif; ?>
+       <?php foreach($places as $place): ?>
+       <a class="cel-city-link" href="<?php echo esc_url(get_permalink($place)); ?>">⌂ <?php echo esc_html($place->post_title); ?> →</a>
+       <?php endforeach; ?>
+       <a class="cel-text-link" href="<?php echo esc_url(Celestin_Home::url('cel_lieu')); ?>">Tous les lieux →</a>
      </div>
    </div>
+   <?php else: ?><p class="cel-home-empty">Sélectionne les lieux de Fleuriville à afficher ici.</p><?php endif; ?>
  </section>
 </div>
 <section class="cel-welcome" aria-labelledby="cel-welcome-title">

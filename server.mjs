@@ -9,6 +9,7 @@ const DATA = path.resolve(process.env.DATA_DIR || './data');
 const UPLOADS = path.join(DATA, 'uploads');
 const DB = path.join(DATA, 'content.json');
 const PASSWORD = process.env.ADMIN_PASSWORD || '';
+const USERNAME = process.env.ADMIN_USERNAME || 'admin';
 const production = process.env.NODE_ENV === 'production';
 const sessions = new Map();
 const loginAttempts = new Map();
@@ -156,7 +157,9 @@ const server = http.createServer(async (req, res) => {
         const data = await body(req);
         const supplied = crypto.createHash('sha256').update(String(data.password || '')).digest();
         const expected = crypto.createHash('sha256').update(PASSWORD).digest();
-        if (!crypto.timingSafeEqual(supplied, expected)) {
+        const providedUsername = crypto.createHash('sha256').update(String(data.username || '')).digest();
+        const expectedUsername = crypto.createHash('sha256').update(USERNAME).digest();
+        if (!crypto.timingSafeEqual(supplied, expected) || !crypto.timingSafeEqual(providedUsername, expectedUsername)) {
           attempts.push(now); loginAttempts.set(ip, attempts);
           return error(res, 401, 'Mot de passe incorrect');
         }

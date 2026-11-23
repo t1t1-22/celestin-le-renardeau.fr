@@ -31,11 +31,27 @@ final class Celestin_Fields {
 
     static function init(): void {
         add_action('init',[__CLASS__,'remove_editor'],30);
+        add_filter('wp_insert_post_data',[__CLASS__,'automatic_character_title'],20,2);
         add_action('add_meta_boxes',[__CLASS__,'boxes'],30);
         add_action('save_post',[__CLASS__,'save'],20,2);
         add_action('admin_enqueue_scripts',[__CLASS__,'admin_assets']);
         add_filter('enter_title_here',[__CLASS__,'title_placeholder'],10,2);
         add_filter('use_block_editor_for_post_type',[__CLASS__,'disable_blocks'],10,2);
+    }
+    // Le nom affiché sur le site vient directement des champs Prénom + Nom.
+    // Le filtre intervient avant l'insertion pour éviter un titre manquant au premier enregistrement.
+    static function automatic_character_title(array $data,array $postarr): array {
+        if(($data['post_type']??'')!=='cel_personnage')return $data;
+        if(!isset($_POST['cel_fields_nonce']) || !is_string($_POST['cel_fields_nonce']))return $data;
+        $nonce=sanitize_text_field(wp_unslash($_POST['cel_fields_nonce']));
+        if(!wp_verify_nonce($nonce,'cel_fields_save'))return $data;
+        if(!isset($_POST['cel_f']) || !is_array($_POST['cel_f']))return $data;
+        $fields=wp_unslash($_POST['cel_f']);
+        $first=sanitize_text_field(is_string($fields['prenom']??null)?$fields['prenom']:'');
+        $last=sanitize_text_field(is_string($fields['nom']??null)?$fields['nom']:'');
+        $title=trim($first.' '.$last);
+        if($title!=='')$data['post_title']=$title;
+        return $data;
     }
     static function remove_editor(): void {
         foreach(self::TYPES as $type) remove_post_type_support($type,'editor');
@@ -63,13 +79,14 @@ final class Celestin_Fields {
         $screen=get_current_screen();
         if(!$screen || !in_array($screen->post_type,self::TYPES,true)) return;
         wp_enqueue_media();
-        wp_enqueue_style('cel-fields',plugins_url('../assets/fields.css',__FILE__),[],'0.3.0');
-        wp_enqueue_script('cel-fields',plugins_url('../assets/fields.js',__FILE__),['jquery'],'0.3.0',true);
+        wp_enqueue_style('cel-fields',plugins_url('../assets/fields.css',__FILE__),[],'0.3.2');
+        wp_enqueue_script('cel-fields',plugins_url('../assets/fields.js',__FILE__),['jquery'],'0.3.2',true);
+        if($screen->post_type==='cel_personnage')wp_add_inline_style('cel-fields','#post-body-content #titlediv{display:none!important}');
     }
     static function render(WP_Post $post): void {
         wp_nonce_field('cel_fields_save','cel_fields_nonce');
         $groups=self::fields_for($post);
-        echo '<div class="cel-form-head"><p>Complète les champs ci-dessous : la page du site sera construite automatiquement. Les champs vides ne seront pas affichés.</p></div>';
+        echo '<div class="cel-form-head"><p>'.($post->post_type==='cel_personnage'?'Le titre du personnage est généré automatiquement avec le prénom et le nom. ':'').'Complète les champs ci-dessous : la page du site sera construite automatiquement. Les champs vides ne seront pas affichés.</p></div>';
         echo '<div class="cel-form-tabs" role="tablist" aria-label="Sections de la fiche">';
         $i=0;
         foreach($groups as $slug=>$group) {
@@ -87,12 +104,26 @@ final class Celestin_Fields {
             echo '<h3>'.esc_html($title).'</h3><div class="cel-field-grid">';
             foreach($fields as $key=>$label) self::field($post,$key,$label);
             echo '</div>';
+            self::section_image($post,$slug,$title);
           }
           echo '</section>';
           $i++;
         }
         if($post->post_type==='cel_personnage') self::extras($post);
         self::relations($post);
+    }
+    // Image dédiée à chaque onglet, sans avoir à manipuler les réglages WordPress.
+    // La photo d'identité / image principale est aussi la vignette automatique.
+    static function section_image(WP_Post $post,string $section,string $title): void {
+        $primary=$post->post_type==='cel_personnage' ? 'identite' : 'principal';
+        $id=absint(get_post_meta($post->ID,'_cel_section_image_'.$section,true));
+        if(!$id && $section===$primary)$id=(int)get_post_thumbnail_id($post);
+        $url=$id?wp_get_attachment_image_url($id,'medium'):'';
+        echo '<div class="cel-section-image"><h4>'.esc_html($section===$primary?'Illustration principale / photo du personnage':'Illustration de cette rubrique').'</h4>';
+        echo '<p class="description">'.($section===$primary?'Cette image sera aussi utilisée comme vignette sur le site et dans les nouveautés.':'Illustration facultative propre à « '.esc_html($title).' ».').'</p>';
+        echo '<input type="hidden" name="cel_section_images['.esc_attr($section).']" value="'.esc_attr((string)$id).'" class="cel-section-image-id">';
+        echo '<img class="cel-section-image-preview" src="'.esc_url($url?:'').'" alt="Aperçu de l’illustration" style="display:'.($url?'block':'none').'">';
+        echo '<div class="cel-section-image-actions"><button type="button" class="button cel-select-section-image">Choisir une image</button> <button type="button" class="button cel-remove-section-image">Retirer</button></div></div>';
     }
     static function field(WP_Post $post,string $key,string $label): void {
         $value=(string)get_post_meta($post->ID,'_cel_f_'.$key,true);
@@ -162,6 +193,23 @@ final class Celestin_Fields {
           if($key==='pdf'&&$post->post_type==='cel_livre')update_post_meta($id,'_cel_book_pdf',$v);
           if($key==='pdf'&&$post->post_type==='cel_coloriage')update_post_meta($id,'_cel_pdf_url',$v);
           if($key==='audio'&&$post->post_type==='cel_histoire')update_post_meta($id,'_cel_story_mp3',$v);
+        }
+        // Les images de chaque onglet sont conservées séparément.
+        // Seule l'image de l'onglet principal devient l'image mise en avant.
+        $images=isset($_POST['cel_section_images'])&&is_array($_POST['cel_section_images'])?wp_unslash($_POST['cel_section_images']):[];
+        $primary=$post->post_type==='cel_personnage'?'identite':'principal';
+        foreach(array_keys($defs) as $section){
+            if(!array_key_exists($section,$images))continue;
+            $candidate=absint($images[$section]);
+            $valid=$candidate && wp_attachment_is_image($candidate)?$candidate:0;
+            $key='_cel_section_image_'.$section;
+            $previous=(int)get_post_meta($id,$key,true);
+            if($valid)update_post_meta($id,$key,$valid);
+            else delete_post_meta($id,$key);
+            if($section===$primary){
+                if($valid)set_post_thumbnail($id,$valid);
+                elseif($previous && (int)get_post_thumbnail_id($id)===$previous)delete_post_thumbnail($id);
+            }
         }
         if($post->post_type==='cel_personnage') {
             $cats=isset($_POST['cel_extra_category'])&&is_array($_POST['cel_extra_category'])?wp_unslash($_POST['cel_extra_category']):[];

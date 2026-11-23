@@ -2,6 +2,7 @@ FROM wordpress:php8.3-apache
 COPY wp-content/themes/celestin/ /usr/src/wordpress/wp-content/themes/celestin/
 COPY wp-content/mu-plugins/ /usr/src/wordpress/wp-content/mu-plugins/
 COPY wp-entrypoint.sh /usr/local/bin/celestin-entrypoint
+COPY php-uploads.ini /usr/local/etc/php/conf.d/celestin-uploads.ini
 RUN chmod 755 /usr/local/bin/celestin-entrypoint
 ENTRYPOINT ["celestin-entrypoint"]
 CMD ["apache2-foreground"]

@@ -1,6 +1,6 @@
 # Célestin le renardeau — WordPress + Fleurville
 
-Le site `celestin-le-renardeau.fr` utilise **WordPress** (PHP/Apache), **MariaDB**, un frontal **Nginx**, et un thème sur mesure **Célestin**. Il reste indépendant de `factcast` et du dépôt `ubuntu-edge`.
+Le site `celestin-le-renardeau.fr` utilise **WordPress** (PHP/Apache), **MariaDB**, un frontal **Nginx**, et le thème WordPress **Astra** choisi dans l'administration. Le plugin obligatoire **Célestin × Astra** réalise les sections illustrées sans remplacer Astra. Il reste indépendant de `factcast` et du dépôt `ubuntu-edge`.
 
 ## Déploiement automatique : aucune intervention manuelle sur Ubuntu
 
@@ -25,9 +25,29 @@ Le script `scripts/deploy.sh` réalise toutes les opérations suivantes sans ass
 1. Vérifier que les tests GitHub Actions passent avant fusion sur `main`.
 2. GitHub Actions déploie les trois conteneurs `web`, `wordpress` et `db` automatiquement. Le frontal conserve l'alias `celestin-web:8080` sur `celestin_proxy` et le domaine actuel : aucun DNS à modifier.
 3. Ouvrir **https://celestin-le-renardeau.fr/wp-admin/install.php** et créer le premier administrateur WordPress **dans le navigateur**, avec un identifiant personnel, un mot de passe fort et un e-mail valide.
-4. Se connecter ensuite à **https://celestin-le-renardeau.fr/wp-admin/**. WordPress active le thème Célestin et les rubriques administrables automatiquement.
+4. Se connecter ensuite à **https://celestin-le-renardeau.fr/wp-admin/**. WordPress conserve le thème Astra et charge automatiquement les rubriques administrables.
 5. Dans **Réglages → Permaliens**, sélectionner « Titre de la publication », puis **Enregistrer**.
-6. Dans **Apparence → Personnaliser → 🦊 Accueil Célestin**, ajouter l'illustration finale de la bannière **sans texte**.
+6. Dans **Univers Célestin**, choisir l'illustration finale de la bannière **sans texte**, puis celle de Fleurville, dans la médiathèque WordPress.
+
+## Le site avec le thème Astra
+
+L'utilisateur a activé **Astra** depuis WordPress. **Le thème Astra reste actif** : le code GitHub ne doit plus utiliser `switch_theme()`.
+
+Le plugin obligatoire `wp-content/mu-plugins/celestin-astra.php` :
+- crée une page d'accueil éditable « Accueil – Célestin le renardeau » avec le shortcode `[celestin_accueil]` ;
+- l'assigne comme page d'accueil à la première initialisation, sans supprimer l'ancienne page (la configuration précédente est sauvegardée dans une option) ;
+- crée quatre pages de catalogues distinctes, modifiables dans **Pages** : livres, mini-histoires, coloriages et personnages ;
+- conserve les publications existantes et affiche automatiquement les derniers contenus publiés depuis les rubriques natives WordPress ;
+- crée le menu « Navigation Célestin » uniquement si le menu principal Astra n'est pas déjà défini ;
+- utilise le logo historique uniquement si aucun logo Astra n'a été sélectionné ;
+- ajoute un menu **Univers Célestin** dans l'administration, pour charger les images principales avec la médiathèque et modifier le texte d'introduction ;
+- ajoute les boutons de lecture, téléchargement des PDF et liens de livres sur les pages Astra.
+
+Si la page d'accueil avait déjà été personnalisée dans Astra, son contenu reste conservé dans WordPress : aucune page antérieure n'est supprimée.
+
+**Modifier la maquette** : dans **Pages → Accueil – Célestin le renardeau**, on retrouve le shortcode ; les sections sont gérées dynamiquement via les rubriques. Les images de la bannière et du village se changent dans **Univers Célestin**. Pour personnaliser l'en-tête, le logo, le menu et le pied de page : **Apparence → Personnaliser → Astra**.
+
+Les images initiales `/images/jardin.webp` et `/images/logo.webp` servent de références provisoires. Remplace-les par les illustrations définitives depuis la médiathèque pour respecter les personnages et la maison.
 
 ## Utilisation de l'administration
 
@@ -57,7 +77,7 @@ Le compose crée :
 - Volume `celestin_celestin_wordpress` : fichiers WordPress, thèmes, plugins et médias ;
 - Volume `celestin_celestin_db` : MariaDB.
 
-Le code du thème et du plugin obligatoire `Atelier de Fleurville` est recopié dans les volumes au démarrage du conteneur, ce qui permet de les mettre à jour via GitHub. Les autres plugins et les uploads restent dans le volume.
+Le module WordPress obligatoire `Atelier de Fleurville` et l'intégration `Célestin × Astra` sont synchronisés via GitHub. Le thème **Astra**, les autres extensions, les personnalisations et les uploads restent dans le volume WordPress : ils ne sont pas écrasés par les déploiements.
 
 **Sauvegarder impérativement les deux volumes** régulièrement. Ne jamais faire `docker compose down -v` sur le serveur de production.
 

@@ -43,6 +43,8 @@ jobs:
       - name: Vérifier la syntaxe du thème et les pages
         run: |
           set -eu
+          docker compose -p celestin-ci exec -T wordpress sh -c 'su -s /bin/sh www-data -c "test -r /var/www/html/wp-content/themes/celestin/style.css"'
+          docker compose -p celestin-ci exec -T web wget -q -O - http://127.0.0.1:8080/wp-content/themes/celestin/style.css | grep -Fq 'Theme Name: Célestin'
           docker compose -p celestin-ci exec -T web nginx -t
           docker compose -p celestin-ci exec -T wordpress php -l /var/www/html/wp-content/mu-plugins/celestin-content.php
           for page in functions.php front-page.php header.php footer.php archive.php single.php index.php 404.php; do

@@ -21,6 +21,9 @@ jobs:
         run: |
           set -eu
           sh -n scripts/deploy.sh
+          php -l celestin-core/celestin-core.php
+          php -l celestin-core/includes/home.php
+          php -l celestin-core/includes/front-page.php
           sh -n scripts/enable-celestin-proxy-uploads.sh
           grep -Fq 'client_max_body_size 80m' scripts/enable-celestin-proxy-uploads.sh
           sh -n scripts/ensure-wordpress-secrets.sh

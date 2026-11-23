@@ -38,5 +38,8 @@ fi
 # des modules Célestin dans la nouvelle installation.
 compose exec -T wordpress sh -c 'test ! -e /var/www/html/wp-content/mu-plugins/celestin-content.php && test ! -e /var/www/html/wp-content/themes/celestin'
 compose exec -T web wget -q -O /dev/null http://127.0.0.1:8080/wp-admin/install.php
+# Le frontal HTTPS ubuntu-edge partage Nginx avec Factify. Ne modifier que
+# le fichier du domaine Célestin, vérifier nginx -t, puis recharger sans restart.
+sh scripts/enable-celestin-proxy-uploads.sh
 compose ps
 echo "WordPress vierge en ligne sur celestin-web:8080. Anciennes données conservées dans leurs volumes inactifs."

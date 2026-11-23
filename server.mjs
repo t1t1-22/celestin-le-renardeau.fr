@@ -22,6 +22,25 @@ const initial = {
     { id: 'coloriage-muguet', type: 'coloriage', title: 'Le stand de muguet à colorier', category: 'À imprimer', description: 'Un coloriage au format A4.', body: '', cover: '/images/coloriage.webp', download: '/images/coloriage-celestin.pdf', externalUrl: '', published: true, createdAt: '', updatedAt: '' }
   ]
 };
+// Import the two existing mini-stories from the previous site on first start.
+const legacyFile = path.join(ROOT, 'ancienne-version.html');
+if (fs.existsSync(legacyFile)) {
+  const legacy = fs.readFileSync(legacyFile, 'utf8');
+  const decode = value => String(value || '').replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&quot;/g, '"').trim();
+  for (const match of legacy.matchAll(/<details class="story">([\s\S]*?)<\/details>/g)) {
+    const block = match[1];
+    const title = decode(block.match(/<strong>([\s\S]*?)<\/strong>/)?.[1]);
+    const category = decode(block.match(/<span class="story-place">([\s\S]*?)<\/span>/)?.[1]);
+    const section = block.match(/<div class="story-text">([\s\S]*?)<\/div>/)?.[1] || '';
+    const paragraphs = [...section.matchAll(/<p>([\s\S]*?)<\/p>/g)].map(m => decode(m[1]));
+    if (title && paragraphs.length) initial.items.push({
+      id: crypto.randomUUID(), type: 'histoire', title, category,
+      description: paragraphs[0].slice(0, 220), body: paragraphs.join('\n\n'),
+      cover: '', download: '', externalUrl: '', readMinutes: 4,
+      published: true, createdAt: '', updatedAt: ''
+    });
+  }
+}
 if (!fs.existsSync(DB)) fs.writeFileSync(DB, JSON.stringify(initial, null, 2), { mode: 0o600 });
 function readDB() { return JSON.parse(fs.readFileSync(DB, 'utf8')); }
 function writeDB(data) {

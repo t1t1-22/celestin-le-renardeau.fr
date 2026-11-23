@@ -42,7 +42,7 @@ fi
 # des modules Célestin dans la nouvelle installation.
 compose exec -T wordpress sh -c 'test -r /var/www/html/wp-content/mu-plugins/celestin-site.php && php -l /var/www/html/wp-content/mu-plugins/celestin-site.php'
 # Initialise explicitement les pages et la page d’accueil après le démarrage de WordPress.
-compose exec -T wordpress php -r 'require "/var/www/html/wp-load.php"; if (!function_exists("cel_initialize_site")) { fwrite(STDERR,"Module Célestin indisponible\\n"); exit(1); } cel_initialize_site(); $p=get_page_by_path("accueil"); if (!$p || get_option("show_on_front")!=="page" || (int)get_option("page_on_front")!==(int)$p->ID) { fwrite(STDERR,"Accueil Célestin non configuré\\n"); exit(1); } echo "Accueil Célestin activé : ".$p->ID.PHP_EOL;'
+compose exec -T wordpress php -r 'require "/var/www/html/wp-load.php"; if (!function_exists("cel_initialize_site")) { fwrite(STDERR,"Module Célestin indisponible\\n"); exit(1); } cel_initialize_site(); $p=get_page_by_path("accueil"); if (!$p || get_option("show_on_front")!=="page" || (int)get_option("page_on_front")!==(int)$p->ID) { fwrite(STDERR,"Accueil Célestin non configuré\\n"); exit(1); } if (!function_exists("cel_setup_home_content") || !cel_setup_home_content()) { fwrite(STDERR,"Blocs accueil non initialises\\n"); exit(1); } $p=get_page_by_path("accueil"); echo "Accueil Célestin actif et éditable : ".$p->ID.PHP_EOL;'
 compose exec -T web wget -q -O /dev/null http://127.0.0.1:8080/wp-admin/install.php
 # Le frontal HTTPS ubuntu-edge partage Nginx avec Factify. Ne modifier que
 # le fichier du domaine Célestin, vérifier nginx -t, puis recharger sans restart.

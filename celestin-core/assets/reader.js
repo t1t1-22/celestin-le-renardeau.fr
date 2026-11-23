@@ -33,16 +33,19 @@ document.addEventListener('DOMContentLoaded',function(){
     }
     function turn(direction){
       if(busy||!documentPdf)return;
-      const delta=single()?1:2;
-      const target=Math.max(1,Math.min(documentPdf.numPages,page+direction*delta));
+      let target;
+      if(single()) target=page+direction;
+      else if(direction>0) target=page===1?2:page+2;
+      else target=page<=2?1:page-2;
+      target=Math.max(1,Math.min(documentPdf.numPages,target));
       if(target===page)return;
-      if(!single() && target>1 && target%2===1)page=target;else page=target;
+      page=target;
       stage.classList.remove('turn-next','turn-prev');void stage.offsetWidth;
       stage.classList.add(direction>0?'turn-next':'turn-prev');
       render();
     }
     prev.addEventListener('click',()=>turn(-1));next.addEventListener('click',()=>turn(1));
-    window.addEventListener('resize',()=>{if(!documentPdf)return; if(!single()&&page>1&&page%2===0)page--;render()});
+    window.addEventListener('resize',()=>{if(!documentPdf)return; if(!single()&&page>1&&page%2===1)page--;render()});
     if(!window.pdfjsLib){counter.textContent='Visionneuse indisponible';error.hidden=false;error.textContent='Utilise le lien PDF ci-dessous.';return}
     window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     window.pdfjsLib.getDocument({url:pdfUrl}).promise.then(function(pdf){documentPdf=pdf;render()}).catch(function(){

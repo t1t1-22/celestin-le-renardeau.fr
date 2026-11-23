@@ -1,53 +1,53 @@
 #!/bin/sh
 set -eu
-# Le volume Docker persistant peut contenir une ancienne copie du thème
-# créée avec un autre propriétaire ou des permissions trop restrictives.
+# Compatible avec Astra : le thème actif est toujours celui choisi dans WordPress.
+# Les fichiers source de Célestin sont synchronisés, sans toucher aux autres
+# thèmes, aux plugins tiers ni au répertoire uploads du volume persistant.
 theme_source=/usr/src/wordpress/wp-content/themes/celestin
 theme_target=/var/www/html/wp-content/themes/celestin
 mu_source=/usr/src/wordpress/wp-content/mu-plugins
 mu_target=/var/www/html/wp-content/mu-plugins
+wp_content=/var/www/html/wp-content
 
-if [ ! -s "$theme_source/style.css" ]; then
-  echo "Thème Célestin invalide : fichier source style.css manquant ou vide." >&2
-  exit 1
-fi
-
-# Vérifier que rien n'est redirigé par des liens symboliques inattendus.
-for directory in /var/www/html/wp-content /var/www/html/wp-content/themes "$theme_target" "$mu_target"; do
+for directory in "$wp_content" "$wp_content/themes" "$theme_target" "$mu_target"; do
   if [ -L "$directory" ]; then
-    echo "Lien symbolique inattendu sur le chemin WordPress : $directory" >&2
+    echo "Lien symbolique inattendu dans WordPress : $directory" >&2
     exit 1
   fi
 done
 
 mkdir -p "$theme_target" "$mu_target"
-cp -a "$theme_source/." "$theme_target/"
+# Ancien thème conservé pour référence, mais jamais activé automatiquement.
+if [ -d "$theme_source" ]; then
+  cp -a "$theme_source/." "$theme_target/"
+fi
 cp -a "$mu_source/." "$mu_target/"
 
-# Le serveur Apache exécute PHP en tant que www-data ; le thème doit
-# être lisible par ce compte, pas seulement par root lors de la CI.
-# Ne modifier que les fichiers Célestin, jamais les autres sites/volumes.
+# Donner à Apache/PHP la lecture des éléments gérés par GitHub.
 chown -R www-data:www-data "$theme_target"
 find "$theme_target" -type d -exec chmod 755 {} +
 find "$theme_target" -type f -exec chmod 644 {} +
 
-for file in celestin-content.php celestin-media.js; do
-  if [ -f "$mu_target/$file" ]; then
-    chown www-data:www-data "$mu_target/$file"
-    chmod 644 "$mu_target/$file"
+for item in celestin-content.php celestin-media.js celestin-astra.php; do
+  if [ -f "$mu_target/$item" ]; then
+    chown www-data:www-data "$mu_target/$item"
+    chmod 644 "$mu_target/$item"
+  fi
+done
+if [ -d "$mu_target/celestin-astra" ]; then
+  chown -R www-data:www-data "$mu_target/celestin-astra"
+  find "$mu_target/celestin-astra" -type d -exec chmod 755 {} +
+  find "$mu_target/celestin-astra" -type f -exec chmod 644 {} +
+fi
+chown www-data:www-data "$wp_content"
+chmod 755 "$wp_content" "$wp_content/themes" "$mu_target"
+
+for file in "$mu_target/celestin-astra.php" "$mu_target/celestin-astra/site.css"; do
+  if ! su -s /bin/sh www-data -c "test -r '$file' && test -s '$file'"; then
+    echo "Erreur : module Célestin Astra illisible : $file" >&2
+    exit 1
   fi
 done
 
-# Permettre à PHP de traverser les dossiers du thème et de créer les
-# médias dans wp-content (sans écraser les uploads déjà présents).
-chown www-data:www-data /var/www/html/wp-content
-chmod 755 /var/www/html/wp-content
-chmod 755 /var/www/html/wp-content/themes "$mu_target"
-
-if ! su -s /bin/sh www-data -c 'test -s /var/www/html/wp-content/themes/celestin/style.css && test -r /var/www/html/wp-content/themes/celestin/style.css'; then
-  echo "ERREUR : WordPress ne peut pas lire le style.css du thème Célestin." >&2
-  exit 1
-fi
-
-echo "Thème Célestin : style.css vérifié et lisible par WordPress."
+echo "Astra conservé : module Célestin disponible dans WordPress."
 exec docker-entrypoint.sh "$@"

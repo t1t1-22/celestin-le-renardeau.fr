@@ -57,7 +57,8 @@ $links=[
       ][$item->post_type] ?? 'Découverte';
       // Illustration de la fiche uniquement : ne pas présenter une autre illustration à sa place.
       $img = get_the_post_thumbnail_url($item->ID, 'medium_large');
-      $summary = $item->post_excerpt ?: wp_strip_all_tags(strip_shortcodes($item->post_content));
+      $summary = Celestin_Fields::value($item->ID, 'resume') ?: ($item->post_excerpt ?: wp_strip_all_tags(strip_shortcodes($item->post_content)));
+      if (!$summary && $item->post_type === 'cel_personnage') $summary = Celestin_Fields::value($item->ID, 'description');
     ?>
       <a class="cel-card" href="<?php echo esc_url(get_permalink($item)); ?>">
         <div class="cel-card-image">
@@ -120,7 +121,7 @@ $links=[
     <div class="cel-character-image"><?php if($character && has_post_thumbnail($character)) echo get_the_post_thumbnail($character,'medium'); else echo Celestin_Home::render_image('character','Portrait de Célestin'); ?></div>
     <div><h3><?php echo esc_html($character?$character->post_title:'Célestin'); ?></h3>
     <p><strong>Prénom :</strong> Célestin</p><p><strong>Âge :</strong> 6 ans</p>
-    <p class="cel-character-desc"><?php echo esc_html($character?wp_trim_words(wp_strip_all_tags($character->post_content),30):'Un petit renardeau curieux, joyeux et toujours prêt pour de nouvelles aventures !'); ?></p>
+    <p class="cel-character-desc"><?php echo esc_html($character?wp_trim_words(Celestin_Fields::value($character->ID,'description') ?: wp_strip_all_tags($character->post_content),30):'Un petit renardeau curieux, joyeux et toujours prêt pour de nouvelles aventures !'); ?></p>
     <a class="cel-text-link" href="<?php echo esc_url($character?get_permalink($character):Celestin_Home::url('cel_personnage')); ?>">Rencontrer les personnages →</a>
     </div>
    </div>

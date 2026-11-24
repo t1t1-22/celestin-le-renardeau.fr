@@ -98,3 +98,5 @@ body.cel-book-custom-editor #wpcontent{background:#fcf7ef}
 .cel-tax-dialog input{display:block;margin-top:7px}
 .cel-tax-dialog-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
 .cel-tax-dialog .cel-tax-add{background:#d97927!important;color:white!important;border-color:#c56a20!important;border-radius:8px}
+
+.cel-tax-details .cel-tax-add{display:block;width:100%;text-align:left;white-space:normal;height:auto;padding:9px 12px;margin:8px 0 0;background:#fff0dc!important;border:1px dashed #dca36d!important;color:#8a471c!important;border-radius:8px!important;font-weight:600}.cel-tax-details .cel-tax-add[hidden]{display:none!important}.cel-tax-details .cel-tax-add:hover{background:#ffe2b9!important}

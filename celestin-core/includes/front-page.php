@@ -63,6 +63,27 @@ body.cel-page .cel-book-editorial .cel-book-actions .cel-book-library-link{displ
 body.cel-page .cel-book-editorial .cel-book-actions .cel-book-library-link:hover{background:#f2e5d5}
 body.cel-page .cel-book-editorial .cel-book-listen{width:auto;display:flex;align-items:center;gap:10px;margin:0;padding:5px 13px 5px 5px;border:1px solid #e5d8c7;border-radius:32px;background:#fffaf3;box-shadow:none}
 @media(max-width:760px){body.cel-page .cel-book-editorial .cel-book-description{gap:13px}body.cel-page .cel-book-editorial .cel-book-actions{justify-content:flex-start}}
+/* Album jeunesse : couverture, présentation et mémo épinglé. */
+body.cel-page .cel-book-editorial .cel-books-layout{max-width:1250px;gap:clamp(20px,3vw,45px);grid-template-columns:minmax(0,.9fr) minmax(0,1.25fr)}
+body.cel-page .cel-book-editorial .cel-books-layout.cel-has-book-note{grid-template-columns:minmax(0,.9fr) minmax(0,1.2fr) minmax(0,.85fr)}
+body.cel-page .cel-book-editorial .cel-book-description{gap:12px}
+body.cel-page .cel-book-editorial .cel-home-book-ribbon{display:inline-block;background:#e98932;color:#fff;padding:5px 18px 5px 12px;clip-path:polygon(0 0,100% 0,94% 50%,100% 100%,0 100%);font-size:13px;font-weight:700;border-radius:4px}
+body.cel-page .cel-book-editorial .cel-book-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 8px;padding:12px 0;border:0}
+body.cel-page .cel-book-editorial .cel-book-facts>span{align-items:center;text-align:center;gap:3px;padding:0}
+body.cel-page .cel-book-editorial .cel-book-facts i{display:block;color:#e98932;height:24px}
+body.cel-page .cel-book-editorial .cel-book-facts i svg{width:24px;height:24px;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+body.cel-page .cel-book-editorial .cel-book-facts>span>strong{font-size:10px;letter-spacing:.04em}
+body.cel-page .cel-book-editorial .cel-book-facts>span>span{font-size:12px;line-height:1.35}
+body.cel-page .cel-book-editorial .cel-home-book-note{position:relative;align-self:center;background:linear-gradient(135deg,#fff6db,#fff0c5);border:1px solid #e8c98e;border-radius:15px;padding:26px 20px 22px;box-shadow:0 9px 18px #8052231d;transform:rotate(-2deg);color:#633619}
+body.cel-page .cel-book-editorial .cel-note-pin{position:absolute;width:30px;height:36px;top:-19px;left:50%;transform:translateX(-50%) rotate(12deg);filter:drop-shadow(1px 2px 2px #84522144)}
+body.cel-page .cel-book-editorial .cel-note-pin svg{display:block;width:100%;height:100%}
+body.cel-page .cel-book-editorial .cel-home-book-note h3{font:700 23px/1.2 'Baloo 2',sans-serif;color:#633619;margin:0 0 14px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+body.cel-page .cel-book-editorial .cel-home-book-note h3 svg{width:25px;height:25px;fill:none;stroke:#e98932;stroke-width:1.8;flex:none}
+body.cel-page .cel-book-editorial .cel-home-book-note ul{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+body.cel-page .cel-book-editorial .cel-home-book-note li{position:relative;padding-left:23px;font-size:14px;line-height:1.45}
+body.cel-page .cel-book-editorial .cel-home-book-note li:before{content:"✓";position:absolute;left:0;top:0;color:#d77929;font-weight:900;font-size:19px}
+@media(max-width:1050px){body.cel-page .cel-book-editorial .cel-books-layout.cel-has-book-note{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr)}body.cel-page .cel-book-editorial .cel-home-book-note{grid-column:2;max-width:440px;width:100%;margin-top:12px}}
+@media(max-width:760px){body.cel-page .cel-book-editorial .cel-books-layout,body.cel-page .cel-book-editorial .cel-books-layout.cel-has-book-note{grid-template-columns:1fr}body.cel-page .cel-book-editorial .cel-home-book-note{grid-column:auto;justify-self:center;margin:20px 0}body.cel-page .cel-book-editorial .cel-book-description{width:100%}}
 </style>
 
 </head>
@@ -174,21 +195,28 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
  $book_resume=Celestin_Fields::value($book->ID,'resume');
  $book_short=wp_trim_words(wp_strip_all_tags($book_resume),30,'…');
  $book_audio=Celestin_Fields::value($book->ID,'resume_audio');
+ $book_points=preg_split('/\R/u',trim((string)Celestin_Fields::value($book->ID,'points_livre')),-1,PREG_SPLIT_NO_EMPTY);
+ $book_number=Celestin_Fields::value($book->ID,'numero'); $book_month=Celestin_Fields::value($book->ID,'mois'); $book_pages=absint(Celestin_Fields::value($book->ID,'nombre_pages'));
  ?>
- <div class="cel-books-layout">
+ <div class="cel-books-layout<?php echo $book_points?' cel-has-book-note':''; ?>">
  <div class="cel-book-preview">
  <a class="cel-home-cover-card cel-book-mockup" href="<?php echo esc_url(get_permalink($book)); ?>" aria-label="<?php echo esc_attr('Découvrir '.$book->post_title); ?>">
  <span class="cel-book-pages" aria-hidden="true"></span><span class="cel-book-face"><?php echo Celestin_Public::illustration($book->ID,'large'); ?></span>
  </a>
  </div>
  <div class="cel-book-description">
+ <?php if($book_number||$book_month): ?><span class="cel-home-book-ribbon"><?php echo esc_html(implode(" — ",array_filter([$book_number?"Livre ".$book_number:"",$book_month]))); ?></span><?php endif; ?>
  <h2 class="cel-book-editorial-title"><a href="<?php echo esc_url(get_permalink($book)); ?>"><?php echo esc_html($book->post_title); ?></a></h2>
- <div class="cel-feature-tags"><?php foreach(['categorie'=>'Thème','collection'=>'Collection','saison'=>'Saison','mois'=>'Parution','age_lecture'=>'Âge','evenement'=>'Événement'] as $key=>$label): $value=Celestin_Fields::value($book->ID,$key); if($value): ?><span><strong><?php echo esc_html($label); ?></strong><span><?php echo esc_html($value); ?></span></span><?php endif; endforeach; ?></div>
  <?php if($book_resume): ?><div class="cel-home-book-summary"><?php if($book_short!==wp_strip_all_tags($book_resume) && mb_strlen($book_short)<mb_strlen(wp_strip_all_tags($book_resume))): ?><details class="cel-book-more"><summary><span class="cel-book-excerpt"><?php echo esc_html($book_short); ?></span><span class="cel-book-more-label"><span class="cel-book-open">Lire plus +</span><span class="cel-book-close">Lire moins −</span></span></summary><div class="cel-book-full"><?php echo wpautop(esc_html($book_resume)); ?></div></details><?php else: ?><p><?php echo esc_html($book_resume); ?></p><?php endif; ?></div><?php endif; ?>
+ <div class="cel-feature-tags cel-book-facts">
+ <?php if($book_pages): ?><span><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v15M12 5C8 2 4 3 2 4v15c4-2 7-1 10 1 3-2 6-3 10-1V4c-3-1-6-2-10 1Z"/></svg></i><strong>Pages</strong><span><?php echo esc_html($book_pages); ?></span></span><?php endif; ?>
+ <?php foreach(['age_lecture'=>['Âge','<circle cx="12" cy="7" r="4"/><path d="M4 21v-3a8 8 0 0 1 16 0v3"/>'],'saison'=>['Saison','<path d="M5 20C4 8 12 3 21 3c0 10-5 15-14 15M3 22l12-12"/>'],'collection'=>['Collection','<path d="m12 2 3 7 7 1-5 5 1 7-6-4-6 4 1-7-5-5 7-1Z"/>'],'categorie'=>['Thème','<path d="M3 12V4h8l10 10-7 7Z"/><circle cx="7.5" cy="8" r="1"/>'],'mois'=>['Parution','<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18"/>'],'evenement'=>['Événement','<path d="m12 2 2 6 6 2-6 2-2 6-2-6-6-2 6-2ZM19 16v6m-3-3h6"/>']] as $key=>$fact): $value=Celestin_Fields::value($book->ID,$key); if($value): ?><span><i aria-hidden="true"><svg viewBox="0 0 24 24"><?php echo $fact[1]; ?></svg></i><strong><?php echo esc_html($fact[0]); ?></strong><span><?php echo esc_html($value); ?></span></span><?php endif; endforeach; ?>
+ </div>
  <?php if($book_audio): ?><div class="cel-book-listen cel-audio-card"><audio preload="metadata" src="<?php echo esc_url($book_audio); ?>"></audio><button type="button" class="cel-audio-toggle" data-title="<?php echo esc_attr($book->post_title); ?>" aria-label="Écouter le résumé" aria-pressed="false"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="30" fill="#fffaf3"/><circle cx="32" cy="32" r="26" fill="none" stroke="#e9d3bb" stroke-width="4"/><circle class="cel-audio-ring" cx="32" cy="32" r="26" fill="none" stroke="#e98932" stroke-width="4" pathLength="100" stroke-dasharray="0 100" stroke-linecap="round" transform="rotate(-90 32 32)"/><path class="cel-audio-play" d="M25 20L44 32L25 44Z" fill="#a45b2c"/><rect class="cel-audio-stop" x="23" y="23" width="18" height="18" rx="3" fill="#a45b2c"/></svg></button><span>Écouter le résumé</span><span class="cel-audio-error" role="status" hidden>Audio indisponible.</span></div><?php endif; ?>
  <div class="cel-book-actions"><a class="cel-feature-link cel-home-book-all" href="<?php echo esc_url(get_permalink($book)); ?>">Découvrir ce livre →</a>
  <a class="cel-book-library-link" href="<?php echo esc_url(Celestin_Home::url('cel_livre')); ?>">Voir tous les livres <span aria-hidden="true">↗</span></a></div>
  </div>
+ <?php if($book_points): ?><aside class="cel-home-book-note"><span class="cel-note-pin" aria-hidden="true"><svg viewBox="0 0 32 40"><path d="m16 24-5 13" stroke="#77533a" stroke-width="2" stroke-linecap="round"/><ellipse cx="16" cy="22" rx="10" ry="6" fill="#d77b30" stroke="#ad5b22" stroke-width="1.5"/><path d="m10 9-2 12q8 8 15 0L22 9" fill="#e98932" stroke="#ad5b22" stroke-width="1.5"/><ellipse cx="16" cy="9" rx="10" ry="7" fill="#f6aa56" stroke="#ad5b22" stroke-width="1.5"/></svg></span><h3>Dans ce livre… <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21 3 12C-2 5 7 0 12 7c5-7 14-2 9 5Z"/></svg></h3><ul><?php foreach($book_points as $point): if(trim($point)==='')continue; ?><li><?php echo esc_html(trim($point)); ?></li><?php endforeach; ?></ul></aside><?php endif; ?>
  </div>
  <?php else: ?><p class="cel-home-empty">Sélectionne un livre depuis sa fiche WordPress pour l’afficher ici.</p><?php endif; ?>
 </section>

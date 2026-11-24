@@ -48,9 +48,10 @@ jQuery(function($){
 
 jQuery(function($){
  if(!$('body').hasClass('post-type-cel_livre'))return;
- const slot=$('.cel-book-title-slot'),title=$('#titlediv'),bar=$('.cel-book-savebar');
- if(!slot.length||!title.length||!bar.length)return;
- title.appendTo(slot);
+ const field=$('#cel-book-title'),title=$('#title'),bar=$('.cel-book-savebar');
+ if(!field.length||!bar.length)return;
+ field.on('input change',()=>title.val(field.val()));
+ title.val(field.val());
  // Preserve WordPress' native submit actions, nonce, draft and preview logic.
  const publish=$('#publish'),draft=$('#save-post'),preview=$('#post-preview');
  if(!publish.length)return;

@@ -215,6 +215,14 @@ body.cel-page .cel-identity-deck .cel-identity-controls button:hover{background:
 .cel-identity-photo-column{min-width:0}
 .cel-identity-location{display:flex;align-items:center;justify-content:center;gap:4px;margin-top:7px;color:#a76129;font-size:12px;line-height:1.4;font-weight:600}
 .cel-identity-location svg{flex:none}
+
+/* Léger mouvement de la pile au survol, indépendant du changement de carte. */
+@media(hover:hover) and (prefers-reduced-motion:no-preference){
+ .cel-identity-stack{transition:transform .32s cubic-bezier(.2,.7,.3,1)}
+ .cel-identity-stack:hover{transform:translateY(-5px) rotate(-.65deg)}
+ .cel-identity-card{transition:box-shadow .32s ease}
+ .cel-identity-stack:hover>.cel-identity-card:first-child{box-shadow:0 12px 25px #63361930}
+}
 </style>
 
 </head>

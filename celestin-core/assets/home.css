@@ -198,3 +198,9 @@ body.admin-bar .cel-interior-header{top:32px}
 .cel-news-track .cel-card{background:#fffdf8;box-shadow:0 3px 9px #63361918}
 .cel-news-track{padding-top:5px}
 @media(max-width:720px){.cel-news.cel-news-has-items{margin-top:-24px}.cel-news{padding:0 0 10px}}
+
+/* Cartes audio légèrement plus compactes, même lorsqu'une seule est sélectionnée. */
+.cel-audio-inner{width:min(870px,92%)}
+.cel-audio-card{max-width:285px}
+.cel-audio-toggle{width:55px;height:55px}
+@media(max-width:760px){.cel-audio-toggle{width:48px;height:48px}}

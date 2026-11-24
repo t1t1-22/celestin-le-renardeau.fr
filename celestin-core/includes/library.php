@@ -1,8 +1,8 @@
 <?php
 if(!defined('ABSPATH'))exit;
 final class Celestin_Library {
- const TAX=['collection'=>'cel_book_collection','mois'=>'cel_book_month','saison'=>'cel_book_season','age_lecture'=>'cel_book_age','evenement'=>'cel_book_event'];
- const LABELS=['collection'=>'Collections','mois'=>'Mois','saison'=>'Saisons','age_lecture'=>'Tranches d’âge','evenement'=>'Événements'];
+ const TAX=['categorie'=>'cel_collection','collection'=>'cel_book_collection','mois'=>'cel_book_month','saison'=>'cel_book_season','age_lecture'=>'cel_book_age','evenement'=>'cel_book_event'];
+ const LABELS=['categorie'=>'Catégories','collection'=>'Collections','mois'=>'Mois','saison'=>'Saisons','age_lecture'=>'Tranches d’âge','evenement'=>'Événements'];
  const SEEDS=['mois'=>['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'],'saison'=>['Printemps','Été','Automne','Hiver'],'age_lecture'=>['0-3','3-6','6-8','8-12'],'evenement'=>['Nouvel An','Épiphanie','Chandeleur','Carnaval','Pâques','1er mai','Fête des mères','Fête des pères','Fête de la musique','Vacances d’été','Rentrée scolaire','Halloween','Saint-Nicolas','Noël']];
  static function init(){
   add_action('init',[__CLASS__,'register'],25);
@@ -20,7 +20,7 @@ final class Celestin_Library {
   return is_wp_error($t)?0:(int)(is_array($t)?$t['term_id']:$t);
  }
  static function migrate(){
-  if(!current_user_can('manage_options')||get_option('cel_library_schema')==='1')return;
+  if(!current_user_can('manage_options')||get_option('cel_library_schema')==='2')return;
   foreach(self::SEEDS as $key=>$names)foreach($names as $name)self::term(self::TAX[$key],$name);
   foreach(get_posts(['post_type'=>'cel_livre','post_status'=>'any','posts_per_page'=>-1,'fields'=>'ids']) as $id){
    foreach(self::TAX as $key=>$tax){
@@ -33,7 +33,7 @@ final class Celestin_Library {
     $ids=array_filter(array_map(fn($n)=>self::term($tax,$n),$names));if($ids)wp_set_object_terms($id,array_values($ids),$tax);
    }
   }
-  update_option('cel_library_schema','1');flush_rewrite_rules(false);
+  update_option('cel_library_schema','2');flush_rewrite_rules(false);
  }
  static function clean(){
   foreach(['cel_news_box','cel_home_box','cel_illustration_help','postimagediv','postexcerpt','slugdiv','commentstatusdiv','commentsdiv','trackbacksdiv','authordiv','cel_collectiondiv','tagsdiv-cel_book_tags'] as $box)foreach(['side','normal','advanced'] as $where)remove_meta_box($box,'cel_livre',$where);
@@ -62,7 +62,7 @@ final class Celestin_Library {
   }
  }
  static function display($id,$key){
-  $terms=wp_get_object_terms($id,self::TAX[$key],['fields'=>'names']);if(is_wp_error($terms)||!$terms)return '';
+  $terms=wp_get_object_terms($id,self::TAX[$key],['fields'=>'names']);if(is_wp_error($terms)||!$terms)return (string)get_post_meta($id,'_cel_f_'.$key,true);
   if($key!=='age_lecture')return implode(', ',$terms);
   $ranges=[];$others=[];foreach($terms as $t){if(preg_match('/^(\d+)\s*[-–]\s*(\d+)$/u',$t,$m))$ranges[]=[(int)$m[1],(int)$m[2]];else $others[]=$t;}
   usort($ranges,fn($a,$b)=>$a[0]<=>$b[0]);$merged=[];foreach($ranges as $r){$i=count($merged)-1;if($i>=0&&$r[0]<=$merged[$i][1])$merged[$i][1]=max($merged[$i][1],$r[1]);else $merged[]=$r;}
@@ -70,12 +70,12 @@ final class Celestin_Library {
  }
  static function filter($q){
   if(is_admin()||!$q->is_main_query()||!$q->is_post_type_archive('cel_livre'))return;
-  $filters=['relation'=>'AND'];foreach(self::TAX as $key=>$tax){$slug=sanitize_title(wp_unslash($_GET[$tax]??''));if($slug)$filters[]=['taxonomy'=>$tax,'field'=>'slug','terms'=>[$slug]];}
+  $filters=['relation'=>'AND'];foreach(self::TAX as $key=>$tax){$slug=sanitize_title(wp_unslash($_GET['filtre_'.$key]??''));if($slug)$filters[]=['taxonomy'=>$tax,'field'=>'slug','terms'=>[$slug]];}
   if(count($filters)>1)$q->set('tax_query',$filters);
  }
  static function filter_form(){
   echo '<form class="cel-library-filters" method="get" action="'.esc_url(get_post_type_archive_link('cel_livre')).'">';
-  foreach(self::TAX as $key=>$tax){$terms=get_terms(['taxonomy'=>$tax,'hide_empty'=>true]);if(is_wp_error($terms)||!$terms)continue;$current=sanitize_title(wp_unslash($_GET[$tax]??''));echo '<label>'.esc_html(self::LABELS[$key]).'<select name="'.esc_attr($tax).'"><option value="">Tous</option>';foreach($terms as $t)echo '<option value="'.esc_attr($t->slug).'"'.selected($current,$t->slug,false).'>'.esc_html($t->name).'</option>';echo '</select></label>';}
+  foreach(self::TAX as $key=>$tax){$terms=get_terms(['taxonomy'=>$tax,'hide_empty'=>true]);if(is_wp_error($terms)||!$terms)continue;$current=sanitize_title(wp_unslash($_GET[$tax]??''));echo '<label>'.esc_html(self::LABELS[$key]).'<select name="'.esc_attr('filtre_'.$key).'"><option value="">Tous</option>';foreach($terms as $t)echo '<option value="'.esc_attr($t->slug).'"'.selected($current,$t->slug,false).'>'.esc_html($t->name).'</option>';echo '</select></label>';}
   echo '<button type="submit">Filtrer</button><a href="'.esc_url(get_post_type_archive_link('cel_livre')).'">Réinitialiser</a></form>';
  }
 }

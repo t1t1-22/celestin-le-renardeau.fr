@@ -88,6 +88,14 @@ final class Celestin_Public {
         $audio=Celestin_Fields::value($id,'audio');
         if($audio)echo '<section class="cel-detail-section"><h2>Écoute-moi me présenter !</h2><audio controls preload="metadata" src="'.esc_url($audio).'"></audio></section>';
         Celestin_Town::character_album($id);
+        [$family]=Celestin_Fields::family_graph(true);
+        if(!empty($family[$id])){
+            echo '<section class="cel-detail-section"><h2>Ma famille et mes relations</h2><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,190px));gap:14px">';
+            foreach($family[$id] as $kind=>$others)foreach(array_keys($others) as $other){
+                echo '<a style="display:block;text-decoration:none;background:#fff8ef;border:1px solid #ead5bb;border-radius:14px;padding:10px;color:#633619;text-align:center" href="'.esc_url(get_permalink($other)).'"><div style="aspect-ratio:1;overflow:hidden;border-radius:9px">'.get_the_post_thumbnail($other,'medium',['style'=>'width:100%;height:100%;object-fit:contain']).'</div><strong style="display:block">'.esc_html(get_the_title($other)).'</strong><span>'.esc_html(Celestin_Fields::family_label($kind,$other)).'</span></a>';
+            }
+            echo '</div></section>';
+        }
         echo self::related($id,'cel_personnage','Ma famille et mes amis');
         echo self::related($id,'cel_lieu','Mes lieux préférés');
         echo self::related($id,'cel_livre','Les livres où je suis présent');

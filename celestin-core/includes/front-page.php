@@ -278,6 +278,20 @@ body.cel-page .cel-play-caption h3{font-size:15px}
 .cel-play-tabs button[aria-pressed=true],.cel-play-tabs button:hover{background:#e98932;color:#fff;border-color:#e98932}
 .cel-play-panel [hidden]{display:none!important}
 .cel-play-filter-empty{font-size:13px;color:#80532b;text-align:center;padding:15px 0}
+
+body.cel-page .cel-origin-section{position:relative;isolation:isolate;background:#f2e4d0;margin:55px 0 0;min-height:clamp(255px,24vw,380px);overflow:hidden;display:flex;align-items:center}
+body.cel-page .cel-origin-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+body.cel-page .cel-origin-section:before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#f2e4d0 0%,#f2e4d0f5 35%,#f2e4d055 100%);z-index:-1}
+body.cel-page .cel-origin-inner{width:min(1200px,92%);margin:auto;padding:48px 0 65px}
+body.cel-page .cel-origin-copy{width:46%;max-width:540px;color:#633619}
+body.cel-page .cel-origin-copy h2{font:700 clamp(29px,3vw,40px)/1.12 'Baloo 2',sans-serif;margin:0 0 13px;color:#633619}
+body.cel-page .cel-origin-copy p{font-size:16px;line-height:1.65;margin:0 0 22px;color:#80532b}
+body.cel-page .cel-origin-button{display:inline-flex;align-items:center;border-radius:24px;padding:10px 19px;background:#e98932;color:white;text-decoration:none;font-weight:700;font-size:15px}
+body.cel-page .cel-origin-pending{opacity:.75}
+body.cel-page .cel-origin-button:hover{background:#633619;color:#fff}
+body.cel-page .cel-footer.cel-footer-fox{margin-top:0!important}
+body.cel-page .cel-footer-fox>.cel-fox-divider{left:auto!important;right:4%!important;transform:none!important;z-index:2!important}
+@media(max-width:720px){body.cel-page .cel-origin-copy{width:100%;max-width:none}body.cel-page .cel-origin-inner{padding:35px 0 calc(15vw + 28px)}body.cel-page .cel-origin-section{margin-top:35px}body.cel-page .cel-origin-section:before{background:#f2e4d0e8}}
 </style>
 
 </head>
@@ -506,9 +520,14 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
    <?php else: ?><p class="cel-home-empty">De nouvelles activités arrivent bientôt !</p><?php endif; ?>
  </section>
 </div>
-<section class="cel-welcome" aria-labelledby="cel-welcome-title">
- <?php if(Celestin_Home::image('footer')) echo '<img src="'.esc_url(Celestin_Home::image('footer')).'" alt="" loading="lazy">'; ?>
- <div class="cel-welcome-copy"><h2 id="cel-welcome-title">Bienvenue à Fleuriville !</h2><p><?php echo esc_html($options['welcome']); ?></p><a class="cel-button cel-primary" href="<?php echo esc_url(Celestin_Home::url('cel_lieu')); ?>">Découvrir Fleuriville →</a></div>
+<section class="cel-origin-section" aria-labelledby="cel-origin-title">
+ <?php if(Celestin_Home::image('footer')) echo '<img class="cel-origin-bg" src="'.esc_url(Celestin_Home::image('footer')).'" alt="" loading="lazy">'; ?>
+ <div class="cel-origin-inner"><div class="cel-origin-copy">
+ <h2 id="cel-origin-title"><?php echo esc_html($options['origin_title']); ?></h2>
+ <p><?php echo esc_html($options['origin_description']); ?></p>
+ <?php $origin_link=$options['origin_link']; if(!$origin_link){$origin_page=get_page_by_path('les-origines-de-celestin');if($origin_page&&$origin_page->post_status==='publish')$origin_link=get_permalink($origin_page);} ?>
+ <?php if($origin_link): ?><a class="cel-origin-button" href="<?php echo esc_url($origin_link); ?>"><?php echo esc_html($options['origin_button']); ?> →</a><?php else: ?><span class="cel-origin-button cel-origin-pending"><?php echo esc_html($options['origin_button']); ?> · Bientôt</span><?php endif; ?>
+ </div></div>
 </section>
 </main>
 <?php require __DIR__.'/shared-footer.php'; ?>

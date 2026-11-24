@@ -294,3 +294,16 @@ body.cel-page .cel-audio-feature .cel-audio-toggle{width:43px;height:43px}
 @media(max-width:1050px){body.cel-page .cel-audio-feature .cel-audio-card{flex-basis:calc((100% - 66px)/4)}}
 @media(max-width:720px){body.cel-page .cel-audio-feature .cel-audio-grid{gap:12px;padding-inline:12px}body.cel-page .cel-audio-feature .cel-audio-card{flex-basis:calc((100% - 24px)/3)}}
 @media(max-width:480px){body.cel-page .cel-audio-feature .cel-audio-grid{flex-wrap:wrap}body.cel-page .cel-audio-feature .cel-audio-card{flex-basis:calc((100% - 12px)/2)}body.cel-page .cel-audio-feature .cel-audio-card h3{font-size:15px}}
+
+/* Mini-histoires : même animation ludique que les nouveautés. */
+body.cel-page .cel-audio-feature .cel-audio-card{position:relative;transform-origin:center;transition:transform .23s ease}
+body.cel-page .cel-audio-feature .cel-audio-art{transition:box-shadow .23s ease}
+@media(hover:hover) and (pointer:fine){
+ body.cel-page .cel-audio-feature .cel-audio-card:hover{z-index:2;transform:translateY(-3px) rotate(-2deg)}
+ body.cel-page .cel-audio-feature .cel-audio-card:hover .cel-audio-art{box-shadow:0 0 0 2px #e98932,0 9px 17px rgba(99,54,25,.21)}
+}
+body.cel-page .cel-audio-feature .cel-audio-card:focus-within .cel-audio-art{box-shadow:0 0 0 2px #e98932,0 9px 17px rgba(99,54,25,.21)}
+@media(prefers-reduced-motion:reduce){
+ body.cel-page .cel-audio-feature .cel-audio-card,body.cel-page .cel-audio-feature .cel-audio-art{transition:none}
+ body.cel-page .cel-audio-feature .cel-audio-card:hover{transform:none}
+}

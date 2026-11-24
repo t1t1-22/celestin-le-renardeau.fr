@@ -19,7 +19,7 @@ final class Celestin_Fields {
         'fichier' => ['Les pages'=>['pdf'=>'PDF complet du livre carré']]
       ],
       'cel_histoire' => [
-        'principal'=>['Identité de la mini-histoire'=>['resume'=>'Résumé']],
+        'principal'=>['Identité de la mini-histoire'=>['resume'=>'Résumé écrit','resume_audio'=>'Résumé audio (MP3)']],
         'audio'=>['Audio et texte'=>['audio'=>'Narration MP3','texte'=>'Texte intégral','synchronisation'=>'Repères de synchronisation (facultatif)']]
       ],
       'cel_coloriage' => [
@@ -92,10 +92,10 @@ final class Celestin_Fields {
         wp_enqueue_media();
         if($screen->post_type==='cel_livre'){
             wp_enqueue_script('cel-admin-pdfjs','https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',[],'3.11.174',true);
-            wp_enqueue_script('cel-pdf-preview',plugins_url('../assets/pdf-preview.js',__FILE__),['jquery','cel-admin-pdfjs'],'0.4.25',true);
+            wp_enqueue_script('cel-pdf-preview',plugins_url('../assets/pdf-preview.js',__FILE__),['jquery','cel-admin-pdfjs'],'0.4.26',true);
         }
-        wp_enqueue_style('cel-fields',plugins_url('../assets/fields.css',__FILE__),[],'0.4.25');
-        wp_enqueue_script('cel-fields',plugins_url('../assets/fields.js',__FILE__),['jquery'],'0.4.25',true);
+        wp_enqueue_style('cel-fields',plugins_url('../assets/fields.css',__FILE__),[],'0.4.26');
+        wp_enqueue_script('cel-fields',plugins_url('../assets/fields.js',__FILE__),['jquery'],'0.4.26',true);
         if($screen->post_type==='cel_personnage')wp_add_inline_style('cel-fields','#post-body-content #titlediv{display:none!important}');
     }
     static function render(WP_Post $post): void {
@@ -164,18 +164,18 @@ final class Celestin_Fields {
         if(!$value && $key==='pdf' && $post->post_type==='cel_coloriage') $value=(string)get_post_meta($post->ID,'_cel_pdf_url',true);
         if(!$value && $key==='audio' && $post->post_type==='cel_histoire') $value=(string)get_post_meta($post->ID,'_cel_story_mp3',true);
         $long=in_array($key,['points_livre','description','anecdote','resume','texte','histoire','synchronisation','qualites','defauts','aime','deteste','peurs','reves'],true);
-        $media=in_array($key,['audio','pdf','couverture_arriere'],true);
-        echo '<div class="cel-field'.(($long||$key==='audio')?' cel-field-wide':'').'"><label for="cel_f_'.esc_attr($key).'">'.esc_html($label).'</label>';
+        $media=in_array($key,['audio','resume_audio','pdf','couverture_arriere'],true);
+        echo '<div class="cel-field'.(($long||in_array($key,['audio','resume_audio'],true))?' cel-field-wide':'').'"><label for="cel_f_'.esc_attr($key).'">'.esc_html($label).'</label>';
         if($long) {
             echo '<textarea id="cel_f_'.esc_attr($key).'" name="cel_f['.esc_attr($key).']" rows="'.($key==='texte'?12:($key==='synchronisation'?5:4)).'">'.esc_textarea($value).'</textarea>';
             if($key==='synchronisation') echo '<p class="description">Facultatif : une ligne par phrase, sous la forme <code>0.0|Première phrase</code> puis <code>4.5|Deuxième phrase</code>. À ajuster en écoutant le MP3.</p>';
         } else {
             echo '<div class="cel-input-row"><input id="cel_f_'.esc_attr($key).'" name="cel_f['.esc_attr($key).']" type="'.($media?'url':($key==='nombre_pages'?'number':'text')).'" value="'.esc_attr($value).'" '.($media?'class="cel-media-value" placeholder="Choisir un fichier dans la médiathèque"':'').'>';
-            if($media) echo '<button type="button" class="button cel-pick-media" data-media-type="'.($key==='pdf'?'application/pdf':($key==='audio'?'audio':'image')).'">Choisir un fichier</button>';
+            if($media) echo '<button type="button" class="button cel-pick-media" data-media-type="'.($key==='pdf'?'application/pdf':(in_array($key,['audio','resume_audio'],true)?'audio':'image')).'">Choisir un fichier</button>';
             echo '</div>';
         }
-        if($key==='audio' && $post->post_type==='cel_histoire'){
-            echo '<div class="cel-admin-audio"><strong>Écouter et vérifier la narration</strong><audio controls preload="metadata" src="'.esc_url($value).'"'.($value?'':' hidden').'></audio><p class="cel-audio-preview-status" role="status">'.($value?'Chargement des informations audio…':'Choisis un MP3 pour afficher le lecteur.').'</p><button type="button" class="button cel-audio-remove"'.($value?'':' hidden').'>Retirer le fichier audio</button></div>';
+        if(in_array($key,['audio','resume_audio'],true) && $post->post_type==='cel_histoire'){
+            echo '<div class="cel-admin-audio"><strong>'.($key==='resume_audio'?'Écouter le résumé — utilisé sur l’accueil et la fiche publique':'Écouter et vérifier la narration intégrale').'</strong><audio controls preload="metadata" src="'.esc_url($value).'"'.($value?'':' hidden').'></audio><p class="cel-audio-preview-status" role="status">'.($value?'Chargement des informations audio…':'Choisis un MP3 pour afficher le lecteur.').'</p><button type="button" class="button cel-audio-remove"'.($value?'':' hidden').'>Retirer le fichier audio</button></div>';
         }
         echo '</div>';
     }
@@ -240,7 +240,7 @@ final class Celestin_Fields {
         $defs=self::fields_for($post);$submitted=isset($_POST['cel_f'])&&is_array($_POST['cel_f'])?wp_unslash($_POST['cel_f']):[];
         foreach($defs as $group)foreach($group as $fields)foreach($fields as $key=>$label) {
           $v=isset($submitted[$key]) && is_string($submitted[$key]) ? $submitted[$key] : '';
-          $v=in_array($key,['audio','pdf','couverture_arriere'],true)?esc_url_raw($v):sanitize_textarea_field($v);
+          $v=in_array($key,['audio','resume_audio','pdf','couverture_arriere'],true)?esc_url_raw($v):sanitize_textarea_field($v);
           update_post_meta($id,'_cel_f_'.$key,$v);
           if($key==='pdf'&&$post->post_type==='cel_livre')update_post_meta($id,'_cel_book_pdf',$v);
           if($key==='pdf'&&$post->post_type==='cel_coloriage')update_post_meta($id,'_cel_pdf_url',$v);

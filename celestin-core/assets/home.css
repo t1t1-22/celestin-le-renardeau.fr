@@ -249,3 +249,9 @@ body.cel-page,body.cel-page .cel-site{background:#fcf7ef!important}
 }
 .cel-news-track .cel-news-card:focus-within{border-color:#e98932;box-shadow:0 0 0 2px #e98932,0 9px 17px rgba(99,54,25,.21)}
 @media(prefers-reduced-motion:reduce){.cel-news-track .cel-news-card{transition:none}.cel-news-track .cel-news-card:hover{transform:none}}
+
+/* Fond orange pastel pleine largeur sous le slide, avec cartes en chevauchement. */
+.cel-news-band{display:flow-root;background:#fce5ce;padding:0 0 22px;position:relative;isolation:auto}
+.cel-news-band .cel-news{background:transparent;margin-bottom:0}
+.cel-news-band .cel-news.cel-news-has-items{margin-top:-48px}
+@media(max-width:720px){.cel-news-band .cel-news.cel-news-has-items{margin-top:-24px}.cel-news-band{padding-bottom:14px}}

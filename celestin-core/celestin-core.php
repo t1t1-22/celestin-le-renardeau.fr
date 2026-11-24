@@ -255,7 +255,6 @@ final class Celestin_Core {
     static function organize_menu(): void {
         add_menu_page('Apparence du site','Apparence du site','manage_options','cel-site-appearance',[__CLASS__,'appearance_dashboard'],'dashicons-art',5);
         add_submenu_page('cel-site-appearance','Apparence','Apparence','manage_options','celestin-design',['Celestin_Home','settings']);
-        add_submenu_page('cel-site-appearance','Fleuriville','Fleuriville','manage_options','cel-town',['Celestin_Town','settings']);
         add_submenu_page('cel-site-appearance','Nouveautés','Nouveautés','manage_options','celestin-news',['Celestin_News','screen']);
         foreach(['celestin-design','cel-town','celestin-news'] as $slug)remove_submenu_page('celestin-core',$slug);
 
@@ -263,7 +262,10 @@ final class Celestin_Core {
         foreach(['cel_livre','cel_histoire','cel_coloriage','cel_personnage','cel_lieu'] as $type){
             $object=get_post_type_object($type);
             if(!$object)continue;
-            add_submenu_page('cel-universe',self::TYPES[$type][0],self::TYPES[$type][0],$object->cap->edit_posts,'edit.php?post_type='.$type);
+            if($type==='cel_lieu'){
+                add_submenu_page('cel-universe','Fleuriville','Fleuriville','manage_options','cel-town',['Celestin_Town','settings']);
+                add_submenu_page('cel-universe','Lieux de Fleuriville','↳ Les lieux',$object->cap->edit_posts,'edit.php?post_type='.$type);
+            }else add_submenu_page('cel-universe',self::TYPES[$type][0],self::TYPES[$type][0],$object->cap->edit_posts,'edit.php?post_type='.$type);
             remove_menu_page('edit.php?post_type='.$type);
         }
         add_menu_page('Catégories et classement','Catégories et classement','manage_categories','cel-classification',[__CLASS__,'classification_dashboard'],'dashicons-tag',4);
@@ -276,7 +278,7 @@ final class Celestin_Core {
     static function appearance_dashboard(): void {
         if(!current_user_can('manage_options'))return;
         echo '<div class="wrap"><h1 style="color:#633619;font-weight:800">Apparence du site</h1><p>Personnalise la présentation du site et les contenus mis en avant.</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px;max-width:1000px;margin-top:24px">';
-        foreach(['celestin-design'=>['Apparence','Identité, accueil et rubriques'],'cel-town'=>['Fleuriville','Présentation et carte de la ville'],'celestin-news'=>['Nouveautés','Contenus du carrousel d’accueil']] as $slug=>$item){
+        foreach(['celestin-design'=>['Apparence','Identité, accueil et rubriques'],'celestin-news'=>['Nouveautés','Contenus du carrousel d’accueil']] as $slug=>$item){
             echo '<section style="background:#fffdfa;border:1px solid #ead5bb;border-radius:16px;padding:22px;color:#633619"><h2>'.esc_html($item[0]).'</h2><p>'.esc_html($item[1]).'</p><a class="button" href="'.esc_url(admin_url('admin.php?page='.$slug)).'">Gérer</a></section>';
         }
         echo '</div></div>';
@@ -364,7 +366,8 @@ final class Celestin_Core {
         <?php
     }
     static function universe_parent($parent){
-        if(in_array($_GET['page']??'',['celestin-design','cel-town','celestin-news'],true))return 'cel-site-appearance';
+        if(($_GET['page']??'')==='cel-town')return 'cel-universe';
+        if(in_array($_GET['page']??'',['celestin-design','celestin-news'],true))return 'cel-site-appearance';
         $screen=get_current_screen();
         if(!$screen)return $parent;
         if(in_array($screen->taxonomy??'',array_values(Celestin_Library::TAX),true))return 'cel-classification';
@@ -384,6 +387,7 @@ final class Celestin_Core {
         foreach(['cel_livre','cel_histoire','cel_coloriage','cel_personnage','cel_lieu'] as $type){
             $object=get_post_type_object($type);if(!$object||!current_user_can($object->cap->edit_posts))continue;
             $count=wp_count_posts($type);
+            if($type==='cel_lieu'&&current_user_can('manage_options'))echo '<section style="background:#fffdfa;border:1px solid #ead5bb;border-radius:16px;padding:22px;color:#633619"><h2>Fleuriville</h2><p>Présentation et carte de la ville</p><a class="button" href="'.esc_url(admin_url('admin.php?page=cel-town')).'">Gérer la carte</a> <a class="button" href="'.esc_url(admin_url('edit.php?post_type=cel_lieu')).'">Les lieux</a></section>';
             echo '<section style="background:#fffdfa;border:1px solid #ead5bb;border-radius:16px;padding:22px;color:#633619"><span class="dashicons '.esc_attr(self::TYPES[$type][2]).'" style="color:#e98932;font-size:28px;width:28px;height:28px"></span><h2>'.esc_html(self::TYPES[$type][0]).'</h2><p>'.absint($count->publish??0).' publié(s)</p><a class="button" href="'.esc_url(admin_url('edit.php?post_type='.$type)).'">Gérer</a> <a class="button" href="'.esc_url(admin_url('post-new.php?post_type='.$type)).'">Ajouter</a></section>';
         }
         echo '</div></div>';

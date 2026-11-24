@@ -63,3 +63,32 @@ jQuery(function($){
  if(window.MutationObserver)new MutationObserver(update).observe(publish[0],{attributes:true,attributeFilter:['disabled','class']});
  update();
 });
+
+jQuery(function($){
+ const normalize=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+ $('.cel-tax-picker').each(function(){
+   const root=$(this),list=root.find('.cel-lib-choices'),selected=root.find('.cel-tax-selected'),search=root.find('.cel-tax-search');
+   if(!selected.length)return;
+   function refresh(){
+     selected.empty();const checked=list.find('input:checked');
+     checked.each(function(){const input=$(this),name=input.closest('label').find('span').text();$('<button>',{type:'button',class:'cel-tax-chip',text:name+' ×','aria-label':'Retirer '+name}).on('click',()=>{input.prop('checked',false).trigger('change')}).appendTo(selected)});
+     if(!checked.length)selected.append($('<span>',{class:'description',text:'Aucune sélection'}));
+     root.find('.cel-tax-count').text('('+checked.length+' sélectionné'+(checked.length>1?'s':'')+')');
+   }
+   function filter(){const q=normalize(search.val()||'');let count=0;list.children('label').each(function(){const match=normalize($(this).text()).includes(q);$(this).toggle(match);if(match)count++});root.find('.cel-tax-empty').prop('hidden',count!==0);}
+   list.on('change','input',refresh);search.on('input',filter);
+   root.find('input:not([type=checkbox])').on('keydown',e=>{if(e.key==='Enter'){e.preventDefault();if($(e.target).hasClass('cel-tax-new'))root.find('.cel-tax-add').trigger('click')}});
+   root.find('.cel-tax-add').on('click',function(){
+     const button=$(this),input=root.find('.cel-tax-new'),name=input.val().trim(),status=root.find('.cel-tax-status');
+     if(!name){status.text('Indique un nom.');return;}
+     button.prop('disabled',true);status.text('Création…');
+     $.post(ajaxurl,{action:'cel_library_create_term',nonce:root.data('nonce'),key:root.data('key'),name}).done(r=>{
+       if(!r.success){status.text(typeof r.data==='string'?r.data:'Création impossible.');return;}
+       let choice=list.find('input').filter(function(){return Number(this.value)===Number(r.data.id)});
+       if(!choice.length){choice=$('<input>',{type:'checkbox',name:'cel_lib['+root.data('key')+'][]',value:r.data.id});$('<label>').append(choice,' ',$('<span>').text(r.data.name)).appendTo(list);}
+       choice.prop('checked',true);input.val('');search.val('');refresh();filter();status.text('Valeur créée et sélectionnée.');
+     }).fail(xhr=>status.text(xhr.responseJSON?.data||'Impossible de créer cette valeur. Réessaie.')).always(()=>button.prop('disabled',false));
+   });
+   refresh();filter();
+ });
+});

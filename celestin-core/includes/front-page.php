@@ -42,9 +42,9 @@ $hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_si
  <?php if($options['hero_button']): ?><a class="cel-button cel-primary" href="<?php echo esc_url($options['hero_link']?:'#cel-decouvrir'); ?>"><?php echo esc_html($options['hero_button']); ?> <span aria-hidden="true">→</span></a><?php endif; ?>
  </div>
  
-<svg class="cel-hero-wave cel-news-transition" viewBox="0 0 1440 200" preserveAspectRatio="none" aria-hidden="true"><path style="fill:#e98932!important" d="M0 200V194C220 194 355 190 450 160C429 114 425 48 444 16Q451 4 466 10C531 31 590 87 638 139L664 131Q643 114 652 108Q670 101 700 118Q677 95 690 91Q708 86 738 105Q722 82 736 84C761 89 781 115 818 131C870 76 935 27 982 10Q997 4 1004 16C1023 48 1019 114 998 160C1093 190 1220 194 1440 194V200Z"/></svg>
+
 </section>
-<div class="cel-news-band"><section id="cel-decouvrir" class="cel-section cel-news<?php echo $news ? ' cel-news-has-items' : ''; ?>" aria-labelledby="cel-news-h">
+<div class="cel-news-band"><div aria-hidden="true" class="cel-fox-divider" style="position:absolute;bottom:calc(100% - 2px);left:50%;transform:translateX(-50%);width:min(52vw,800px);aspect-ratio:4/1;z-index:20;pointer-events:none;background:#e98932;clip-path:polygon(0% 100%,8% 94%,14% 82%,12% 57%,11% 30%,12% 10%,14% 3%,17% 4%,25% 15%,33% 33%,40% 57%,43% 54%,40% 42%,44% 43%,48% 49%,45% 32%,49% 35%,54% 46%,52% 25%,57% 34%,62% 49%,65% 54%,73% 30%,81% 12%,88% 3%,91% 4%,93% 12%,94% 33%,93% 58%,90% 82%,95% 94%,100% 100%);"></div><section id="cel-decouvrir" class="cel-section cel-news<?php echo $news ? ' cel-news-has-items' : ''; ?>" aria-labelledby="cel-news-h">
   <h2 id="cel-news-h" class="screen-reader-text">Les nouveautés</h2>
   <?php if($news): ?>
   <div class="cel-news-carousel" aria-label="Carrousel des nouveautés"><div class="cel-cards cel-news-track" tabindex="0">

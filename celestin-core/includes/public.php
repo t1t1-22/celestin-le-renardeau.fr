@@ -17,14 +17,14 @@ final class Celestin_Public {
         return $default;
     }
     static function assets(): void {
-        if(!is_singular(self::TYPES) && !is_post_type_archive(self::TYPES) && !is_tax(array_values(Celestin_Library::TAX)))return;
-        wp_enqueue_style('celestin-home',plugins_url('../assets/home.css',__FILE__),[],'0.4.48');
-        wp_enqueue_style('cel-content',plugins_url('../assets/content.css',__FILE__),['celestin-home'],'0.4.48');
-        if(is_singular('cel_livre')){
+        if(!is_front_page() && !is_singular(self::TYPES) && !is_post_type_archive(self::TYPES) && !is_tax(array_values(Celestin_Library::TAX)))return;
+        wp_enqueue_style('celestin-home',plugins_url('../assets/home.css',__FILE__),[],'0.4.49');
+        wp_enqueue_style('cel-content',plugins_url('../assets/content.css',__FILE__),['celestin-home'],'0.4.49');
+        if(is_front_page()||is_singular('cel_livre')){
             wp_enqueue_script('cel-pdfjs','https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',[],'3.11.174',true);
-            wp_enqueue_script('cel-reader',plugins_url('../assets/reader.js',__FILE__),['cel-pdfjs'],'0.4.4',true);
+            wp_enqueue_script('cel-reader',plugins_url('../assets/reader.js',__FILE__),['cel-pdfjs'],'0.4.49',true);
         }
-        if(is_singular('cel_histoire'))wp_enqueue_script('cel-story',plugins_url('../assets/story.js',__FILE__),[],'0.4.48',true);
+        if(is_singular('cel_histoire'))wp_enqueue_script('cel-story',plugins_url('../assets/story.js',__FILE__),[],'0.4.49',true);
     }
     static function title(string $type): string {
         return ['cel_personnage'=>'Les personnages','cel_livre'=>'Les livres','cel_histoire'=>'Mini-histoires audio','cel_coloriage'=>'Mes petites activités','cel_lieu'=>'Les lieux de Fleuriville'][$type]??'Découvertes';
@@ -91,6 +91,10 @@ final class Celestin_Public {
         echo self::related($id,'cel_livre','Les livres où je suis présent');
         echo self::related($id,'cel_histoire','Mes mini-histoires');
     }
+    static function reader(string $pdf,bool $compact=false): void {
+        echo '<section class="cel-reader-section'.($compact?' cel-reader-compact':'').'" aria-label="Visionneuse du livre"><div class="cel-book-reader" data-pdf="'.esc_url($pdf).'"><div class="cel-reader-layout">'.($compact?'':'<div class="cel-reader-thumbs" aria-label="Miniatures des pages"></div>').'<div class="cel-reader-center"><div class="cel-reader-viewport"><div class="cel-reader-spread"><canvas class="cel-reader-left" aria-label="Page de gauche"></canvas><canvas class="cel-reader-right" aria-label="Page de droite"></canvas><canvas class="cel-reader-flip" aria-hidden="true"></canvas></div></div></div></div>';
+            echo '<div class="cel-reader-controls"><button type="button" class="cel-reader-prev" aria-label="Page précédente">❮</button><span class="cel-reader-counter">Chargement…</span><input class="cel-reader-progress" type="range" min="1" max="1" value="1" aria-label="Aller à une page"><button type="button" class="cel-reader-next" aria-label="Page suivante">❯</button><button type="button" class="cel-reader-zoom-out" aria-label="Dézoomer">−</button><button type="button" class="cel-reader-zoom-in" aria-label="Zoomer">+</button><button type="button" class="cel-reader-full" aria-label="Plein écran">⛶</button></div><p class="cel-reader-error" hidden></p><a class="cel-reader-fallback" href="'.esc_url($pdf).'" target="_blank" rel="noopener">Ouvrir le PDF</a></div></section>';
+    }
     static function book(int $id): void {
         $pdf=Celestin_Fields::value($id,'pdf');
         $resume=Celestin_Fields::value($id,'resume');
@@ -113,8 +117,7 @@ final class Celestin_Public {
         echo '</ul></aside>';}
         echo '</div>';
         if($pdf){
-            echo '<section class="cel-reader-section" aria-label="Visionneuse du livre"><div class="cel-book-reader" data-pdf="'.esc_url($pdf).'"><div class="cel-reader-layout"><div class="cel-reader-thumbs" aria-label="Miniatures des pages"></div><div class="cel-reader-center"><div class="cel-reader-viewport"><div class="cel-reader-spread"><canvas class="cel-reader-left" aria-label="Page de gauche"></canvas><canvas class="cel-reader-right" aria-label="Page de droite"></canvas><canvas class="cel-reader-flip" aria-hidden="true"></canvas></div></div></div></div>';
-            echo '<div class="cel-reader-controls"><button type="button" class="cel-reader-prev" aria-label="Page précédente">❮</button><span class="cel-reader-counter">Chargement…</span><input class="cel-reader-progress" type="range" min="1" max="1" value="1" aria-label="Aller à une page"><button type="button" class="cel-reader-next" aria-label="Page suivante">❯</button><button type="button" class="cel-reader-zoom-out" aria-label="Dézoomer">−</button><button type="button" class="cel-reader-zoom-in" aria-label="Zoomer">+</button><button type="button" class="cel-reader-full" aria-label="Plein écran">⛶</button></div><p class="cel-reader-error" hidden></p><a class="cel-reader-fallback" href="'.esc_url($pdf).'" target="_blank" rel="noopener">Ouvrir le PDF</a></div></section>';
+            self::reader($pdf);
         }else echo '<p class="cel-empty-info">Ce livre sera bientôt disponible à la lecture.</p>';
 
         echo self::related($id,'cel_coloriage','Les activités de ce livre');

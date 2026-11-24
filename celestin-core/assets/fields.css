@@ -41,3 +41,17 @@
 .cel-book-savebar .cel-book-save-action,.cel-book-savebar .cel-book-publish-action{background:#e98932;color:white;border-color:#d47b29}
 .cel-book-savebar button:disabled{opacity:.55;cursor:wait}
 @media(max-width:782px){.cel-book-savebar{top:46px}.cel-book-identity-header{grid-template-columns:120px minmax(0,1fr);gap:12px}.cel-book-title-slot #title{font-size:19px}.cel-book-save-label{width:100%}}
+
+.cel-tax-picker{border:1px solid #ead9c5;border-radius:12px;padding:16px;background:#fffdfa;align-self:start}
+.cel-tax-selected{display:flex;flex-wrap:wrap;gap:6px;min-height:30px;margin:8px 0}
+.cel-tax-chip{background:#ffedd6;border:1px solid #e7bc89;color:#74421f;border-radius:18px;padding:5px 10px;cursor:pointer;font-weight:600}
+.cel-tax-details{border:1px solid #e9d5bd;border-radius:9px;padding:9px;background:white}
+.cel-tax-details summary{cursor:pointer;color:#74421f;font-weight:600;padding:5px}
+.cel-tax-count{font-weight:400;color:#87694b}
+.cel-tax-details .cel-lib-choices{display:flex;flex-direction:column;flex-wrap:nowrap;max-height:205px;overflow:auto;gap:3px}
+.cel-tax-details .cel-lib-choices label{flex-shrink:0;background:#fff;border:0;margin:0;padding:8px}
+.cel-tax-details .cel-lib-choices label:hover{background:#fff2de}
+.cel-tax-create{display:flex;gap:8px;margin-top:12px}
+.cel-tax-create input{flex:1;min-width:0}
+.cel-tax-create .button{background:#e98932;color:white;border-color:#d47b29}
+.cel-tax-status{margin:5px 0;color:#80532b;font-size:12px}

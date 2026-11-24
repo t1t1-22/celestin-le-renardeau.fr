@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Célestin Core
  * Description: Gestion des contenus de l'univers Célestin le renardeau.
- * Version: 0.4.2
+ * Version: 0.4.3
  * Requires PHP: 8.0
  * Text Domain: celestin-core
  */
@@ -146,7 +146,7 @@ final class Celestin_Core {
         return (string)ob_get_clean();
     }
     static function styles(): void {
-        wp_register_style('celestin-core', false, [], '0.4.2');
+        wp_register_style('celestin-core', false, [], '0.4.3');
         wp_enqueue_style('celestin-core');
         wp_add_inline_style('celestin-core', '.celestin-news{max-width:1140px;margin:3rem auto;padding:0 1rem}.celestin-news-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.5rem}.celestin-news-card{overflow:hidden;border-radius:18px;background:white;box-shadow:0 8px 24px #54371816}.celestin-news-card img{width:100%;aspect-ratio:4/3;object-fit:contain}.celestin-news-card h3,.celestin-news-card p{padding:0 1rem}.celestin-news-card a{color:inherit;text-decoration:none}@media(max-width:700px){.celestin-news-grid{grid-template-columns:1fr}}');
     }

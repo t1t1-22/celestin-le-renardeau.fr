@@ -3,8 +3,7 @@ $p=get_queried_object();if(!$p instanceof WP_Post)exit;
 $type=$p->post_type;
 ?><!DOCTYPE html><html <?php language_attributes(); ?>><head><meta charset="<?php bloginfo('charset'); ?>"><meta name="viewport" content="width=device-width,initial-scale=1"><?php wp_head(); ?></head>
 <body <?php body_class('cel-content-page'); ?>><?php wp_body_open(); ?>
-<header class="cel-content-header"><a class="cel-logo" href="<?php echo esc_url(home_url('/')); ?>"><?php if(Celestin_Home::image('logo'))echo '<img src="'.esc_url(Celestin_Home::image('logo')).'" alt="Célestin le renardeau">';else echo '<span class="cel-script">Célestin<small>le renardeau</small></span>'; ?></a></header>
-<?php require __DIR__.'/navigation.php'; ?>
+<?php require __DIR__.'/interior-header.php'; ?>
 <main class="cel-content-container <?php echo $type==='cel_livre'?'cel-book-detail':''; ?>">
   <?php if($type==='cel_livre'): ?><p class="cel-breadcrumb"><a href="<?php echo esc_url(home_url('/')); ?>">Accueil</a> › <a href="<?php echo esc_url(get_post_type_archive_link($type)); ?>">Les livres</a> › <?php echo esc_html(get_the_title($p)); ?></p><?php else: ?>
   <p class="cel-kicker"><?php echo esc_html(Celestin_Public::title($type)); ?></p>

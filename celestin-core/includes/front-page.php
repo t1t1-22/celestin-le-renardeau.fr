@@ -32,12 +32,18 @@ $links=[
   <a class="cel-button cel-header-cta" href="#cel-decouvrir">Rejoins l’aventure ! <span aria-hidden="true">→</span></a>
 </header>
 <main id="cel-main">
-<section class="cel-hero" aria-labelledby="cel-hero-title">
+<?php
+$hero_below=($options['hero_text_location']??'overlay')==='below';
+$hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_size'])).'px;--cel-hero-text-size:'.max(12,min(32,(int)$options['hero_text_size'])).'px;--cel-hero-x:'.max(0,min(100,(int)$options['hero_x'])).'%;--cel-hero-y:'.max(0,min(100,(int)$options['hero_y'])).'%;--cel-hero-width:'.max(240,min(1100,(int)$options['hero_width'])).'px;';
+?>
+<section class="cel-hero <?php echo $hero_below?'cel-hero-below':'cel-hero-overlay'; ?>" aria-labelledby="cel-hero-title" style="<?php echo esc_attr($hero_style); ?>">
+ <div class="cel-hero-picture">
  <?php if(Celestin_Home::image('hero')) echo '<img class="cel-hero-art" src="'.esc_url(Celestin_Home::image('hero')).'" alt="L’univers illustré de Célestin et de Fleuriville" fetchpriority="high">'; ?>
+ </div>
  <div class="cel-hero-copy">
- <p class="cel-eyebrow"><?php echo esc_html($options['hero_intro']); ?></p>
- <h1 id="cel-hero-title"><?php echo esc_html($options['headline']); ?><i>✦</i></h1>
- <p><?php echo nl2br(esc_html($options['hero_description'])); ?></p>
+ <?php if($options['hero_intro']!==''): ?><p class="cel-eyebrow"><?php echo esc_html($options['hero_intro']); ?></p><?php endif; ?>
+ <h1 id="cel-hero-title"><?php echo nl2br(esc_html($options['headline'])); ?></h1>
+ <?php if($options['hero_description']!==''): ?><p class="cel-hero-description"><?php echo nl2br(esc_html($options['hero_description'])); ?></p><?php endif; ?>
  <?php if($options['hero_button']): ?><a class="cel-button cel-primary" href="<?php echo esc_url($options['hero_link']?:'#cel-decouvrir'); ?>"><?php echo esc_html($options['hero_button']); ?> <span aria-hidden="true">→</span></a><?php endif; ?>
  </div>
 </section>

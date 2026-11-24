@@ -123,26 +123,15 @@ $hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_si
  ?>
  <div class="cel-books-layout">
    <div class="cel-book-preview">
-     <div class="cel-book-spread">
-       <div class="cel-book-page">
-         <?php if($book_image): ?><img src="<?php echo esc_url($book_image); ?>" alt="<?php echo esc_attr('Couverture de '.$book->post_title); ?>" loading="lazy"><?php else: ?><span aria-hidden="true">✦</span><?php endif; ?>
-       </div>
-       <div class="cel-book-page"><div class="cel-book-text"><?php echo esc_html(wp_trim_words($book_resume ?: $book->post_title,22,'…')); ?></div><span aria-hidden="true" class="cel-book-flower">✿</span></div>
-     </div>
-     <a class="cel-button cel-book-read" href="<?php echo esc_url(get_permalink($book)); ?>">Découvrir ce livre →</a>
+     <?php $pdf=Celestin_Fields::value($book->ID,'pdf'); if($pdf): Celestin_Public::reader($pdf,true); else: ?>
+     <a href="<?php echo esc_url(get_permalink($book)); ?>"><?php echo Celestin_Public::illustration($book->ID); ?></a>
+     <?php endif; ?>
    </div>
    <div class="cel-book-description">
-    <h3><?php echo esc_html($book->post_title); ?></h3>
-    <?php if($book_resume): ?><p><?php echo nl2br(esc_html($book_resume)); ?></p><?php endif; ?>
-    <?php if($book_month || $book_collection): ?><div class="cel-chips"><?php if($book_month): ?><span>📅 <?php echo esc_html($book_month); ?></span><?php endif; ?><?php if($book_collection): ?><span>📖 <?php echo esc_html($book_collection); ?></span><?php endif; ?></div><?php endif; ?>
-    <?php if($book_activities): ?>
-    <div class="cel-home-associated"><strong>Les activités de ce livre</strong>
-      <?php foreach(array_slice($book_activities,0,3) as $related): ?>
-        <a href="<?php echo esc_url(get_permalink($related)); ?>"><?php echo esc_html($related->post_title); ?> →</a>
-      <?php endforeach; ?>
-    </div>
-    <?php endif; ?>
-    <a class="cel-text-link" href="<?php echo esc_url(Celestin_Home::url('cel_livre')); ?>">Voir tous les livres →</a>
+    <h3><a href="<?php echo esc_url(get_permalink($book)); ?>"><?php echo esc_html($book->post_title); ?></a></h3>
+    <?php if($book_resume): ?><div class="cel-home-book-summary"><?php echo wpautop(esc_html($book_resume)); ?></div><?php endif; ?>
+    <div class="cel-chips"><?php foreach(['categorie','collection','mois','saison','age_lecture','evenement'] as $key): $value=Celestin_Fields::value($book->ID,$key); if($value): ?><span><?php echo esc_html($value); ?></span><?php endif; endforeach; ?></div>
+    <a class="cel-button cel-primary cel-home-book-all" href="<?php echo esc_url(Celestin_Home::url('cel_livre')); ?>">Découvrir tous les livres →</a>
    </div>
  </div>
  <?php else: ?><p class="cel-home-empty">Sélectionne un livre depuis sa fiche WordPress pour l’afficher ici.</p><?php endif; ?>

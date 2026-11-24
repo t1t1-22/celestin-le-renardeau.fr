@@ -12,6 +12,7 @@ final class Celestin_Public {
         add_action('wp_enqueue_scripts',[__CLASS__,'assets']);
     }
     static function template(string $default): string {
+        if(is_page(['origine','origines','les-origines-de-celestin','origine-de-celestin'])&&!is_preview())return __DIR__.'/origin-page.php';
         if(is_singular(self::TYPES))return __DIR__.'/single-content.php';
         if(is_tax(array_values(Celestin_Library::TAX))||is_post_type_archive(self::TYPES))return __DIR__.'/archive-content.php';
         if(!is_feed()&&!is_embed()&&!is_preview()&&(is_page()||is_singular('post')||is_search()||is_404()||is_archive()||is_home()))return __DIR__.'/general-page.php';

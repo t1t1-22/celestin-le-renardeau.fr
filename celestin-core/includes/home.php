@@ -43,7 +43,7 @@ final class Celestin_Home {
         add_submenu_page('celestin-core','Apparence du site','Apparence du site','manage_options','celestin-design',[__CLASS__,'settings']);
     }
     static function admin_assets($hook): void {
-        if ($hook !== 'celestin-core_page_celestin-design') return;
+        if (sanitize_key($_GET['page'] ?? '') !== 'celestin-design' || !current_user_can('manage_options')) return;
         wp_enqueue_media();
         wp_enqueue_script('celestin-media', plugins_url('../assets/admin.js',__FILE__), ['jquery'], '0.4.83', true);
         wp_enqueue_style('celestin-admin', plugins_url('../assets/admin.css',__FILE__), [], '0.4.83');

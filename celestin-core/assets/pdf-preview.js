@@ -12,7 +12,7 @@ jQuery(function($){
    pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
    task=pdfjsLib.getDocument({url,isEvalSupported:false});doc=await task.promise;
    if(token!==generation)return;
-   const pdf=doc;status.text(pdf.numPages+' pages — vérifie la couverture, les pages intérieures et la quatrième de couverture.');
+   const pdf=doc;$('#cel_f_nombre_pages').val(pdf.numPages);status.text(pdf.numPages+' pages — vérifie la couverture, les pages intérieures et la quatrième de couverture.');
    for(let n=1;n<=pdf.numPages;n++){
     if(token!==generation)return;
     const label=n===1?'Première de couverture':n===pdf.numPages?'Quatrième de couverture':'Page '+n;

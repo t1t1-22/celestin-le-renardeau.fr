@@ -377,7 +377,7 @@ body .cel-interior-header-inner>.cel-social-links:empty{display:none}
 @media(max-width:600px){body .cel-interior-header-inner>.cel-nav-search input{width:100px}body .cel-interior-header-inner>.cel-nav-search button svg{width:20px;height:20px}}
 
 body .cel-interior-header{padding-top:0!important}
-body .cel-contact-bar{background:#f5bf68;margin:0 calc(-1 * clamp(24px,4vw,80px)) 10px;color:#633619}
+body .cel-contact-bar{background:#e98932;margin:0 calc(-1 * clamp(24px,4vw,80px)) 10px;color:#633619}
 body .cel-contact-inner{display:flex;align-items:center;justify-content:flex-end;gap:15px;max-width:1600px;margin:auto;padding:5px clamp(24px,4vw,80px);min-height:30px;box-sizing:border-box}
 body .cel-contact-email{font:600 12px/1.4 Nunito,sans-serif;color:#633619!important;text-decoration:none}
 body .cel-contact-email:hover{text-decoration:underline}

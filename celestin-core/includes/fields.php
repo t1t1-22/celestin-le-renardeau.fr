@@ -120,10 +120,10 @@ final class Celestin_Fields {
 .post-type-cel_coloriage .cel-form-panel[data-panel=principal]>.cel-field-grid:empty{display:none}
 .post-type-cel_coloriage .cel-activity-layout{margin-top:10px}
 
-.post-type-cel_coloriage .cel-activity-layout{display:grid;grid-template-columns:minmax(210px, .7fr) minmax(0,1.7fr);gap:24px;align-items:start}
+.post-type-cel_coloriage .cel-activity-layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:24px;align-items:start}
 .post-type-cel_coloriage .cel-activity-layout .cel-section-image{margin:0;background:#fff8ed;padding:16px}
 .post-type-cel_coloriage .cel-activity-layout .cel-section-image-preview{width:100%;max-width:100%;height:auto;max-height:300px;box-sizing:border-box}
-.post-type-cel_coloriage .cel-activity-images{display:grid;gap:16px}
+.post-type-cel_coloriage .cel-activity-images{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:stretch}.post-type-cel_coloriage .cel-activity-images .cel-section-image{min-width:0;display:flex;flex-direction:column;gap:6px}.post-type-cel_coloriage .cel-activity-images .cel-section-image-actions{margin-top:auto}.post-type-cel_coloriage .cel-activity-images .cel-section-image-preview[src=""]{display:none!important}.post-type-cel_coloriage .cel-activity-images .cel-section-image:has(.cel-section-image-preview[src=""])::before{content:"Aucune image sélectionnée";display:grid;place-items:center;min-height:140px;border:1px dashed #d9ba94;border-radius:10px;background:#fffdfa;color:#94603c;font-size:12px;order:0}.post-type-cel_coloriage .cel-activity-images .cel-section-image h4{order:-2}.post-type-cel_coloriage .cel-activity-images .cel-section-image .description{order:-1}@media(max-width:600px){.post-type-cel_coloriage .cel-activity-images{grid-template-columns:1fr}}
 .post-type-cel_coloriage .cel-activity-content{display:grid;gap:18px}
 .post-type-cel_coloriage .cel-activity-content .cel-field-grid{grid-template-columns:1fr}
 .post-type-cel_coloriage .cel-activity-content .cel-field{padding:14px 16px;border:1px solid #ead9c5;border-radius:12px;background:#fffdfa}

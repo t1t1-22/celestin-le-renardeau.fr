@@ -16,7 +16,7 @@ $items=[
 ];
 ?><nav class="cel-nav cel-nav-illustrated" aria-label="Navigation principale">
 <?php foreach($items as [$label,$url,$icon,$active]): ?>
-<a href="<?php echo esc_url($url); ?>" <?php if($active)echo 'class="is-active" aria-current="page"'; ?>><svg viewBox="0 0 32 32" aria-hidden="true"><?php echo $icons[$icon]; ?></svg><span><?php echo esc_html($label); ?></span></a>
+<a href="<?php echo esc_url($url); ?>" <?php if($active)echo 'class="is-active" aria-current="page"'; ?>><span><?php echo esc_html($label); ?></span></a>
 <?php endforeach; ?>
 <form action="<?php echo esc_url(home_url('/')); ?>" method="get" class="cel-nav-search"><input type="search" name="s" aria-label="Rechercher sur le site" placeholder="Rechercher" required><button aria-label="Rechercher" type="submit"><svg viewBox="0 0 32 32" aria-hidden="true"><?php echo $icons['search']; ?></svg></button></form>
 </nav>

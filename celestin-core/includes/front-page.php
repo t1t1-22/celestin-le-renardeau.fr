@@ -82,7 +82,7 @@ $hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_si
  <p class="cel-audio-intro">Installe-toi confortablement et laisse-toi raconter une histoire.</p>
  <div class="cel-audio-grid">
  <?php foreach($stories as $story):
- $title=get_the_title($story);$mp3=Celestin_Fields::value($story->ID,'audio')?:get_post_meta($story->ID,'_cel_story_mp3',true);
+ $title=get_the_title($story);$mp3=Celestin_Fields::value($story->ID,'resume_audio');
  $terms=get_the_terms($story->ID,Celestin_Library::TAX['categorie']);$theme=($terms&&!is_wp_error($terms))?$terms[0]->name:'';
  ?>
  <article class="cel-audio-card">
@@ -93,7 +93,7 @@ $hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_si
  <?php if($theme): ?><span class="cel-audio-theme"><?php echo esc_html($theme); ?></span><?php endif; ?>
  <?php if($mp3): ?>
  <audio preload="none" src="<?php echo esc_url($mp3); ?>"></audio>
- <button type="button" class="cel-audio-toggle" aria-label="<?php echo esc_attr('Écouter '.$title); ?>" data-title="<?php echo esc_attr($title); ?>" aria-pressed="false">
+ <button type="button" class="cel-audio-toggle" aria-label="<?php echo esc_attr('Écouter le résumé de '.$title); ?>" data-title="<?php echo esc_attr('le résumé de '.$title); ?>" aria-pressed="false">
  <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="30" fill="#fffaf3"/><circle cx="32" cy="32" r="26" fill="none" stroke="#e9d3bb" stroke-width="4"/><circle class="cel-audio-ring" cx="32" cy="32" r="26" fill="none" stroke="#e98932" stroke-width="4" pathLength="100" stroke-dasharray="0 100" stroke-linecap="round" transform="rotate(-90 32 32)"/><path class="cel-audio-play" d="M25 20L44 32L25 44Z" fill="#a45b2c"/><rect class="cel-audio-stop" x="23" y="23" width="18" height="18" rx="3" fill="#a45b2c"/></svg>
  </button><span class="cel-audio-error" role="status" hidden>Audio indisponible.</span>
  <?php endif; ?>

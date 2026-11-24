@@ -64,3 +64,5 @@ body.cel-content-page .cel-content-container h2{font-size:clamp(20px,2.2vw,27px)
 body.cel-content-page .cel-archive-description h2{font-size:20px}
 
 .cel-listen.cel-listen-preview{background:#f6e0d3;border:1px solid #ead0bd;margin:16px 0 20px;padding:16px;border-radius:15px}.cel-listen-preview audio{width:100%}.cel-listen-preview h2{margin:0 0 6px}.cel-listen-preview p{margin:0 0 10px}
+
+.cel-reader-compact .cel-reader-layout{display:block;grid-template-columns:1fr}.cel-reader-compact .cel-book-reader{background:transparent;padding:0;border-radius:0}.cel-reader-compact .cel-reader-controls{margin:8px 0;gap:5px;justify-content:center}.cel-reader-compact .cel-reader-controls button{font-size:16px;min-width:32px;padding:5px 9px}.cel-reader-compact .cel-reader-counter{font-size:12px}.cel-reader-compact .cel-reader-progress{max-width:120px}.cel-reader-compact .cel-reader-spread{min-height:0}.cel-reader-compact:fullscreen{background:#fcf7ef;padding:20px;overflow:auto}.cel-reader-compact:fullscreen .cel-reader-spread{max-width:calc((100vh - 140px)*2)}

@@ -77,7 +77,7 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
  </div>
 </div>
 <?php endforeach; ?>
-<?php if(count($news)>1): ?><div class="cel-feature-pagination" aria-label="Choisir une nouveauté"><?php foreach($news as $idx=>$item): ?><button type="button" data-slide="<?php echo esc_attr($idx); ?>" aria-label="<?php echo esc_attr(get_the_title($item)); ?>" aria-current="<?php echo $idx===0?'true':'false'; ?>"></button><?php endforeach; ?><button type="button" class="cel-feature-pause" aria-label="Mettre le défilement en pause">Ⅱ</button></div><?php endif; ?>
+<?php if(count($news)>1): ?><div class="cel-feature-pagination" aria-label="Choisir une nouveauté"><?php foreach($news as $idx=>$item): ?><button type="button" data-slide="<?php echo esc_attr($idx); ?>" aria-label="<?php echo esc_attr(get_the_title($item)); ?>" aria-current="<?php echo $idx===0?'true':'false'; ?>"></button><?php endforeach; ?></div><?php endif; ?>
 </section>
 <?php else: ?>
 <section class="cel-hero <?php echo $hero_below?'cel-hero-below':'cel-hero-overlay'; ?>" aria-labelledby="cel-hero-title" style="<?php echo esc_attr($hero_style); ?>">

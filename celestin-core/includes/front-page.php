@@ -193,6 +193,12 @@ body.cel-page .cel-audio-feature .cel-audio-grid>.cel-audio-card:hover,body.cel-
 body.cel-page .cel-audio-feature .cel-audio-toggle[aria-pressed="true"]{animation:none!important}
 
 body.cel-page .cel-audio-feature .cel-section-title{font:700 clamp(29px,3vw,40px)/1.12 'Baloo 2',sans-serif!important;color:#fff!important}
+
+.cel-identity-stack{overflow:visible;isolation:isolate}
+.cel-identity-card{transform-origin:50% 55%;will-change:transform}
+.cel-identity-card:nth-child(2){transform:translate(9px,9px) rotate(2.5deg)}
+.cel-identity-card:nth-child(3){transform:translate(17px,17px) rotate(4.5deg)}
+@media(prefers-reduced-motion:reduce){.cel-identity-card{will-change:auto}}
 </style>
 
 </head>
@@ -444,11 +450,38 @@ document.querySelectorAll('[data-cel-deck]').forEach(deck=>{
  const stack=deck.querySelector('.cel-identity-stack'), counter=deck.querySelector('[data-deck-count]');
  const original=Array.from(stack.children);let busy=false;
  function refresh(){Array.from(stack.children).forEach((card,i)=>{card.inert=i!==0;if(i)card.setAttribute('aria-hidden','true');else card.removeAttribute('aria-hidden')});if(counter)counter.textContent=(original.indexOf(stack.firstElementChild)+1)+' / '+original.length;}
- async function turn(direction){if(busy||original.length<2)return;busy=true;const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
- const front=stack.firstElementChild;
- try{if(direction>0){if(!reduced&&front.animate)await front.animate([{transform:'translate(0,0)'},{transform:'translate(-38%, 3%) rotate(-12deg)',offset:.48},{transform:'translate(-38%, 12%) rotate(-12deg)',opacity:.25}],{duration:340,easing:'ease-in-out'}).finished;stack.append(front);}
- else{const last=stack.lastElementChild;stack.prepend(last);if(!reduced&&last.animate)await last.animate([{transform:'translate(-38%, 12%) rotate(-12deg)',opacity:.25},{transform:'translate(0,0)',opacity:1}],{duration:340,easing:'ease-out'}).finished;}
- }finally{refresh();busy=false;}}
+ async function turn(direction){
+  if(busy||original.length<2)return;busy=true;
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const front=stack.firstElementChild,last=stack.lastElementChild;
+  const animate=async(card,frames,options)=>{if(!reduced&&card.animate){const anim=card.animate(frames,options);try{await anim.finished}catch(e){}finally{anim.cancel()}}};
+  const next=front.nextElementSibling;
+  try{
+   if(direction>0){
+    if(!reduced&&front.animate){
+     // La carte sort latéralement, passe derrière les autres puis rentre dans la pile.
+     front.style.zIndex='5';
+     await animate(front,[{transform:'translate(0,0) rotate(0deg)'},{transform:'translate(-55%, -5%) rotate(-12deg)'}],{duration:310,easing:'cubic-bezier(.35,0,.25,1)'});
+     const backTransform=original.length===2?'translate(8px,8px) rotate(2deg)':'translate(15px,15px) rotate(4deg)';
+     front.style.zIndex='0';front.style.transform='translate(-55%, -5%) rotate(-12deg)';
+     stack.append(front);front.style.opacity='1';next.style.zIndex='3';
+     await Promise.all([
+      animate(front,[{transform:'translate(-55%, -5%) rotate(-12deg)',opacity:1},{transform:backTransform,opacity:1}],{duration:340,easing:'cubic-bezier(.2,.7,.2,1)'}),
+      animate(next,[{transform:'translate(8px,8px) rotate(2deg)'},{transform:'translate(0,0) rotate(0deg)'}],{duration:340,easing:'ease-out'})
+     ]);
+    }else stack.append(front);
+   }else{
+    if(!reduced&&last.animate){
+     last.style.zIndex='1';last.style.opacity='1';
+     await animate(last,[{transform:original.length===2?'translate(8px,8px) rotate(2deg)':'translate(15px,15px) rotate(4deg)'},{transform:'translate(-55%, -5%) rotate(-12deg)'}],{duration:310,easing:'ease-in-out'});
+     stack.prepend(last);last.style.zIndex='5';last.style.transform='translate(-55%, -5%) rotate(-12deg)';
+     await animate(last,[{transform:'translate(-55%, -5%) rotate(-12deg)'},{transform:'translate(0,0) rotate(0deg)'}],{duration:340,easing:'ease-out'});
+    }else stack.prepend(last);
+   }
+  }finally{
+   original.forEach(card=>{card.style.removeProperty('z-index');card.style.removeProperty('transform');card.style.removeProperty('opacity')});refresh();busy=false;
+  }
+ }
  deck.querySelector('[data-deck-next]')?.addEventListener('click',()=>turn(1));deck.querySelector('[data-deck-prev]')?.addEventListener('click',()=>turn(-1));refresh();
 });
 </script>

@@ -375,3 +375,14 @@ body .cel-interior-header-inner>.cel-social-links:empty{display:none}
 @media(min-width:1251px){body .cel-interior-header .cel-interior-header-inner{max-width:1600px;gap:16px}body .cel-interior-header nav.cel-nav.cel-nav-illustrated{flex:1 1 auto;min-width:0}}
 @media(max-width:1250px){body .cel-interior-header-inner>.cel-nav-search{order:2;margin-left:auto}body .cel-interior-header-inner>.cel-social-links{order:1;margin-left:auto}body .cel-interior-header-inner>.cel-social-links:not(:empty)+.cel-nav-search{margin-left:0}}
 @media(max-width:600px){body .cel-interior-header-inner>.cel-nav-search input{width:100px}body .cel-interior-header-inner>.cel-nav-search button svg{width:20px;height:20px}}
+
+body .cel-interior-header{padding-top:0!important}
+body .cel-contact-bar{background:#f5bf68;margin:0 calc(-1 * clamp(24px,4vw,80px)) 10px;color:#633619}
+body .cel-contact-inner{display:flex;align-items:center;justify-content:flex-end;gap:15px;max-width:1600px;margin:auto;padding:5px clamp(24px,4vw,80px);min-height:30px;box-sizing:border-box}
+body .cel-contact-email{font:600 12px/1.4 Nunito,sans-serif;color:#633619!important;text-decoration:none}
+body .cel-contact-email:hover{text-decoration:underline}
+body .cel-contact-bar .cel-social-links{margin:0;gap:7px}
+body .cel-contact-bar .cel-social-links a{background:transparent;width:24px;height:24px;color:#633619}
+body .cel-contact-bar .cel-social-links a:hover{background:#633619;color:white}
+body .cel-contact-bar .cel-social-links svg{width:16px;height:16px}
+@media(max-width:600px){body .cel-contact-bar{margin-inline:-16px}body .cel-contact-inner{padding-inline:16px;justify-content:center;flex-wrap:wrap;gap:8px}}

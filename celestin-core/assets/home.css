@@ -431,3 +431,10 @@ body.cel-page .cel-news-band .cel-news-silhouette::after{content:"";position:abs
 body.cel-page .cel-news-band .cel-news{position:relative;z-index:1;margin-top:0!important;background:transparent!important}
 body.cel-page .cel-news-band .cel-news-carousel,body.cel-page .cel-news-band .cel-news-track{background:transparent!important}
 body.cel-page .cel-news-band .cel-news-empty{color:white}
+
+/* Séparateur comme celui des mini-histoires : découpe orange sur le bas du slide. */
+body.cel-page .cel-site .cel-news-band{background:#e98932!important;position:relative;overflow:visible!important;padding:8px 0 30px!important;margin:0!important}
+body.cel-page .cel-news-band>.cel-news-transition{position:absolute;left:0;right:0;bottom:calc(100% - 1px);width:100%!important;height:clamp(100px,13.889vw,200px)!important;max-width:none!important;max-height:none!important;display:block!important;pointer-events:none;z-index:2;overflow:visible}
+body.cel-page .cel-news-band>.cel-news-transition path{fill:#e98932!important;stroke:none!important}
+body.cel-page .cel-news-band .cel-news-silhouette{display:none!important}
+body.cel-page .cel-news-band .cel-news{margin-top:0!important}

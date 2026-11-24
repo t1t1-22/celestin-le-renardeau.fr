@@ -151,6 +151,14 @@ body.cel-page .cel-book-editorial .cel-book-more[open] .cel-book-collapse{displa
 .cel-identity-controls button{border:1px solid #dfb584;background:#fffaf0;color:#633619;border-radius:50%;width:36px;height:36px;padding:0;font-size:26px;line-height:1;cursor:pointer}
 .cel-identity-controls button:hover{background:#e98932;color:white}
 @media(max-width:420px){.cel-identity-deck{padding-inline:0}.cel-identity-body{gap:8px;padding:10px}.cel-identity-body h3{font-size:20px}}
+
+.cel-identity-portrait{aspect-ratio:1/1}
+.cel-identity-body{grid-template-columns:minmax(0,.85fr) minmax(0,1.35fr);align-items:start}
+.cel-identity-info{min-width:0}
+.cel-identity-body .cel-identity-info h3{font-size:clamp(15px,1.35vw,23px);white-space:nowrap;letter-spacing:-.025em;margin-bottom:12px}
+.cel-identity-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cel-identity-info p{margin-bottom:8px}
+@media(max-width:480px){.cel-identity-body .cel-identity-info h3{white-space:normal;font-size:18px}}
 </style>
 
 </head>
@@ -356,8 +364,12 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
      <article class="cel-identity-card" <?php if($index)echo 'inert aria-hidden="true"'; ?>>
       <div class="cel-identity-top"><span>CARTE D’IDENTITÉ</span><span>FLEURIVILLE</span></div>
       <div class="cel-identity-body"><div class="cel-identity-portrait"><?php echo Celestin_Public::illustration($person->ID,'medium_large'); ?></div>
-      <div><h3><?php echo esc_html(get_the_title($person)); ?></h3>
-      <?php foreach(['prenom'=>'Prénom','age'=>'Âge','espece'=>'Espèce','role'=>'Rôle'] as $key=>$label): $value=Celestin_Fields::value($person->ID,$key);if($value): ?><p><strong><?php echo esc_html($label); ?></strong> <?php echo esc_html($value); ?></p><?php endif; endforeach; ?>
+      <div class="cel-identity-info">
+      <?php $name=trim(Celestin_Fields::value($person->ID,'prenom').' '.Celestin_Fields::value($person->ID,'nom')); $birthday=Celestin_Fields::value($person->ID,'anniversaire');$age=Celestin_Fields::value($person->ID,'age'); ?>
+      <h3><?php echo esc_html($name?:get_the_title($person)); ?></h3>
+      <div class="cel-identity-pair"><?php foreach(['espece'=>'Espèce','genre'=>'Genre'] as $key=>$label):$value=Celestin_Fields::value($person->ID,$key);if($value): ?><p><strong><?php echo esc_html($label); ?></strong> <?php echo esc_html($value); ?></p><?php endif;endforeach; ?></div>
+      <?php if($birthday||$age): ?><p><strong><?php echo $birthday?'Anniversaire':'Âge'; ?></strong> <?php echo esc_html($birthday); ?><?php if($age): ?><?php echo esc_html(($birthday?' (':'').$age.(preg_match('/^\d+$/u',trim($age))?' ans':'').($birthday?')':'')); ?><?php endif; ?></p><?php endif; ?>
+      <?php foreach(['role'=>'Rôle','pelage'=>'Pelage'] as $key=>$label):$value=Celestin_Fields::value($person->ID,$key);if($value): ?><p><strong><?php echo esc_html($label); ?></strong> <?php echo esc_html($value); ?></p><?php endif;endforeach; ?>
       <a class="cel-text-link" href="<?php echo esc_url(get_permalink($person)); ?>">Découvrir ma fiche →</a></div></div>
      </article>
     <?php endforeach; ?>

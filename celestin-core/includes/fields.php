@@ -87,10 +87,10 @@ final class Celestin_Fields {
         wp_enqueue_media();
         if($screen->post_type==='cel_livre'){
             wp_enqueue_script('cel-admin-pdfjs','https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',[],'3.11.174',true);
-            wp_enqueue_script('cel-pdf-preview',plugins_url('../assets/pdf-preview.js',__FILE__),['jquery','cel-admin-pdfjs'],'0.4.10',true);
+            wp_enqueue_script('cel-pdf-preview',plugins_url('../assets/pdf-preview.js',__FILE__),['jquery','cel-admin-pdfjs'],'0.4.13',true);
         }
-        wp_enqueue_style('cel-fields',plugins_url('../assets/fields.css',__FILE__),[],'0.4.10');
-        wp_enqueue_script('cel-fields',plugins_url('../assets/fields.js',__FILE__),['jquery'],'0.4.10',true);
+        wp_enqueue_style('cel-fields',plugins_url('../assets/fields.css',__FILE__),[],'0.4.13');
+        wp_enqueue_script('cel-fields',plugins_url('../assets/fields.js',__FILE__),['jquery'],'0.4.13',true);
         if($screen->post_type==='cel_personnage')wp_add_inline_style('cel-fields','#post-body-content #titlediv{display:none!important}');
     }
     static function render(WP_Post $post): void {
@@ -102,7 +102,7 @@ final class Celestin_Fields {
         $i=0;
         foreach($groups as $slug=>$group) {
           echo '<button type="button" role="tab" data-tab="'.esc_attr($slug).'" class="cel-form-tab'.(!$i?' active':'').'" aria-selected="'.(!$i?'true':'false').'">'.esc_html(array_key_first($group)).'</button>';
-          if($slug==='principal' && $post->post_type==='cel_livre')echo '<button type="button" role="tab" data-tab="categories" class="cel-form-tab" aria-selected="false">Catégories</button>';
+          if($slug==='principal' && in_array($post->post_type,['cel_livre','cel_histoire'],true))echo '<button type="button" role="tab" data-tab="categories" class="cel-form-tab" aria-selected="false">Catégories</button>';
           $i++;
         }
         if($post->post_type==='cel_personnage') echo '<button type="button" role="tab" data-tab="extras" class="cel-form-tab" aria-selected="false">Attributs personnalisés</button>';
@@ -135,7 +135,7 @@ final class Celestin_Fields {
           $i++;
         }
         if($post->post_type==='cel_personnage') self::extras($post);
-        if($post->post_type==='cel_livre')Celestin_Library::categories($post);
+        if(in_array($post->post_type,['cel_livre','cel_histoire'],true))Celestin_Library::categories($post);
         self::relations($post);
     }
     // Image dédiée à chaque onglet, sans avoir à manipuler les réglages WordPress.
@@ -206,7 +206,7 @@ final class Celestin_Fields {
               foreach($available as $item){
                 $group='Autres';
                 if($type==='cel_coloriage')$group=trim((string)get_post_meta($item->ID,'_cel_f_type',true))?:'Non classés';
-                if($type==='cel_histoire'){$terms=wp_get_object_terms($item->ID,'cel_theme_cel_histoire',['fields'=>'names']);$group=!is_wp_error($terms)&&$terms?implode(' / ',$terms):'Sans thème';}
+                if($type==='cel_histoire'){$terms=wp_get_object_terms($item->ID,Celestin_Library::TAX['categorie'],['fields'=>'names']);$group=!is_wp_error($terms)&&$terms?implode(' / ',$terms):'Sans thème';}
                 $groups[$group][]=$item;
               }
               ksort($groups,SORT_NATURAL|SORT_FLAG_CASE);

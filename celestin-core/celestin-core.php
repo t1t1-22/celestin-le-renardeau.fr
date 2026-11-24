@@ -254,8 +254,7 @@ final class Celestin_Core {
     }
     static function organize_menu(): void {
         add_menu_page('Apparence du site','Apparence du site','manage_options','cel-site-appearance',[__CLASS__,'appearance_dashboard'],'dashicons-art',5);
-        add_submenu_page('cel-site-appearance','Apparence','Apparence','manage_options','celestin-design',['Celestin_Home','settings']);
-        add_submenu_page('cel-site-appearance','Nouveautés','Nouveautés','manage_options','celestin-news',['Celestin_News','screen']);
+        add_submenu_page('cel-site-appearance','Apparence de la page d’accueil','Apparence de la page d’accueil','manage_options','celestin-design',['Celestin_Home','settings']);
         foreach(['celestin-design','cel-town','celestin-news'] as $slug)remove_submenu_page('celestin-core',$slug);
 
         add_menu_page('L’univers de Célestin','Les contenus','edit_posts','cel-universe',[__CLASS__,'universe_dashboard'],'dashicons-book-alt',3);
@@ -278,7 +277,7 @@ final class Celestin_Core {
     static function appearance_dashboard(): void {
         if(!current_user_can('manage_options'))return;
         echo '<div class="wrap"><h1 style="color:#633619;font-weight:800">Apparence du site</h1><p>Personnalise la présentation du site et les contenus mis en avant.</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px;max-width:1000px;margin-top:24px">';
-        foreach(['celestin-design'=>['Apparence','Identité, accueil et rubriques'],'celestin-news'=>['Nouveautés','Contenus du carrousel d’accueil']] as $slug=>$item){
+        foreach(['celestin-design'=>['Apparence de la page d’accueil','Identité, accueil, contenus mis en avant et nouveautés']] as $slug=>$item){
             echo '<section style="background:#fffdfa;border:1px solid #ead5bb;border-radius:16px;padding:22px;color:#633619"><h2>'.esc_html($item[0]).'</h2><p>'.esc_html($item[1]).'</p><a class="button" href="'.esc_url(admin_url('admin.php?page='.$slug)).'">Gérer</a></section>';
         }
         echo '</div></div>';

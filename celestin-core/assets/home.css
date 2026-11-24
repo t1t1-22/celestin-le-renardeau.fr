@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Courgette&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&family=Courgette&display=swap');500;600;700;800&family=Courgette&display=swap');
 :root{--cel-orange:#ee8a35;--cel-amber:#ffbf36;--cel-brown:#572a1a;--cel-cream:#fffaf3;--cel-peach:#fff0df;--cel-shadow:0 9px 24px rgba(123,67,26,.12)}
 body.cel-page{background:#fffaf4!important;margin:0!important;color:var(--cel-brown)!important;font-family:'DM Sans',system-ui,sans-serif!important}
 body.cel-page #page,body.cel-page .site{max-width:none!important}
@@ -37,3 +37,21 @@ body.cel-page #page,body.cel-page .site{max-width:none!important}
 .cel-city-image a,.cel-story-image{display:block}
 .cel-city-image a img{height:230px;width:100%;object-fit:cover}
 @media(max-width:650px){.cel-featured-activity{grid-template-columns:1fr;padding:17px}.cel-featured-activity-image img{height:190px}}
+
+/* Identité graphique validée pour le site Célestin. */
+body.cel-page{font-family:'Nunito',sans-serif!important}
+.cel-hero{width:100%;max-width:none;min-height:clamp(380px,34vw,650px);margin:0 auto;border:0;border-radius:0 0 36px 36px}
+.cel-header{max-width:none;width:100%;border-radius:0;box-shadow:none}
+.cel-hero-copy{margin-left:0;max-width:680px}
+.cel-hero-copy h1,.cel-section-title,.cel-story-player h3,.cel-character-wrap h3,.cel-welcome-copy h2,.cel-featured-activity h3{font-family:'Baloo 2',sans-serif;font-weight:800;line-height:1.08}
+.cel-hero-copy h1{font-size:clamp(38px,5vw,76px);color:#633619}
+.cel-nav-illustrated{display:flex;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;width:96%;max-width:1600px;margin:-27px auto 35px;background:#fff9ef;padding:7px;border-radius:36px;border:3px solid white;box-shadow:0 8px 20px #7d4c2726}
+.cel-nav-illustrated a{display:flex;align-items:center;gap:9px;border:0;padding:9px 15px;color:#583219!important;font:700 18px/1.2 'Baloo 2',sans-serif;text-decoration:none;border-radius:20px;white-space:nowrap}
+.cel-nav-illustrated svg{width:29px;height:29px;flex-shrink:0;filter:drop-shadow(0 1px 1px #65431b44)}
+.cel-nav-illustrated a span{font:inherit;color:inherit}
+.cel-nav-illustrated a.is-active{background:#f58c22;color:white!important;box-shadow:inset 0 0 0 1px #ffb249}
+.cel-nav-illustrated a:hover:not(.is-active){background:#ffe8c9}
+.cel-nav-search{display:flex;align-items:center;gap:5px;margin:0}
+.cel-nav-search input{width:115px;padding:6px 9px;font:600 13px Nunito,sans-serif;border:1px solid #e5cdb4;background:white;border-radius:20px}
+.cel-nav-search button{background:none;border:0;padding:4px;cursor:pointer}
+@media(max-width:720px){.cel-hero{min-height:420px}.cel-hero-copy{margin:0;padding:45px 15px;background:#fff8efbb;align-self:center;height:auto;border-radius:20px}.cel-nav-illustrated{border-radius:22px;margin:-15px auto 22px;gap:4px}.cel-nav-illustrated a{font-size:14px;padding:8px}.cel-nav-illustrated svg{width:23px;height:23px}.cel-nav-search input{width:130px}}

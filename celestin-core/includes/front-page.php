@@ -238,6 +238,7 @@ body.cel-page .cel-identity-deck .cel-identity-controls button:hover{background:
  .cel-identity-stack.cel-deck-turning:hover>.cel-identity-card:nth-child(2){transform:translate(9px,9px) rotate(2.5deg)}
  .cel-identity-stack.cel-deck-turning:hover>.cel-identity-card:nth-child(3){transform:translate(17px,17px) rotate(4.5deg)}
 }
+.cel-character-intro{color:#80532b;font-size:15px;line-height:1.5;margin:0 0 12px}
 </style>
 
 </head>
@@ -433,7 +434,7 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
 <?php endif; ?>
 <div class="cel-two-columns">
  <section class="cel-info-panel" aria-labelledby="cel-character-title">
-   <h2 id="cel-character-title" class="cel-section-title small" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0">Fiches personnages</h2>
+   <h2 id="cel-character-title" class="cel-section-title small">Rencontre nos personnages</h2><p class="cel-character-intro">Fais connaissance avec les habitants de Fleuriville, découvre leurs petites habitudes, leurs secrets et les liens qui les unissent.</p>
    <?php
    $characters=Celestin_Home::featured('cel_personnage',8);
    if($characters): ?>

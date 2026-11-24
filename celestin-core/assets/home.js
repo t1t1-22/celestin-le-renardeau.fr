@@ -46,6 +46,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  let current=0,stopped=matchMedia('(prefers-reduced-motion: reduce)').matches,hover=false;
  // Quantification de couleurs de l'image, en privilégiant les teintes chromatiques.
  function palette(slide){
+  if(slide.querySelector('.cel-news-cel_coloriage,.cel-news-cel_personnage'))return;
   const img=slide.querySelector('.cel-card-image img');if(!img)return;
   const extract=()=>{try{
    const c=document.createElement('canvas');c.width=c.height=48;const ctx=c.getContext('2d',{willReadFrequently:true});ctx.drawImage(img,0,0,48,48);const data=ctx.getImageData(0,0,48,48).data;

@@ -47,7 +47,7 @@ jQuery(function($){
 });
 
 jQuery(function($){
- if(!$('body').hasClass('post-type-cel_livre'))return;
+ if(!$('body').is('.post-type-cel_livre,.post-type-cel_histoire'))return;
  const field=$('#cel-book-title'),title=$('#title'),bar=$('.cel-book-savebar');
  if(!field.length||!bar.length)return;
  field.on('input change',()=>title.val(field.val()));
@@ -92,4 +92,16 @@ jQuery(function($){
    });
    refresh();filter();
  });
+});
+
+jQuery(function($){
+ const input=$('#cel_f_audio'),box=$('.cel-admin-audio');
+ if(!input.length||!box.length)return;
+ const audio=box.find('audio')[0],status=box.find('.cel-audio-preview-status'),remove=box.find('.cel-audio-remove');
+ function refresh(){const url=input.val().trim();audio.pause();if(url){audio.src=url;audio.hidden=false;remove.prop('hidden',false);status.text('Chargement des informations audio…');}else{audio.removeAttribute('src');audio.load();audio.hidden=true;remove.prop('hidden',true);status.text('Choisis un MP3 pour afficher le lecteur.');}}
+ input.on('change',refresh);remove.on('click',()=>input.val('').trigger('change'));
+ audio.addEventListener('loadedmetadata',()=>{const d=Math.floor(audio.duration);status.text(Number.isFinite(d)?'Durée : '+Math.floor(d/60)+' min '+String(d%60).padStart(2,'0')+' s':'Audio disponible')});
+ audio.addEventListener('error',()=>{if(input.val())status.text('Impossible de lire ce fichier. Vérifie le MP3 ou son adresse.')});
+ $('.cel-form-tab').on('click',function(){if($(this).data('tab')!=='audio')audio.pause()});
+ refresh();
 });

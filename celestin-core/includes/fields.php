@@ -79,8 +79,12 @@ final class Celestin_Fields {
         $screen=get_current_screen();
         if(!$screen || !in_array($screen->post_type,self::TYPES,true)) return;
         wp_enqueue_media();
-        wp_enqueue_style('cel-fields',plugins_url('../assets/fields.css',__FILE__),[],'0.3.2');
-        wp_enqueue_script('cel-fields',plugins_url('../assets/fields.js',__FILE__),['jquery'],'0.3.2',true);
+        if($screen->post_type==='cel_livre'){
+            wp_enqueue_script('cel-admin-pdfjs','https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',[],'3.11.174',true);
+            wp_enqueue_script('cel-pdf-preview',plugins_url('../assets/pdf-preview.js',__FILE__),['jquery','cel-admin-pdfjs'],'0.4.2',true);
+        }
+        wp_enqueue_style('cel-fields',plugins_url('../assets/fields.css',__FILE__),[],'0.4.2');
+        wp_enqueue_script('cel-fields',plugins_url('../assets/fields.js',__FILE__),['jquery'],'0.4.2',true);
         if($screen->post_type==='cel_personnage')wp_add_inline_style('cel-fields','#post-body-content #titlediv{display:none!important}');
     }
     static function render(WP_Post $post): void {
@@ -104,7 +108,9 @@ final class Celestin_Fields {
             echo '<h3>'.esc_html($title).'</h3><div class="cel-field-grid">';
             foreach($fields as $key=>$label) self::field($post,$key,$label);
             echo '</div>';
-            self::section_image($post,$slug,$title);
+            if($post->post_type==='cel_livre' && $slug==='fichier'){
+                echo '<div id="cel-pdf-preview"><h3>Aperçu des pages du livre</h3><p class="cel-pdf-status" aria-live="polite">Choisis le PDF pour afficher ses pages.</p><div class="cel-pdf-grid"></div></div>';
+            } else self::section_image($post,$slug,$title);
           }
           echo '</section>';
           $i++;

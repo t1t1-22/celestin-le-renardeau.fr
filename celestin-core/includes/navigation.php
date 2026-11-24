@@ -16,5 +16,32 @@ $items=[
 <?php foreach($items as [$label,$url,$icon,$active]): ?>
 <a href="<?php echo esc_url($url); ?>" <?php if($active)echo 'class="is-active" aria-current="page"'; ?>><span><?php echo esc_html($label); ?></span></a>
 <?php endforeach; ?>
-<div class="cel-town-nav"><a href="<?php echo esc_url(Celestin_Home::url('cel_lieu')); ?>" class="<?php echo (is_post_type_archive(['cel_lieu','cel_personnage'])||is_singular(['cel_lieu','cel_personnage']))?'is-active':''; ?>">Fleuriville</a><details class="cel-town-dropdown"><summary aria-label="Sous-menu Fleuriville">⌄</summary><div><a href="<?php echo esc_url(Celestin_Home::url('cel_personnage')); ?>">Les personnages</a><a href="<?php echo esc_url(add_query_arg('vue','galerie',Celestin_Home::url('cel_lieu'))); ?>">Galerie photo</a><a href="<?php echo esc_url(add_query_arg('vue','lieux',Celestin_Home::url('cel_lieu'))); ?>">Les lieux</a></div></details></div>
+<div class="cel-town-nav cel-town-menu">
+<button type="button" class="cel-town-trigger<?php echo (is_post_type_archive(['cel_lieu','cel_personnage'])||is_singular(['cel_lieu','cel_personnage']))?' is-active':''; ?>" aria-expanded="false" aria-controls="cel-town-submenu"><span>Fleuriville</span><svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="m4 6 4 4 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<div id="cel-town-submenu" class="cel-town-submenu" hidden><a href="<?php echo esc_url(Celestin_Home::url('cel_personnage')); ?>">Les personnages</a><a href="<?php echo esc_url(add_query_arg('vue','galerie',Celestin_Home::url('cel_lieu'))); ?>">Galerie photo</a><a href="<?php echo esc_url(add_query_arg('vue','lieux',Celestin_Home::url('cel_lieu'))); ?>">Les lieux</a></div></div>
 </nav>
+<style>
+body .cel-interior-header .cel-town-menu{position:relative;display:flex;align-items:center;flex-shrink:0}
+body .cel-interior-header .cel-town-trigger{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:7px 9px;background:transparent;border:0;border-radius:9px;color:#583219;font:600 15px/1.2 'Baloo 2',sans-serif;cursor:pointer;white-space:nowrap}
+body .cel-interior-header .cel-town-trigger svg{width:13px!important;height:13px!important;flex:none;filter:none;transition:transform .2s;display:block}
+body .cel-interior-header .cel-town-trigger[aria-expanded=true] svg{transform:rotate(180deg)}
+body .cel-interior-header .cel-town-trigger:hover,body .cel-interior-header .cel-town-trigger[aria-expanded=true],body .cel-interior-header .cel-town-trigger.is-active{background:#e98932;color:white}
+body .cel-interior-header .cel-town-submenu{position:absolute;top:100%;left:0;min-width:190px;background:#fffdfa;border:1px solid #ead5bb;padding:6px;border-radius:12px;box-shadow:0 8px 22px #63361922;z-index:1001}
+body .cel-interior-header .cel-town-submenu[hidden]{display:none!important}
+body .cel-interior-header .cel-town-submenu a{display:block!important;padding:10px!important;border-radius:8px;color:#633619!important}
+body .cel-interior-header .cel-town-submenu a:hover,body .cel-interior-header .cel-town-submenu a:focus-visible{background:#f6e1c9!important;color:#633619!important}
+@media(max-width:600px){body .cel-interior-header .cel-town-trigger{font-size:13px;padding:6px}body .cel-interior-header .cel-town-submenu{position:fixed;left:auto;right:16px;top:var(--cel-town-top,140px)}}
+</style>
+<script>
+(function(){
+ const menu=document.querySelector('.cel-town-menu');if(!menu)return;
+ const button=menu.querySelector('.cel-town-trigger'),sub=menu.querySelector('.cel-town-submenu');let opened=false;
+ function setOpen(value){opened=value;button.setAttribute('aria-expanded',String(value));sub.hidden=!value;if(value)sub.style.setProperty('--cel-town-top',button.getBoundingClientRect().bottom+'px');}
+ menu.addEventListener('pointerenter',e=>{if(e.pointerType==='mouse')setOpen(true)});
+ menu.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse'&&!menu.contains(document.activeElement))setOpen(false);else if(e.pointerType==='mouse'&&document.activeElement===button){button.blur();setOpen(false)}});
+ button.addEventListener('click',e=>{if(e.detail&&matchMedia('(hover:hover)').matches&&opened)return;setOpen(!opened)});
+ menu.addEventListener('focusout',e=>{if(!menu.contains(e.relatedTarget)&&!menu.matches(':hover'))setOpen(false)});
+ menu.addEventListener('keydown',e=>{if(e.key==='Escape'){setOpen(false);button.focus()}else if(e.key==='ArrowDown'&&e.target===button){e.preventDefault();setOpen(true);sub.querySelector('a').focus()}});
+ document.addEventListener('pointerdown',e=>{if(!menu.contains(e.target))setOpen(false)});
+})();
+</script>

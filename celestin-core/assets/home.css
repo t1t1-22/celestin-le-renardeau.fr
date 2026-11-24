@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&family=Courgette&display=swap');500;600;700;800&family=Courgette&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&family=Courgette&display=swap');
 :root{--cel-orange:#ee8a35;--cel-amber:#ffbf36;--cel-brown:#572a1a;--cel-cream:#fffaf3;--cel-peach:#fff0df;--cel-shadow:0 9px 24px rgba(123,67,26,.12)}
 body.cel-page{background:#fffaf4!important;margin:0!important;color:var(--cel-brown)!important;font-family:'DM Sans',system-ui,sans-serif!important}
 body.cel-page #page,body.cel-page .site{max-width:none!important}
@@ -445,11 +445,11 @@ body.cel-page .cel-hero{z-index:0!important;margin:0!important}
 body.cel-page .cel-site .cel-news-band{background:transparent!important;background-image:none!important;padding:16px 0 30px!important;margin:0!important;z-index:auto!important}
 body.cel-page .cel-news-band .cel-news{margin-top:0!important}
 body.cel-page .cel-audio-feature{position:relative;isolation:isolate;background:#e98932!important;margin-top:clamp(100px,13vw,205px);overflow:visible!important;padding-top:10px}
-body.cel-page .cel-footer-fox>.cel-fox-divider{position:absolute!important;bottom:calc(100% - 2px)!important;left:50%!important;width:min(52vw,800px)!important;aspect-ratio:4/1;transform:translateX(-50%);background:#e98932!important;pointer-events:none}
+body:is(.cel-page,.cel-content-page) .cel-footer-fox>.cel-fox-divider{position:absolute!important;bottom:calc(100% - 2px)!important;left:50%!important;width:min(52vw,800px)!important;aspect-ratio:4/1;transform:translateX(-50%);background:#e98932!important;pointer-events:none}
 body.cel-page .cel-audio-feature .cel-section-title,body.cel-page .cel-audio-feature .cel-audio-intro{color:#fff!important}
-@media(max-width:720px){body.cel-page .cel-footer-fox>.cel-fox-divider{width:70vw!important}}
+@media(max-width:720px){body:is(.cel-page,.cel-content-page) .cel-footer-fox>.cel-fox-divider{width:70vw!important}}
 /* Même silhouette, lissée par des courbes de Bézier dans un masque vectoriel. */
-body.cel-page .cel-footer-fox>.cel-fox-divider{
+body:is(.cel-page,.cel-content-page) .cel-footer-fox>.cel-fox-divider{
 clip-path:none!important;
 -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 200' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M0 200 C45 197 85 185 112 164 C98 135 84 75 92 26 Q96 3 116 8 C181 26 253 74 320 114 L344 108 Q312 83 332 85 Q353 84 384 98 Q350 60 372 67 Q397 72 432 92 Q404 43 424 53 C455 67 478 90 520 108 C584 43 655 12 704 7 Q727 3 735 24 C759 82 745 130 720 164 Q757 190 800 200 Z'/%3E%3C/svg%3E") center bottom / 100% 100% no-repeat;
 mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 200' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M0 200 C45 197 85 185 112 164 C98 135 84 75 92 26 Q96 3 116 8 C181 26 253 74 320 114 L344 108 Q312 83 332 85 Q353 84 384 98 Q350 60 372 67 Q397 72 432 92 Q404 43 424 53 C455 67 478 90 520 108 C584 43 655 12 704 7 Q727 3 735 24 C759 82 745 130 720 164 Q757 190 800 200 Z'/%3E%3C/svg%3E") center bottom / 100% 100% no-repeat;
@@ -458,17 +458,17 @@ mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='
 /* Déplacer la silhouette existante et le fond orange vers les mini-histoires. */
 body.cel-page .cel-site .cel-news-band{background:#fcf7ef!important;padding:20px 0 30px!important;margin-top:0!important;z-index:1!important}
 body.cel-page .cel-audio-feature{position:relative!important;background:#e98932!important;overflow:visible!important;margin-top:clamp(100px,13vw,200px)!important}
-body.cel-page .cel-footer-fox>.cel-fox-divider{display:block!important;position:absolute!important;bottom:calc(100% - 2px)!important;left:50%!important;width:min(52vw,800px)!important;height:auto!important;aspect-ratio:4/1;background:#e98932!important;transform:translateX(-50%);z-index:2!important}
+body:is(.cel-page,.cel-content-page) .cel-footer-fox>.cel-fox-divider{display:block!important;position:absolute!important;bottom:calc(100% - 2px)!important;left:50%!important;width:min(52vw,800px)!important;height:auto!important;aspect-ratio:4/1;background:#e98932!important;transform:translateX(-50%);z-index:2!important}
 body.cel-page .cel-audio-feature .cel-section-title,body.cel-page .cel-audio-feature .cel-audio-intro{color:white!important}
 body.cel-page .cel-audio-feature .cel-audio-inner{padding:22px 0 24px}
 /* Même silhouette, lissée par des courbes de Bézier dans un masque vectoriel. */
-body.cel-page .cel-footer-fox>.cel-fox-divider{
+body:is(.cel-page,.cel-content-page) .cel-footer-fox>.cel-fox-divider{
 clip-path:none!important;
 -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 200' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M0 200 C45 197 85 185 112 164 C98 135 84 75 92 26 Q96 3 116 8 C181 26 253 74 320 114 L344 108 Q312 83 332 85 Q353 84 384 98 Q350 60 372 67 Q397 72 432 92 Q404 43 424 53 C455 67 478 90 520 108 C584 43 655 12 704 7 Q727 3 735 24 C759 82 745 130 720 164 Q757 190 800 200 Z'/%3E%3C/svg%3E") center bottom / 100% 100% no-repeat;
 mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 200' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M0 200 C45 197 85 185 112 164 C98 135 84 75 92 26 Q96 3 116 8 C181 26 253 74 320 114 L344 108 Q312 83 332 85 Q353 84 384 98 Q350 60 372 67 Q397 72 432 92 Q404 43 424 53 C455 67 478 90 520 108 C584 43 655 12 704 7 Q727 3 735 24 C759 82 745 130 720 164 Q757 190 800 200 Z'/%3E%3C/svg%3E") center bottom / 100% 100% no-repeat;
 }
 
-@media(max-width:720px){body.cel-page .cel-footer-fox>.cel-fox-divider{width:70vw!important}}
+@media(max-width:720px){body:is(.cel-page,.cel-content-page) .cel-footer-fox>.cel-fox-divider{width:70vw!important}}
 
 /* Carrousel principal de nouveautés, palette extraite de chaque illustration. */
 body.cel-page .cel-feature-slider{position:relative;width:100%;background:#fcf7ef;isolation:isolate}
@@ -600,18 +600,26 @@ body.cel-page .cel-feature-slider .cel-feature-layout article.cel-news-cel_color
 
 /* Silhouette du renard au-dessus du pied de page, sans espace inutile avant les histoires. */
 body.cel-page .cel-audio-feature{margin-top:0!important}
-body.cel-page .cel-footer.cel-footer-fox{position:relative!important;isolation:isolate;overflow:visible!important;margin-top:clamp(90px,13vw,200px)!important;background:#e98932!important}
-body.cel-page .cel-footer-fox>.cel-fox-divider{background:#e98932!important;z-index:2!important;pointer-events:none}
-@media(max-width:720px){body.cel-page .cel-footer.cel-footer-fox{margin-top:18vw!important}}
+body:is(.cel-page,.cel-content-page) .cel-footer.cel-footer-fox{position:relative!important;isolation:isolate;overflow:visible!important;margin-top:clamp(90px,13vw,200px)!important;background:#e98932!important}
+body:is(.cel-page,.cel-content-page) .cel-footer-fox>.cel-fox-divider{background:#e98932!important;z-index:2!important;pointer-events:none}
+@media(max-width:720px){body:is(.cel-page,.cel-content-page) .cel-footer.cel-footer-fox{margin-top:18vw!important}}
 
 /* Oreilles décentrées à droite et vague de transition sous les nouveautés. */
-body.cel-page .cel-footer.cel-footer-fox>.cel-fox-divider{left:auto!important;right:5%!important;transform:none!important}
+body:is(.cel-page,.cel-content-page) .cel-footer.cel-footer-fox>.cel-fox-divider{left:auto!important;right:5%!important;transform:none!important}
 body.cel-page .cel-feature-slider::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:clamp(24px,3.5vw,56px);pointer-events:none;z-index:3;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 64' preserveAspectRatio='none'%3E%3Cpath fill='%23fcf7ef' d='M0 25 C240 75 420 0 720 28 S1200 65 1440 12 V64 H0 Z'/%3E%3C/svg%3E") center bottom/100% 100% no-repeat}
 body.cel-page .cel-feature-slider>.cel-feature-slide{padding-bottom:calc(65px + clamp(24px,3.5vw,56px))}
 body.cel-page .cel-feature-slider .cel-feature-pagination{bottom:calc(17px + clamp(24px,3.5vw,56px))!important}
-@media(max-width:720px){body.cel-page .cel-footer.cel-footer-fox>.cel-fox-divider{right:3%!important}body.cel-page .cel-feature-slider>.cel-feature-slide{padding-bottom:80px}}
+@media(max-width:720px){body:is(.cel-page,.cel-content-page) .cel-footer.cel-footer-fox>.cel-fox-divider{right:3%!important}body.cel-page .cel-feature-slider>.cel-feature-slide{padding-bottom:80px}}
 
 /* Transition ondulée entre le livre et les mini-histoires. */
 body.cel-page .cel-audio-feature>.cel-audio-wave:first-child{display:block!important;position:absolute!important;top:-1px;left:0;width:100%;height:clamp(24px,3.5vw,56px)!important;pointer-events:none;z-index:1}
 body.cel-page .cel-audio-feature{padding-top:clamp(35px,5vw,76px)!important}
 body.cel-page .cel-audio-feature>.cel-audio-wave:first-child path{fill:#fcf7ef}
+
+body.cel-page>.cel-site,body.cel-content-page{display:flex;flex-direction:column;min-height:100vh;min-height:100dvh}
+body.admin-bar.cel-page>.cel-site,body.admin-bar.cel-content-page{min-height:calc(100dvh - 32px)}
+@media(max-width:782px){body.admin-bar.cel-page>.cel-site,body.admin-bar.cel-content-page{min-height:calc(100dvh - 46px)}}
+body.cel-page>.cel-site>main,body.cel-content-page>main{flex:1 0 auto}
+body.cel-page>.cel-site>.cel-footer,body.cel-content-page>.cel-footer{flex:0 0 auto;width:100%}
+body.cel-content-page .cel-footer a{color:white;text-decoration:none}
+body.cel-content-page .cel-content-container h1{font-family:'Baloo 2',sans-serif!important;font-weight:700}

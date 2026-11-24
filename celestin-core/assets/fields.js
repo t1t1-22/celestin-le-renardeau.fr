@@ -47,7 +47,7 @@ jQuery(function($){
 });
 
 jQuery(function($){
- if(!$('body').is('.post-type-cel_livre,.post-type-cel_histoire'))return;
+ if(!$('body').is('.post-type-cel_livre,.post-type-cel_histoire,.post-type-cel_coloriage'))return;
  const field=$('#cel-book-title'),title=$('#title'),bar=$('.cel-book-savebar');
  if(!field.length||!bar.length)return;
  field.on('input change',()=>title.val(field.val()));

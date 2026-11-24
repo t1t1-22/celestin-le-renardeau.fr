@@ -6,6 +6,7 @@ final class Celestin_Library {
  const SEEDS=['mois'=>['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'],'saison'=>['Printemps','Été','Automne','Hiver'],'age_lecture'=>['0-3','3-6','6-8','8-12'],'evenement'=>['Nouvel An','Épiphanie','Chandeleur','Carnaval','Pâques','1er mai','Fête des mères','Fête des pères','Fête de la musique','Vacances d’été','Rentrée scolaire','Halloween','Saint-Nicolas','Noël']];
  static function init(){
   add_action('init',[__CLASS__,'register'],25);
+  add_action('wp_ajax_cel_library_create_term',[__CLASS__,'create_term']);
   add_action('admin_init',[__CLASS__,'migrate']);
   add_action('save_post_cel_livre',[__CLASS__,'save'],30,2);
   add_action('add_meta_boxes_cel_livre',[__CLASS__,'clean'],100);
@@ -38,26 +39,49 @@ final class Celestin_Library {
  static function clean(){
   foreach(['cel_news_box','cel_home_box','cel_illustration_help','postimagediv','postexcerpt','slugdiv','commentstatusdiv','commentsdiv','trackbacksdiv','authordiv','cel_collectiondiv','tagsdiv-cel_book_tags'] as $box)foreach(['side','normal','advanced'] as $where)remove_meta_box($box,'cel_livre',$where);
  }
+ static function create_term(){
+  check_ajax_referer('cel_library_term','nonce');
+  $key=sanitize_key($_POST['key']??'');
+  if(!isset(self::TAX[$key])||!in_array($key,['categorie','collection','evenement'],true))wp_send_json_error('Type non autorisé.',400);
+  $tax=self::TAX[$key];$obj=get_taxonomy($tax);
+  if(!$obj||!current_user_can($obj->cap->manage_terms))wp_send_json_error('Accès refusé.',403);
+  $name=trim(sanitize_text_field(wp_unslash($_POST['name']??'')));
+  if(!$name||mb_strlen($name)>150)wp_send_json_error('Indique un nom de 1 à 150 caractères.',400);
+  $id=self::term($tax,$name);$t=get_term($id,$tax);
+  if(!$id||!$t||is_wp_error($t))wp_send_json_error('Création impossible.',400);
+  wp_send_json_success(['id'=>$id,'name'=>$t->name]);
+ }
  static function choices($id,$key){
   $tax=self::TAX[$key];$terms=get_terms(['taxonomy'=>$tax,'hide_empty'=>false]);$selected=wp_get_object_terms($id,$tax,['fields'=>'ids']);
   if(is_wp_error($terms))$terms=[];if(is_wp_error($selected))$selected=[];
-  echo '<div class="cel-field"><label>'.esc_html(self::LABELS[$key]).'</label><div class="cel-lib-choices">';
-  foreach($terms as $t)echo '<label><input type="checkbox" name="cel_lib['.esc_attr($key).'][]" value="'.(int)$t->term_id.'"'.checked(in_array((int)$t->term_id,array_map('intval',$selected),true),true,false).'> '.esc_html($t->name).'</label>';
-  echo '</div><input type="text" name="cel_lib_new['.esc_attr($key).']" placeholder="'.esc_attr($key==='evenement'?'Créer un nouvel événement':'Ajouter une valeur réutilisable (facultatif)').'"></div>';
+  if(isset(self::SEEDS[$key])&&in_array($key,['mois','saison','age_lecture'],true)){
+   $order=array_flip(self::SEEDS[$key]);usort($terms,fn($a,$b)=>($order[$a->name]??999)<=>($order[$b->name]??999));
+  }
+  $compact=in_array($key,['categorie','collection','evenement'],true);
+  echo '<div class="cel-field cel-tax-picker" data-key="'.esc_attr($key).'" data-nonce="'.esc_attr(wp_create_nonce('cel_library_term')).'"><label>'.esc_html(self::LABELS[$key]).'</label>';
+  if($compact)echo '<div class="cel-tax-selected"></div><details class="cel-tax-details"><summary>Choisir ou ajouter <span class="cel-tax-count"></span></summary><input type="search" class="cel-tax-search" placeholder="Rechercher…" aria-label="Rechercher dans '.esc_attr(self::LABELS[$key]).'">';
+  echo '<div class="cel-lib-choices">';
+  foreach($terms as $t)echo '<label><input type="checkbox" name="cel_lib['.esc_attr($key).'][]" value="'.(int)$t->term_id.'"'.checked(in_array((int)$t->term_id,array_map('intval',$selected),true),true,false).'> <span>'.esc_html($t->name).'</span></label>';
+  echo '</div>';
+  if($compact){
+   echo '<p class="cel-tax-empty" hidden>Aucun résultat.</p><div class="cel-tax-create"><input type="text" class="cel-tax-new" placeholder="Nouveau nom" maxlength="150"><button type="button" class="button cel-tax-add">+ Ajouter</button></div><p class="cel-tax-status" role="status"></p></details>';
+  }
+  echo '</div>';
  }
  static function identity($post){
   wp_nonce_field('cel_core_save','cel_core_nonce');
-  echo '<div class="cel-field-grid cel-library-identity">';
+  echo '<div class="cel-field"><label>Visibilité sur le site</label><label><input type="checkbox" name="cel_feature_home" value="1"'.checked(get_post_meta($post->ID,'_cel_feature_home',true),'1',false).'> Mettre en avant sur l’accueil</label></div>';
+ }
+ static function categories($post){
+  echo '<section class="cel-form-panel" data-panel="categories" hidden><h3>Catégories et classement</h3><p>Les valeurs créées sont disponibles dans tous les livres. Enregistre la fiche pour conserver tes sélections.</p><div class="cel-field-grid cel-library-identity">';
   foreach(self::TAX as $key=>$tax)self::choices($post->ID,$key);
-  echo '<div class="cel-field"><label>Visibilité sur le site</label><label><input type="checkbox" name="cel_feature_home" value="1"'.checked(get_post_meta($post->ID,'_cel_feature_home',true),'1',false).'> Mettre en avant sur l’accueil</label></div></div>';
+  echo '</div></section>';
  }
  static function save($id,$post){
   if(!isset($_POST['cel_fields_nonce'])||!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['cel_fields_nonce'])),'cel_fields_save')||!current_user_can('edit_post',$id)||wp_is_post_revision($id)||(defined('DOING_AUTOSAVE')&&DOING_AUTOSAVE))return;
   foreach(self::TAX as $key=>$tax){
    $ids=array_map('absint',(array)($_POST['cel_lib'][$key]??[]));
    $ids=array_values(array_filter($ids,fn($i)=>term_exists($i,$tax)));
-   $new=sanitize_text_field(wp_unslash($_POST['cel_lib_new'][$key]??''));
-   if($new&&current_user_can('manage_categories')){$t=self::term($tax,$new);if($t)$ids[]=$t;}
    wp_set_object_terms($id,array_unique($ids),$tax);
   }
  }

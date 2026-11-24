@@ -360,7 +360,7 @@ $story_tags=[];$story_under_image=[];
 if($item->post_type==='cel_histoire'){
  $themes=wp_get_object_terms($item->ID,Celestin_Library::TAX['categorie'],['fields'=>'names']);
  $kicker=(!is_wp_error($themes)&&$themes)?implode(' · ',$themes):'Mini-histoire audio';
- $labels=['collection'=>'Collection','saison'=>'Saison','mois'=>'Parution','age_lecture'=>'Âge','evenement'=>'Événement'];
+ $labels=['collection'=>'Collection','saison'=>'Saison','mois'=>'Date de sortie','age_lecture'=>'Âge','evenement'=>'Événement'];
  foreach($labels as $key=>$label){
   $terms=wp_get_object_terms($item->ID,Celestin_Library::TAX[$key],['fields'=>'names']);
   if(is_wp_error($terms)||!$terms)continue;

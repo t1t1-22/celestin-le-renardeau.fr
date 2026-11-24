@@ -284,7 +284,7 @@ final class Celestin_Core {
     static function custom_menu_order($enabled){return true;}
     static function daily_menu_order($order){
         if(!is_array($order))return $order;
-        $daily=['celestin-core','cel-universe','cel-site-appearance','cel-classification','upload.php','edit.php?post_type=page'];
+        $daily=['celestin-core','cel-site-appearance','cel-universe','cel-classification','upload.php','edit.php?post_type=page'];
         $first=array_values(array_intersect($daily,$order));
         $rest=array_values(array_diff($order,$first));
         $rest=array_values(array_filter($rest,static fn($slug)=>$slug!=='separator1'));

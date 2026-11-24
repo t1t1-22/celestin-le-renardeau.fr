@@ -603,3 +603,10 @@ body.cel-page .cel-audio-feature{margin-top:0!important}
 body.cel-page .cel-footer.cel-footer-fox{position:relative!important;isolation:isolate;overflow:visible!important;margin-top:clamp(90px,13vw,200px)!important;background:#e98932!important}
 body.cel-page .cel-footer-fox>.cel-fox-divider{background:#e98932!important;z-index:2!important;pointer-events:none}
 @media(max-width:720px){body.cel-page .cel-footer.cel-footer-fox{margin-top:18vw!important}}
+
+/* Oreilles décentrées à droite et vague de transition sous les nouveautés. */
+body.cel-page .cel-footer.cel-footer-fox>.cel-fox-divider{left:auto!important;right:5%!important;transform:none!important}
+body.cel-page .cel-feature-slider::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:clamp(24px,3.5vw,56px);pointer-events:none;z-index:3;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 64' preserveAspectRatio='none'%3E%3Cpath fill='%23fcf7ef' d='M0 25 C240 75 420 0 720 28 S1200 65 1440 12 V64 H0 Z'/%3E%3C/svg%3E") center bottom/100% 100% no-repeat}
+body.cel-page .cel-feature-slider>.cel-feature-slide{padding-bottom:calc(65px + clamp(24px,3.5vw,56px))}
+body.cel-page .cel-feature-slider .cel-feature-pagination{bottom:calc(17px + clamp(24px,3.5vw,56px))!important}
+@media(max-width:720px){body.cel-page .cel-footer.cel-footer-fox>.cel-fox-divider{right:3%!important}body.cel-page .cel-feature-slider>.cel-feature-slide{padding-bottom:80px}}

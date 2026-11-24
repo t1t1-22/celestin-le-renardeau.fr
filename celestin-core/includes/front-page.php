@@ -316,6 +316,12 @@ body.cel-page .cel-feature-layout .cel-news-cel_livre .cel-news-image-link::afte
 body.cel-page .cel-feature-layout .cel-news-cel_livre:hover .cel-news-image-link{transform:rotateY(9deg);box-shadow:none}
 body.cel-page .cel-feature-layout .cel-news-cel_livre .cel-card-image:before{content:"";position:absolute;left:12%;right:12%;bottom:5%;height:20px;background:radial-gradient(ellipse,#51371965,transparent 72%);filter:blur(6px);z-index:-1;pointer-events:none}
 @media(prefers-reduced-motion:no-preference){body.cel-page .cel-feature-layout .cel-news-cel_livre .cel-news-image-link{animation:cel-home-book-float 5s ease-in-out infinite}}
+
+body.cel-page .cel-feature-layout .cel-news-visual{min-width:0;width:100%;align-self:center;display:flex;flex-direction:column;align-items:center}
+body.cel-page .cel-feature-layout .cel-news-visual>.cel-news-card{width:100%}
+body.cel-page .cel-news-under-image{display:flex;flex-wrap:wrap;justify-content:center;gap:5px 20px;margin:12px 0 0;color:#633619;font:500 13px/1.5 Nunito,sans-serif;text-align:center}
+body.cel-page .cel-news-under-image strong{font-weight:800}
+body.cel-page .cel-news-under-image strong::after{content:" :"}
 </style>
 
 </head>
@@ -350,7 +356,7 @@ $summary=Celestin_Fields::value($item->ID,'resume');
 if(!$summary && $item->post_type==='cel_personnage')$summary=Celestin_Fields::value($item->ID,'description');
 $summary=$summary?:$item->post_excerpt;
 $kicker=$item->post_type==='cel_coloriage'?(Celestin_Fields::value($item->ID,'type')?:'Activité'):($item->post_type==='cel_personnage'?'':$new_label);
-$story_tags=[];
+$story_tags=[];$story_under_image=[];
 if($item->post_type==='cel_histoire'){
  $themes=wp_get_object_terms($item->ID,Celestin_Library::TAX['categorie'],['fields'=>'names']);
  $kicker=(!is_wp_error($themes)&&$themes)?implode(' · ',$themes):'Mini-histoire audio';
@@ -365,7 +371,8 @@ if($item->post_type==='cel_histoire'){
    foreach($ranges as $range){$last=count($merged)-1;if($last>=0&&$range[0]<=$merged[$last][1])$merged[$last][1]=max($merged[$last][1],$range[1]);else $merged[]=$range;}
    $terms=array_merge(array_map(fn($range)=>$range[0].'–'.$range[1].' ans',$merged),$other);
   }
-  $story_tags[]=$label.' : '.implode(', ',$terms);
+  if(in_array($key,['collection','mois'],true))$story_under_image[$label]=implode(', ',$terms);
+  else $story_tags[]=$label.' : '.implode(', ',$terms);
  }
  if(!$summary)$summary=Celestin_Fields::value($item->ID,'texte');
 }
@@ -374,7 +381,7 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
 <div class="cel-feature-slide" <?php if($idx!==0)echo 'hidden'; ?> data-slide="<?php echo esc_attr($idx); ?>">
  <?php if($img): ?><div class="cel-feature-backdrop" aria-hidden="true"><img src="<?php echo esc_url(get_the_post_thumbnail_url($item->ID,'large')?:$img); ?>" alt="" decoding="async"></div><?php endif; ?>
  <div class="cel-feature-layout">
-       <article class="cel-card cel-news-card cel-news-<?php echo esc_attr($item->post_type); ?>">
+       <div class="cel-news-visual"><article class="cel-card cel-news-card cel-news-<?php echo esc_attr($item->post_type); ?>">
         <span class="cel-card-type cel-news-badge"><?php echo esc_html($new_label); ?></span>
         <div class="cel-card-image">
          <?php if($item->post_type==='cel_coloriage' && $img): ?><div class="cel-paper-stack" aria-hidden="true"><img src="<?php echo esc_url($img); ?>" alt=""><img src="<?php echo esc_url($img); ?>" alt=""></div><?php endif; ?>
@@ -390,6 +397,7 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
          <?php endif; ?>
         </div>
       </article>
+      <?php if($story_under_image): ?><div class="cel-news-under-image"><?php foreach($story_under_image as $label=>$value): ?><div><strong><?php echo esc_html($label); ?></strong> <span><?php echo esc_html($value); ?></span></div><?php endforeach; ?></div><?php endif; ?></div>
  <div class="cel-feature-copy"><?php if($kicker): ?><p class="cel-feature-kicker"><?php echo esc_html($kicker); ?></p><?php endif; ?><h2><?php echo esc_html($title); ?></h2>
  <?php if($story_tags): ?><div class="cel-feature-tags"><?php foreach($story_tags as $tag): ?><span><?php echo esc_html($tag); ?></span><?php endforeach; ?></div><?php endif; ?>
  <?php if($summary): ?><p class="cel-feature-summary"><?php echo esc_html(wp_trim_words(wp_strip_all_tags($summary),$item->post_type==='cel_personnage'?38:65,'…')); ?></p><?php endif; ?>

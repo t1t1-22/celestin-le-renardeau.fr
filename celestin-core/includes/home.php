@@ -71,39 +71,113 @@ final class Celestin_Home {
         $active=absint($cfg['active']??0);
         $terms=get_terms(['taxonomy'=>Celestin_Library::TAX['evenement'],'hide_empty'=>false]);
         if(is_wp_error($terms))$terms=[];
-        echo '<h2>Temps forts de l’année</h2><p>Les sélections habituelles restent indépendantes. Choisis un événement actif ou reviens à l’accueil standard. Le changement d’accueil est exclusivement manuel : aucun événement ne s’active ni ne se désactive automatiquement.</p>';
-        echo '<p><label><strong>Accueil actif</strong> <select name="cel_event[active]"><option value="0">Accueil standard</option>';
-        foreach($terms as $term)echo '<option value="'.$term->term_id.'"'.selected($active,$term->term_id,false).'>'.esc_html($term->name).'</option>';
-        echo '</select></label></p>';
         $types=['news'=>'Slider des nouveautés','cel_livre'=>'Livre mis en avant','cel_histoire'=>'Mini-histoires audio','cel_coloriage'=>'Activités'];
-        $posts=get_posts(['post_type'=>['cel_livre','cel_histoire','cel_coloriage'],'post_status'=>'publish','posts_per_page'=>-1,'orderby'=>'title','order'=>'ASC']);
-        foreach($terms as $term){
-            $id=$term->term_id;$p=$cfg['profiles'][$id]??[];$prefix='cel_event[profiles]['.$id.']';
-            echo '<details style="border:1px solid #ead5bb;background:#fffaf3;padding:15px;margin:10px 0;border-radius:10px"'.($active===$id?' open':'').'><summary><strong>'.esc_html($term->name).'</strong></summary>';
-            echo '<p><label>Mode <select name="'.$prefix.'[mode]"><option value="auto"'.selected($p['mode']??'auto','auto',false).'>Automatique selon l’événement associé</option><option value="manual"'.selected($p['mode']??'auto','manual',false).'>Sélection manuelle</option></select></label></p>';
-            foreach($types as $key=>$label){
-                echo '<p><label><input type="checkbox" name="'.$prefix.'[sections]['.$key.']" value="1"'.checked(!isset($p['sections'])||!empty($p['sections'][$key]),true,false).'> '.esc_html($label).'</label></p>';
-                echo '<details><summary>Choix manuel : '.esc_html($label).'</summary><div style="max-height:180px;overflow:auto">';
-                foreach($posts as $post){
-                    if($key!=='news'&&$post->post_type!==$key)continue;
-                    if(!has_term($id,Celestin_Library::TAX['evenement'],$post))continue;
-                    echo '<label style="display:block"><input type="checkbox" name="'.$prefix.'[manual]['.$key.'][]" value="'.$post->ID.'"'.checked(in_array($post->ID,array_map('absint',(array)($p['manual'][$key]??[])),true),true,false).'> '.esc_html($post->post_title).'</label>';
-                }
-                echo '</div></details>';
-            }
-            echo '<p>Si aucun contenu ne correspond, la rubrique conserve sa sélection standard.</p></details>';
+        $labels=['cel_livre'=>'Livre','cel_histoire'=>'Mini-histoire audio','cel_coloriage'=>'Activité'];
+        $limits=['news'=>8,'cel_livre'=>1,'cel_histoire'=>3,'cel_coloriage'=>4];
+        $posts=get_posts(['post_type'=>array_keys($labels),'post_status'=>'publish','posts_per_page'=>-1,'orderby'=>'date','order'=>'DESC']);
+        $library=[];
+        foreach($posts as $post){
+            $ids=wp_get_object_terms($post->ID,Celestin_Library::TAX['evenement'],['fields'=>'ids']);
+            $library[]=['id'=>(int)$post->ID,'title'=>get_the_title($post),'type'=>$post->post_type,'label'=>$labels[$post->post_type],'image'=>get_the_post_thumbnail_url($post,'thumbnail')?:'','events'=>is_wp_error($ids)?[]:array_map('intval',$ids)];
         }
+        $profiles=[];
+        foreach($terms as $term){
+            $id=(int)$term->term_id;$p=$cfg['profiles'][$id]??[];
+            foreach($types as $key=>$label){
+                $profiles[$id][$key]=['mode'=>isset($p['sections'])&&empty($p['sections'][$key])?'standard':($p['modes'][$key]??$p['mode']??'auto'),'ids'=>array_values(array_map('absint',(array)($p['manual'][$key]??[])))];
+            }
+        }
+        ?>
+        <style>
+        .cel-event-admin{color:#633619}.cel-event-admin h2,.cel-event-admin h3{color:#633619}.cel-event-top{display:flex;flex-wrap:wrap;gap:20px;align-items:end;padding:16px;background:#fff8ef;border:1px solid #ead5bb;border-radius:12px;margin:16px 0}.cel-event-top label{display:grid;gap:5px}.cel-event-top select{min-width:210px}.cel-event-tabs,.cel-event-filters{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}.cel-event-admin button.cel-event-tab,.cel-event-admin button.cel-event-filter{border:1px solid #e4c4a1;color:#77431f;background:#fff7eb;border-radius:8px;padding:7px 12px;cursor:pointer}.cel-event-admin button.is-current{background:#e98932;color:white;border-color:#d47b29}.cel-event-layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:20px}.cel-event-panel{background:#fff8ef;border:1px solid #ead5bb;border-radius:16px;padding:18px;min-width:0}.cel-event-row{display:flex;align-items:center;gap:9px;background:white;border:1px solid #ead5bb;border-radius:10px;margin:8px 0;padding:8px}.cel-event-row img{width:54px;height:54px;object-fit:contain;border-radius:6px;flex:none}.cel-event-row .cel-event-name{flex:1;min-width:0;overflow-wrap:anywhere}.cel-event-name small{display:block;color:#94603c}.cel-event-row button{flex:none}.cel-event-row.is-selected{border-color:#e98932;background:#fff3e3}.cel-event-library{max-height:520px;overflow:auto}.cel-event-search{width:100%;margin:8px 0}.cel-event-admin [hidden]{display:none!important}.cel-event-grip{cursor:grab;touch-action:none;color:#a7622b;font-size:20px;user-select:none}.cel-event-row.dragging{opacity:.5}@media(max-width:900px){.cel-event-layout{grid-template-columns:1fr}}
+        </style>
+        <div class="cel-event-admin">
+        <h2>Temps forts de l’année</h2><p>Prépare chaque événement indépendamment de ton accueil standard. Seul ton choix enregistré dans « Accueil actif » change la vitrine publique.</p>
+        <div class="cel-event-top">
+        <label><strong>Accueil actif</strong><select name="cel_event[active]"><option value="0">Accueil standard</option>
+        <?php foreach($terms as $term): ?><option value="<?php echo (int)$term->term_id; ?>" <?php selected($active,$term->term_id); ?>><?php echo esc_html($term->name); ?></option><?php endforeach; ?>
+        </select></label>
+        <label><strong>Événement à préparer</strong><select class="cel-event-edit">
+        <?php foreach($terms as $term): ?><option value="<?php echo (int)$term->term_id; ?>" <?php selected($active,$term->term_id); ?>><?php echo esc_html($term->name); ?></option><?php endforeach; ?>
+        </select></label><span>Préparer un événement ne l’active pas.</span></div>
+        <input type="hidden" name="cel_event[json]" class="cel-event-json">
+        <div class="cel-event-tabs"><?php foreach($types as $key=>$label): ?><button type="button" class="cel-event-tab" data-key="<?php echo esc_attr($key); ?>"><?php echo esc_html($label); ?></button><?php endforeach; ?></div>
+        <p><label><strong>Mode de cette rubrique</strong> <select class="cel-event-mode"><option value="auto">Automatique : contenus liés à l’événement</option><option value="manual">Manuel : choisir et ordonner</option><option value="standard">Conserver l’accueil standard</option></select></label></p>
+        <div class="cel-event-layout">
+        <section class="cel-event-panel"><h3 class="cel-event-selected-title">Contenus affichés</h3><p class="cel-event-help"></p><div class="cel-event-selected"></div><button type="submit" class="button button-primary" style="background:#e98932;border-color:#d47b29;margin-top:12px">Enregistrer la configuration</button></section>
+        <section class="cel-event-panel"><h3>Contenus disponibles</h3><input type="search" class="cel-event-search" placeholder="Rechercher un contenu…"><div class="cel-event-filters"><button type="button" class="cel-event-filter is-current" data-filter="event">Cet événement</button><button type="button" class="cel-event-filter" data-filter="all">Tous les contenus</button></div><div class="cel-event-library"></div></section>
+        </div><p>En l’absence de contenu disponible, la rubrique conserve sa sélection standard.</p>
+        <script type="application/json" class="cel-event-data"><?php echo wp_json_encode(['profiles'=>$profiles,'library'=>$library,'limits'=>$limits],JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT); ?></script>
+        </div>
+        <script>
+        (function(){
+          const root=document.querySelector('.cel-event-admin');if(!root)return;
+          const data=JSON.parse(root.querySelector('.cel-event-data').textContent),profiles=data.profiles,library=data.library;
+          const edit=root.querySelector('.cel-event-edit'),mode=root.querySelector('.cel-event-mode'),search=root.querySelector('.cel-event-search'),left=root.querySelector('.cel-event-selected'),right=root.querySelector('.cel-event-library'),hidden=root.querySelector('.cel-event-json');
+          let key='news',filter='event';
+          function current(){return profiles[edit.value]&&profiles[edit.value][key]}
+          function eligible(p){return key==='news'||p.type===key}
+          function eventMatch(p){return p.events.includes(Number(edit.value))}
+          function sync(){hidden.value=JSON.stringify(profiles)}
+          function node(tag,cls,txt){const el=document.createElement(tag);if(cls)el.className=cls;if(txt!==undefined)el.textContent=txt;return el}
+          function button(txt,action,disabled){const b=node('button','button',txt);b.type='button';b.disabled=!!disabled;b.onclick=action;return b}
+          function row(p){const r=node('div','cel-event-row');if(p.image){const img=node('img');img.src=p.image;img.alt='';r.append(img)}const name=node('div','cel-event-name');name.append(node('strong','',p.title),node('small','',p.label));r.append(name);return r}
+          function render(){
+            sync();const state=current();left.replaceChildren();right.replaceChildren();if(!state)return;
+            mode.value=state.mode;
+            root.querySelectorAll('.cel-event-tab').forEach(b=>b.classList.toggle('is-current',b.dataset.key===key));
+            root.querySelectorAll('.cel-event-filter').forEach(b=>b.classList.toggle('is-current',b.dataset.filter===filter));
+            const matches=library.filter(p=>eligible(p)&&eventMatch(p));
+            const ids=state.mode==='manual'?state.ids:state.mode==='auto'?matches.slice(0,data.limits[key]).map(p=>p.id):[];
+            const visible=ids.map(id=>library.find(p=>p.id===id&&eligible(p))).filter(Boolean);
+            root.querySelector('.cel-event-selected-title').textContent='Contenus affichés ('+visible.length+')';
+            root.querySelector('.cel-event-help').textContent=state.mode==='manual'?'Déplace les contenus avec la poignée ou les flèches. Maximum : '+data.limits[key]:state.mode==='auto'?'Sélection automatique, du plus récent au plus ancien.':'La sélection standard sera utilisée.';
+            if(!visible.length)left.append(node('p','','Aucun contenu sélectionné. La rubrique standard reste disponible.'));
+            visible.forEach((p,i)=>{
+              const r=row(p);
+              if(state.mode==='manual'){
+                const grip=node('span','cel-event-grip','⠿ '+(i+1));r.prepend(grip);r.dataset.id=p.id;
+                grip.addEventListener('pointerdown',e=>{
+                  if(e.button!==0)return;e.preventDefault();grip.setPointerCapture(e.pointerId);let target=p.id;r.classList.add('dragging');
+                  function move(ev){const hit=Array.from(left.children).find(el=>{const rect=el.getBoundingClientRect();return el.dataset.id&&ev.clientY>=rect.top&&ev.clientY<=rect.bottom});if(hit)target=Number(hit.dataset.id)}
+                  function finish(ev){grip.removeEventListener('pointermove',move);grip.removeEventListener('pointerup',finish);grip.removeEventListener('pointercancel',finish);if(ev.type==='pointerup'&&target!==p.id){const from=state.ids.indexOf(p.id),to=state.ids.indexOf(target);state.ids.splice(from,1);state.ids.splice(to,0,p.id)}render()}
+                  grip.addEventListener('pointermove',move);grip.addEventListener('pointerup',finish);grip.addEventListener('pointercancel',finish);
+                });
+                [-1,1].forEach(step=>r.append(button(step<0?'↑':'↓',()=>{const j=state.ids.indexOf(p.id),k=state.ids.indexOf(visible[i+step].id);[state.ids[j],state.ids[k]]=[state.ids[k],state.ids[j]];render()},i+step<0||i+step>=visible.length)));
+                r.append(button('×',()=>{state.ids=state.ids.filter(id=>id!==p.id);render()}));
+              }left.append(r);
+            });
+            const q=search.value.toLocaleLowerCase().trim();
+            const available=library.filter(p=>eligible(p)&&(filter==='all'||eventMatch(p))&&(p.title+' '+p.label).toLocaleLowerCase().includes(q));
+            if(!available.length)right.append(node('p','','Aucun contenu disponible pour ce filtre.'));
+            available.forEach(p=>{
+              const r=row(p),checked=ids.includes(p.id);r.classList.toggle('is-selected',checked);
+              const cb=node('input');cb.type='checkbox';cb.checked=checked;cb.disabled=state.mode!=='manual'||(!checked&&state.ids.length>=data.limits[key]);cb.setAttribute('aria-label','Sélectionner '+p.title);
+              cb.onchange=()=>{if(cb.checked){if(!state.ids.includes(p.id)&&state.ids.length<data.limits[key])state.ids.push(p.id)}else state.ids=state.ids.filter(id=>id!==p.id);render()};r.append(cb);right.append(r);
+            });
+          }
+          edit.onchange=()=>{search.value='';filter='event';render()};mode.onchange=()=>{const state=current();if(!state)return;if(mode.value==='manual'&&state.mode==='auto'&&!state.ids.length)state.ids=library.filter(p=>eligible(p)&&eventMatch(p)).slice(0,data.limits[key]).map(p=>p.id);state.mode=mode.value;render()};
+          root.querySelectorAll('.cel-event-tab').forEach(b=>b.onclick=()=>{key=b.dataset.key;search.value='';render()});
+          root.querySelectorAll('.cel-event-filter').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;render()});
+          search.oninput=render;root.closest('form').addEventListener('submit',sync);render();
+        })();
+        </script>
+        <?php
     }
     static function save_events(array $raw): void {
         $tax=Celestin_Library::TAX['evenement'];$active=absint($raw['active']??0);
         if($active&&!term_exists($active,$tax))$active=0;
-        $out=['active'=>$active,'profiles'=>[]];
-        foreach((array)($raw['profiles']??[]) as $id=>$p){
+        $old=get_option(self::EVENT_OPTION,[]);$out=['active'=>$active,'profiles'=>$old['profiles']??[]];
+        $profiles=json_decode((string)($raw['json']??''),true);
+        if(is_array($profiles))foreach($profiles as $id=>$p){
             $id=absint($id);if(!$id||!term_exists($id,$tax)||!is_array($p))continue;
-            $v=['mode'=>($p['mode']??'')==='manual'?'manual':'auto','sections'=>[],'manual'=>[]];
-            foreach(['news','cel_livre','cel_histoire','cel_coloriage'] as $key){
-                $v['sections'][$key]=!empty($p['sections'][$key]);
-                $v['manual'][$key]=array_values(array_unique(array_filter(array_map('absint',(array)($p['manual'][$key]??[])))));
+            $v=['sections'=>[],'manual'=>[],'modes'=>[]];
+            foreach(['news'=>8,'cel_livre'=>1,'cel_histoire'=>3,'cel_coloriage'=>4] as $key=>$limit){
+                $state=$p[$key]??[];$mode=$state['mode']??'auto';if(!in_array($mode,['auto','manual','standard'],true))$mode='auto';
+                $v['modes'][$key]=$mode;$v['sections'][$key]=$mode!=='standard';
+                $ids=array_values(array_unique(array_filter(array_map('absint',(array)($state['ids']??[])))));
+                $ids=array_values(array_filter($ids,fn($pid)=>get_post_status($pid)==='publish'&&in_array(get_post_type($pid),$key==='news'?['cel_livre','cel_histoire','cel_coloriage']:[$key],true)));
+                $v['manual'][$key]=array_slice($ids,0,$limit);
             }
             $out['profiles'][$id]=$v;
         }
@@ -113,11 +187,12 @@ final class Celestin_Home {
         if(is_admin()||!is_front_page())return [];
         $cfg=get_option(self::EVENT_OPTION,[]);$id=absint($cfg['active']??0);if(!$id)return [];
         $p=$cfg['profiles'][$id]??[];if(empty($p['sections'][$key]))return [];
-        $args=['post_type'=>$key==='news'?['cel_livre','cel_histoire','cel_coloriage']:$key,'post_status'=>'publish','posts_per_page'=>$limit,'orderby'=>'date','order'=>'DESC','tax_query'=>[['taxonomy'=>Celestin_Library::TAX['evenement'],'field'=>'term_id','terms'=>[$id]]]];
-        if(($p['mode']??'auto')==='manual'){
+        $mode=$p['modes'][$key]??$p['mode']??'auto';if($mode==='standard')return [];
+        $args=['post_type'=>$key==='news'?['cel_livre','cel_histoire','cel_coloriage']:$key,'post_status'=>'publish','posts_per_page'=>$limit,'orderby'=>'date','order'=>'DESC'];
+        if($mode==='manual'){
             $ids=array_filter(array_map('absint',(array)($p['manual'][$key]??[])));if(!$ids)return [];
             $args['post__in']=$ids;$args['orderby']='post__in';
-        }
+        }else $args['tax_query']=[['taxonomy'=>Celestin_Library::TAX['evenement'],'field'=>'term_id','terms'=>[$id]]];
         return get_posts($args);
     }
     static function featured_settings(): void {

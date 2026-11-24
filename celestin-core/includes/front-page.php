@@ -340,9 +340,6 @@ body.cel-page .cel-feature-book-slide .cel-feature-layout .cel-news-cel_livre .c
 body.cel-page .cel-feature-book-slide .cel-news-image-link:before,body.cel-page .cel-feature-book-slide .cel-news-image-link:after,body.cel-page .cel-feature-book-slide .cel-card-image:before{content:none!important}
 body.cel-page .cel-feature-book-slide .cel-news-image-link img{width:100%;height:100%;object-fit:contain;display:block;border-radius:inherit;box-shadow:none}
 body.cel-page .cel-feature-slider .cel-news-theme-list>span.cel-news-activity-type{background:#e98932;color:#fff;font-weight:800}
-/* Superposition orange uniforme sur tous les slides de nouveautés. */
-body.cel-page .cel-feature-slider>.cel-feature-slide{--cel-slide-light:#ffead6!important;--cel-slide-mid:#f4ad63!important;--cel-slide-dark:#b65c19!important;background:linear-gradient(110deg,#f4ad63,#ffead6)!important}
-body.cel-page .cel-feature-slider .cel-feature-slide .cel-feature-backdrop::after{background:#e98932!important;opacity:.23!important}
 </style>
 
 </head>

@@ -418,7 +418,7 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
     <div class="cel-identity-stack" aria-live="polite">
     <?php foreach($characters as $index=>$person): ?>
      <article class="cel-identity-card" <?php if($index)echo 'inert aria-hidden="true"'; ?>>
-      <div class="cel-identity-top"><span>CARTE D’IDENTITÉ</span><span>FLEURIVILLE</span></div>
+      <div class="cel-identity-top"><span>CARTE D’IDENTITÉ</span><span><?php echo esc_html(sprintf("N° FV-%06d",$person->ID)); ?></span></div>
       <div class="cel-identity-body"><div class="cel-identity-photo-column"><div class="cel-identity-portrait"><?php echo Celestin_Public::illustration($person->ID,'medium_large'); ?></div><div class="cel-identity-location"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg><span>Fleuriville</span></div></div>
       <div class="cel-identity-info">
       <?php $name=trim(Celestin_Fields::value($person->ID,'prenom').' '.Celestin_Fields::value($person->ID,'nom')); $birthday=Celestin_Fields::value($person->ID,'anniversaire');$age=Celestin_Fields::value($person->ID,'age'); ?>

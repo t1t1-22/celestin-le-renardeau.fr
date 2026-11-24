@@ -102,3 +102,20 @@ body.cel-book-custom-editor #wpcontent{background:#fcf7ef}
 .cel-tax-details .cel-tax-add{display:block;width:100%;text-align:left;white-space:normal;height:auto;padding:9px 12px;margin:8px 0 0;background:#fff0dc!important;border:1px dashed #dca36d!important;color:#8a471c!important;border-radius:8px!important;font-weight:600}.cel-tax-details .cel-tax-add[hidden]{display:none!important}.cel-tax-details .cel-tax-add:hover{background:#ffe2b9!important}
 
 .cel-activity-type-picker select{flex:1;min-width:0;width:100%;max-width:none;border:1px solid #d2c2b1;border-radius:8px;padding:9px 12px;background:#fffdfa;color:#633619}.cel-activity-type-open{font-size:22px!important;min-width:40px;background:#e98932!important;color:white!important;border-color:#d47b29!important}.cel-activity-type-create{margin-top:10px}.cel-activity-type-create[hidden]{display:none!important}.cel-activity-type-status{color:#80532b;margin:6px 0 0;font-size:12px}
+
+/* Éditeur personnage : un portrait unique, visible dans tous les onglets. */
+.post-type-cel_personnage.cel-book-custom-editor #normal-sortables>.postbox:not(#cel_structured),.post-type-cel_personnage.cel-book-custom-editor #advanced-sortables>.postbox{display:none!important}
+.post-type-cel_personnage.cel-book-custom-editor .wrap>h1{color:#633619;font-weight:800}
+.post-type-cel_personnage.cel-book-custom-editor .wrap>.page-title-action{background:#e98932;color:#fff;border-color:#d47b29;border-radius:22px}
+.cel-person-editor{display:grid;grid-template-columns:minmax(180px,250px) minmax(0,1fr);align-items:start;gap:24px;margin-top:20px}
+.cel-person-portrait{position:sticky;top:110px;background:#fff7eb;border:1px solid #ead5bb;border-radius:16px;padding:14px;text-align:center}
+.cel-person-portrait .cel-section-image{margin:0;padding:0;border:0;background:none}
+.cel-person-portrait .cel-section-image-preview{width:100%;max-height:330px;object-fit:contain;margin:10px auto;border-radius:12px}
+.cel-person-portrait .cel-section-image-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:5px}
+.cel-person-portrait .button{border-color:#e4c4a1;color:#77431f;background:#fffdfa;border-radius:8px}
+.cel-person-live-name{color:#633619;font-size:20px;margin:16px 0 4px}
+.cel-person-portrait>p{color:#94603c;font-size:12px}
+.cel-person-panels{min-width:0}
+.cel-person-panels .cel-form-panel{padding-top:0}
+.cel-person-panels .cel-field select{width:100%;max-width:none;border:1px solid #e3c9aa;border-radius:8px;padding:6px 10px}
+@media(max-width:782px){.cel-person-editor{grid-template-columns:1fr}.cel-person-portrait{position:static}.cel-person-portrait .cel-section-image-preview{max-height:200px}}

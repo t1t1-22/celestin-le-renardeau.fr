@@ -593,3 +593,7 @@ body.cel-page .cel-feature-duration svg{width:18px;height:18px}
 
 body.cel-page .cel-feature-slider .cel-feature-copy .cel-feature-duration{display:flex!important;align-items:center!important;gap:6px!important;font-size:13px!important;line-height:1.4!important}
 body.cel-page .cel-feature-slider .cel-feature-copy .cel-feature-duration>svg{width:16px!important;height:16px!important;min-width:16px!important;max-width:16px!important;max-height:16px!important;flex:0 0 16px!important;display:inline-block!important}
+
+/* Activités : cadre blanc et fond coloré derrière les feuilles, comme les portraits. */
+body.cel-page .cel-feature-slider .cel-feature-layout article.cel-news-cel_coloriage>.cel-card-image{background:linear-gradient(145deg,#f8d399,#efaa62)!important;border-radius:12px!important;overflow:hidden!important}
+body.cel-page .cel-feature-slider .cel-feature-layout article.cel-news-cel_coloriage{background:#fffdfa!important}

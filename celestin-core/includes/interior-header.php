@@ -1,5 +1,6 @@
 <?php if(!defined('ABSPATH'))exit;
 $options=Celestin_Home::options();
+if(empty($options['instagram']))$options['instagram']='https://www.instagram.com/p/Dc9A04JjPZq/';
 $socials=[
  'facebook'=>['Facebook','<path fill="currentColor" d="M14 21v-8h3l.5-3H14V8c0-1 .4-2 2-2h2V3a20 20 0 0 0-3-.3c-3 0-5 1.8-5 5V10H7v3h3v8z"/>'],
  'instagram'=>['Instagram','<rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/>'],

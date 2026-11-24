@@ -107,8 +107,8 @@ final class Celestin_Fields {
             wp_enqueue_script('cel-admin-pdfjs','https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',[],'3.11.174',true);
             wp_enqueue_script('cel-pdf-preview',plugins_url('../assets/pdf-preview.js',__FILE__),['jquery','cel-admin-pdfjs'],'0.4.30',true);
         }
-        wp_enqueue_style('cel-fields',plugins_url('../assets/fields.css',__FILE__),[],'0.4.30');
-        wp_enqueue_script('cel-fields',plugins_url('../assets/fields.js',__FILE__),['jquery'],'0.4.31',true);
+        wp_enqueue_style('cel-fields',plugins_url('../assets/fields.css',__FILE__),[],'0.4.32');
+        wp_enqueue_script('cel-fields',plugins_url('../assets/fields.js',__FILE__),['jquery'],'0.4.32',true);
         if($screen->post_type==='cel_coloriage'){
             wp_add_inline_style('cel-fields','
 .post-type-cel_coloriage #wpcontent{background:#fcf7ef}
@@ -152,6 +152,7 @@ final class Celestin_Fields {
         wp_nonce_field('cel_fields_save','cel_fields_nonce');
         $groups=self::fields_for($post);
         if(in_array($post->post_type,['cel_livre','cel_histoire'],true))echo '<div class="cel-editor-heading"><span>Bibliothèque Célestin</span><h2>'.($post->post_type==='cel_livre'?'Fiche du livre':'Fiche de la mini-histoire audio').'</h2></div>';
+        if($post->post_type==='cel_personnage')echo '<div class="cel-editor-heading"><span>Les habitants de Fleuriville</span><h2>Fiche personnage</h2></div>';
         if($post->post_type==='cel_coloriage')echo '<div class="cel-editor-heading"><span>Les petites activités de Célestin</span><h2>Fiche de l’activité</h2></div>';
         if($post->post_type==='cel_coloriage')echo '<div class="cel-book-title-slot cel-activity-title"><label for="cel-book-title">Titre de l’activité</label><input id="cel-book-title" name="cel_book_title" type="text" value="'.esc_attr($post->post_title).'" placeholder="Nom de l’activité"></div>';
         echo '<div class="cel-form-head"><p>'.($post->post_type==='cel_personnage'?'Le titre du personnage est généré automatiquement avec le prénom et le nom. ':'').'Complète les champs ci-dessous : la page du site sera construite automatiquement. Les champs vides ne seront pas affichés.</p></div>';
@@ -165,12 +166,17 @@ final class Celestin_Fields {
         if($post->post_type==='cel_personnage') echo '<button type="button" role="tab" data-tab="extras" class="cel-form-tab" aria-selected="false">Attributs personnalisés</button>';
         echo '<button type="button" role="tab" data-tab="relations" class="cel-form-tab" aria-selected="false">'.($post->post_type==='cel_livre'?'Contenus associés':'Associations').'</button>';
         echo '</div>';
-        if(in_array($post->post_type,['cel_livre','cel_histoire','cel_coloriage'],true)){
+        if(in_array($post->post_type,['cel_livre','cel_histoire','cel_coloriage','cel_personnage'],true)){
             echo '<div class="cel-book-savebar"><span class="cel-book-save-label">'.esc_html($post->post_status==='publish'?'Contenu publié':'Contenu en préparation').'</span><button type="button" class="cel-book-preview-action">Prévisualiser</button><button type="button" class="cel-book-save-action">'.esc_html($post->post_status==='publish'?'Enregistrer les modifications':'Enregistrer le brouillon').'</button>';
             if($post->post_status!=='publish')echo '<button type="button" class="cel-book-publish-action">Publier</button>';
             echo '</div>';
         }
 
+        if($post->post_type==='cel_personnage'){
+            echo '<div class="cel-person-editor"><aside class="cel-person-portrait">';
+            self::section_image($post,'identite','Identité');
+            echo '<h3 class="cel-person-live-name">'.esc_html(trim(self::value($post->ID,'prenom').' '.self::value($post->ID,'nom'))?:'Nouveau personnage').'</h3><p>Portrait de référence pour tous les onglets.</p></aside><div class="cel-person-panels">';
+        }
         $i=0;
         foreach($groups as $slug=>$group) {
           echo '<section class="cel-form-panel" data-panel="'.esc_attr($slug).'"'.($i?' hidden':'').'>';
@@ -194,7 +200,7 @@ final class Celestin_Fields {
             if($post->post_type==='cel_livre' && $slug==='principal') Celestin_Library::identity($post);
             if($post->post_type==='cel_livre' && $slug==='fichier'){
                 echo '<div id="cel-pdf-preview"><h3>Aperçu des pages du livre</h3><p class="cel-pdf-status" aria-live="polite">Choisis le PDF pour afficher ses pages.</p><div class="cel-admin-reader" hidden><button type="button" class="button cel-admin-prev">←</button><div class="cel-admin-spread"><canvas></canvas><canvas></canvas></div><button type="button" class="button cel-admin-next">→</button><p class="cel-admin-counter"></p></div><div class="cel-pdf-grid"></div></div>';
-            } elseif(!in_array($post->post_type,['cel_livre','cel_histoire','cel_coloriage'],true)) self::section_image($post,$slug,$title);
+            } elseif(!in_array($post->post_type,['cel_livre','cel_histoire','cel_coloriage'],true)&&!($post->post_type==='cel_personnage'&&$slug==='identite')) self::section_image($post,$slug,$title);
           }
           echo '</section>';
           $i++;
@@ -202,6 +208,7 @@ final class Celestin_Fields {
         if($post->post_type==='cel_personnage') self::extras($post);
         if(in_array($post->post_type,['cel_livre','cel_histoire','cel_coloriage'],true))Celestin_Library::categories($post);
         self::relations($post);
+        if($post->post_type==='cel_personnage')echo '</div></div>';
     }
     // Image dédiée à chaque onglet, sans avoir à manipuler les réglages WordPress.
     // La photo d'identité / image principale est aussi la vignette automatique.
@@ -242,7 +249,13 @@ final class Celestin_Fields {
         $long=in_array($key,['points_livre','description','anecdote','resume','texte','histoire','synchronisation','qualites','defauts','aime','deteste','peurs','reves'],true);
         $media=in_array($key,['audio','resume_audio','pdf','couverture_arriere'],true);
         echo '<div class="cel-field'.(($long||in_array($key,['audio','resume_audio'],true))?' cel-field-wide':'').'"><label for="cel_f_'.esc_attr($key).'">'.esc_html($label).'</label>';
-        if($key==='type' && $post->post_type==='cel_coloriage'){
+        if($key==='genre' && $post->post_type==='cel_personnage'){
+            $genres=['Masculin','Féminin','Autre','Non précisé'];
+            if($value!==''&&!in_array($value,$genres,true))$genres[]=$value;
+            echo '<select id="cel_f_genre" name="cel_f[genre]"><option value="">Sélectionner un genre</option>';
+            foreach($genres as $genre)echo '<option value="'.esc_attr($genre).'"'.selected($value,$genre,false).'>'.esc_html($genre).'</option>';
+            echo '</select>';
+        } elseif($key==='type' && $post->post_type==='cel_coloriage'){
             $types=self::activity_types();if($value!==''&&!in_array($value,$types,true))$types[]=$value;
             echo '<div class="cel-activity-type-picker" data-nonce="'.esc_attr(wp_create_nonce('cel_activity_type')).'"><div class="cel-input-row"><select id="cel_f_type" name="cel_f[type]"><option value="">Sélectionner un type</option>';
             foreach($types as $type)echo '<option value="'.esc_attr($type).'"'.selected($value,$type,false).'>'.esc_html($type).'</option>';

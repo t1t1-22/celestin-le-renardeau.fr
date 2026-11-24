@@ -23,7 +23,7 @@ final class Celestin_Fields {
         'audio'=>['Audio et texte'=>['audio'=>'Narration MP3','texte'=>'Texte intégral','synchronisation'=>'Repères de synchronisation (facultatif)']]
       ],
       'cel_coloriage' => [
-        'principal'=>['Activité'=>['resume'=>'Présentation','type'=>'Type d’activité (coloriage, jeu, découpage…)','pdf'=>'Fichier PDF à imprimer']]
+        'principal'=>['Activité'=>['resume'=>'Présentation','type'=>'Type d’activité','pdf'=>'Fichier PDF à imprimer']]
       ],
       'cel_lieu' => [
         'principal'=>['Lieu de Fleuriville'=>['resume'=>'Description du lieu','histoire'=>'Son histoire','adresse'=>'Emplacement ou repère sur la carte']]
@@ -32,6 +32,7 @@ final class Celestin_Fields {
 
     static function init(): void {
         add_action('init',[__CLASS__,'remove_editor'],30);
+        add_action('wp_ajax_cel_activity_type_add',[__CLASS__,'add_activity_type']);
         add_filter('wp_insert_post_data',[__CLASS__,'automatic_character_title'],20,2);
         add_action('add_meta_boxes',[__CLASS__,'boxes'],30);
         add_action('save_post',[__CLASS__,'save'],20,2);
@@ -92,10 +93,10 @@ final class Celestin_Fields {
         wp_enqueue_media();
         if($screen->post_type==='cel_livre'){
             wp_enqueue_script('cel-admin-pdfjs','https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',[],'3.11.174',true);
-            wp_enqueue_script('cel-pdf-preview',plugins_url('../assets/pdf-preview.js',__FILE__),['jquery','cel-admin-pdfjs'],'0.4.26',true);
+            wp_enqueue_script('cel-pdf-preview',plugins_url('../assets/pdf-preview.js',__FILE__),['jquery','cel-admin-pdfjs'],'0.4.30',true);
         }
-        wp_enqueue_style('cel-fields',plugins_url('../assets/fields.css',__FILE__),[],'0.4.26');
-        wp_enqueue_script('cel-fields',plugins_url('../assets/fields.js',__FILE__),['jquery'],'0.4.26',true);
+        wp_enqueue_style('cel-fields',plugins_url('../assets/fields.css',__FILE__),[],'0.4.30');
+        wp_enqueue_script('cel-fields',plugins_url('../assets/fields.js',__FILE__),['jquery'],'0.4.30',true);
         if($screen->post_type==='cel_personnage')wp_add_inline_style('cel-fields','#post-body-content #titlediv{display:none!important}');
     }
     static function render(WP_Post $post): void {
@@ -157,6 +158,23 @@ final class Celestin_Fields {
         echo '<img class="cel-section-image-preview" src="'.esc_url($url?:'').'" alt="Aperçu de l’illustration" style="display:'.($url?'block':'none').'">';
         echo '<div class="cel-section-image-actions"><button type="button" class="button cel-select-section-image">Choisir une image</button> <button type="button" class="button cel-remove-section-image">Retirer</button></div></div>';
     }
+    static function activity_types(): array {
+        $values=array_merge(['Coloriage','Jeu','Découpage','Labyrinthe','Jeu des différences'],(array)get_option('cel_activity_types',[]));
+        foreach(get_posts(['post_type'=>'cel_coloriage','post_status'=>'any','posts_per_page'=>-1,'fields'=>'ids']) as $id){
+            $v=trim((string)get_post_meta($id,'_cel_f_type',true));if($v!=='')$values[]=$v;
+        }
+        $unique=[];foreach($values as $v){if(!is_string($v)||!trim($v))continue;$unique[mb_strtolower(trim($v))]=trim($v);}
+        $values=array_values($unique);natcasesort($values);return array_values($values);
+    }
+    static function add_activity_type(): void {
+        check_ajax_referer('cel_activity_type','nonce');
+        if(!current_user_can('manage_options'))wp_send_json_error('Accès refusé.',403);
+        $name=trim(sanitize_text_field(wp_unslash($_POST['name']??'')));
+        if(!$name||mb_strlen($name)>150)wp_send_json_error('Indique un nom valide.',400);
+        foreach(self::activity_types() as $value)if(mb_strtolower($value)===mb_strtolower($name))wp_send_json_success(['name'=>$value]);
+        $values=(array)get_option('cel_activity_types',[]);$values[]=$name;update_option('cel_activity_types',$values,false);
+        wp_send_json_success(['name'=>$name]);
+    }
     static function field(WP_Post $post,string $key,string $label): void {
         $value=(string)get_post_meta($post->ID,'_cel_f_'.$key,true);
         // Continuité avec les fiches de la version précédente.
@@ -166,7 +184,12 @@ final class Celestin_Fields {
         $long=in_array($key,['points_livre','description','anecdote','resume','texte','histoire','synchronisation','qualites','defauts','aime','deteste','peurs','reves'],true);
         $media=in_array($key,['audio','resume_audio','pdf','couverture_arriere'],true);
         echo '<div class="cel-field'.(($long||in_array($key,['audio','resume_audio'],true))?' cel-field-wide':'').'"><label for="cel_f_'.esc_attr($key).'">'.esc_html($label).'</label>';
-        if($long) {
+        if($key==='type' && $post->post_type==='cel_coloriage'){
+            $types=self::activity_types();if($value!==''&&!in_array($value,$types,true))$types[]=$value;
+            echo '<div class="cel-activity-type-picker" data-nonce="'.esc_attr(wp_create_nonce('cel_activity_type')).'"><div class="cel-input-row"><select id="cel_f_type" name="cel_f[type]"><option value="">Sélectionner un type</option>';
+            foreach($types as $type)echo '<option value="'.esc_attr($type).'"'.selected($value,$type,false).'>'.esc_html($type).'</option>';
+            echo '</select><button type="button" class="button cel-activity-type-open" aria-label="Ajouter un type d’activité" aria-expanded="false">+</button></div><div class="cel-activity-type-create" hidden><div class="cel-input-row"><input type="text" class="cel-activity-type-name" maxlength="150" placeholder="Nouveau type d’activité" aria-label="Nouveau type d’activité"><button type="button" class="button cel-activity-type-add">Ajouter</button></div></div><p class="cel-activity-type-status" role="status"></p></div>';
+        } elseif($long) {
             echo '<textarea id="cel_f_'.esc_attr($key).'" name="cel_f['.esc_attr($key).']" rows="'.($key==='texte'?12:($key==='synchronisation'?5:4)).'">'.esc_textarea($value).'</textarea>';
             if($key==='synchronisation') echo '<p class="description">Facultatif : une ligne par phrase, sous la forme <code>0.0|Première phrase</code> puis <code>4.5|Deuxième phrase</code>. À ajuster en écoutant le MP3.</p>';
         } else {

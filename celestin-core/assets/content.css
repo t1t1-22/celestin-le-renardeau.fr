@@ -40,3 +40,18 @@ body.cel-content-page{font-family:Nunito,sans-serif!important}
 .cel-book-reader:fullscreen,.cel-book-reader.expanded{background:#fdf0df;overflow:auto;padding:20px}.cel-book-reader:fullscreen .cel-reader-spread{max-width:calc((100vh - 140px)*2)}
 @media(max-width:950px){.cel-book-intro{grid-template-columns:35% 1fr}.cel-book-note{grid-column:1/-1;transform:none}.cel-reader-layout{grid-template-columns:90px 1fr}}
 @media(max-width:720px){.cel-book-intro{grid-template-columns:1fr;gap:18px}.cel-book-cover{max-width:330px;width:100%;margin:auto}.cel-reader-layout{display:flex;flex-direction:column-reverse;gap:10px}.cel-reader-thumbs{flex-direction:row;max-height:95px;overflow-x:auto}.cel-reader-thumbs button{min-width:65px}.cel-reader-spread.single>canvas.cel-reader-right{width:100%}.cel-reader-flip{width:100%!important;left:0!important}.cel-reader-controls{gap:6px}.cel-reader-counter{font-size:12px}.cel-reader-controls button{min-width:32px;padding:5px 8px}}
+
+/* Résumé aligné sur la couverture, développé à la demande. */
+.cel-book-intro-copy{min-width:0}
+.cel-book-resume-wrap{position:relative}
+.cel-book-resume{font-size:17px;line-height:1.55;margin:0;overflow:hidden}
+.cel-book-resume p{margin:0 0 .65em}
+.cel-book-resume.is-collapsed{mask-image:linear-gradient(to bottom,#000 0%,#000 80%,transparent 100%)}
+.cel-resume-toggle{border:0;background:transparent;color:#a0521b;font:800 17px 'Baloo 2',sans-serif;padding:4px 0;cursor:pointer;text-decoration:underline}
+.cel-resume-toggle[hidden]{display:none}
+.cel-turn-leaf{position:absolute;top:0;width:50%;aspect-ratio:1;z-index:8;transform-style:preserve-3d;pointer-events:none;will-change:transform}
+.cel-turn-leaf.forward{left:50%;transform-origin:left center}
+.cel-turn-leaf.backward{left:0;transform-origin:right center}
+.cel-turn-leaf canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:white;backface-visibility:hidden}
+.cel-turn-leaf .cel-turn-back{transform:rotateY(180deg);box-shadow:inset 12px 0 20px #54381930}
+.cel-turn-leaf .cel-turn-front{box-shadow:inset -12px 0 18px #54381924}

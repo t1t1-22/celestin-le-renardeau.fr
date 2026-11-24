@@ -322,6 +322,12 @@ body.cel-page .cel-feature-layout .cel-news-visual>.cel-news-card{width:100%}
 body.cel-page .cel-news-under-image{display:flex;flex-wrap:wrap;justify-content:center;gap:5px 20px;margin:12px 0 0;color:#633619;font:500 13px/1.5 Nunito,sans-serif;text-align:center}
 body.cel-page .cel-news-under-image strong{font-weight:800}
 body.cel-page .cel-news-under-image strong::after{content:" :"}
+
+body.cel-page .cel-news-themes{display:flex;flex-direction:column;align-items:flex-start;gap:6px;margin:0 0 14px}
+body.cel-page .cel-news-theme-label{font:700 11px/1.3 Nunito,sans-serif;color:#633619;letter-spacing:.04em}
+body.cel-page .cel-news-theme-list{display:flex;flex-wrap:wrap;gap:7px}
+body.cel-page .cel-news-theme-list>span{display:inline-flex;align-items:center;gap:5px;background:#633619;color:#fffaf0;border-radius:7px;padding:5px 10px;font:700 14px/1.35 'Baloo 2',sans-serif}
+body.cel-page .cel-news-theme-list svg{flex:none;width:13px;height:13px}
 </style>
 
 </head>
@@ -398,7 +404,7 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
         </div>
       </article>
       <?php if($story_under_image): ?><div class="cel-news-under-image"><?php foreach($story_under_image as $label=>$value): ?><div><strong><?php echo esc_html($label); ?></strong> <span><?php echo esc_html($value); ?></span></div><?php endforeach; ?></div><?php endif; ?></div>
- <div class="cel-feature-copy"><?php if($kicker): ?><p class="cel-feature-kicker"><?php echo esc_html($kicker); ?></p><?php endif; ?><h2><?php echo esc_html($title); ?></h2>
+ <div class="cel-feature-copy"><?php if($item->post_type==='cel_histoire'&&!is_wp_error($themes)&&$themes): ?><div class="cel-news-themes"><span class="cel-news-theme-label">Les thèmes de cette histoire</span><div class="cel-news-theme-list"><?php foreach($themes as $theme): ?><span><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z"/></svg><?php echo esc_html($theme); ?></span><?php endforeach; ?></div></div><?php elseif($kicker): ?><p class="cel-feature-kicker"><?php echo esc_html($kicker); ?></p><?php endif; ?><h2><?php echo esc_html($title); ?></h2>
  <?php if($story_tags): ?><div class="cel-feature-tags"><?php foreach($story_tags as $tag): ?><span><?php echo esc_html($tag); ?></span><?php endforeach; ?></div><?php endif; ?>
  <?php if($summary): ?><p class="cel-feature-summary"><?php echo esc_html(wp_trim_words(wp_strip_all_tags($summary),$item->post_type==='cel_personnage'?38:65,'…')); ?></p><?php endif; ?>
 <?php if($item->post_type==='cel_personnage'): ?>

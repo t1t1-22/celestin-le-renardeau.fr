@@ -386,3 +386,7 @@ body .cel-contact-bar .cel-social-links a{background:transparent;width:24px;heig
 body .cel-contact-bar .cel-social-links a:hover{background:#633619;color:white}
 body .cel-contact-bar .cel-social-links svg{width:16px;height:16px}
 @media(max-width:600px){body .cel-contact-bar{margin-inline:-16px}body .cel-contact-inner{padding-inline:16px;justify-content:center;flex-wrap:wrap;gap:8px}}
+
+/* Même apparence pour la page active et le survol. */
+body .cel-interior-header nav.cel-nav>a.is-active,body .cel-interior-header nav.cel-nav>a:hover,body .cel-interior-header nav.cel-nav>a:focus-visible,body .cel-interior-header .cel-town-nav>a.is-active,body .cel-interior-header .cel-town-nav>a:hover,body .cel-interior-header .cel-town-nav>a:focus-visible{background:var(--cel-brand-orange)!important;color:#38200e!important;border-radius:9px;transform:none!important}
+body .cel-interior-header nav.cel-nav>a.is-active>span,body .cel-interior-header nav.cel-nav>a:hover>span,body .cel-interior-header nav.cel-nav>a:focus-visible>span{color:#38200e!important}

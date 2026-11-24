@@ -525,3 +525,14 @@ body.cel-page .cel-books .cel-home-cover-card img{display:block;width:100%;heigh
 body.cel-page .cel-books .cel-home-cover-card:hover{transform:translateY(-3px) rotate(-2deg);border-color:#e98932;box-shadow:0 8px 20px #63361930}
 @media(max-width:760px){body.cel-page .cel-books .cel-books-layout{grid-template-columns:1fr;gap:18px}body.cel-page .cel-books .cel-home-cover-card{max-width:245px}}
 @media(prefers-reduced-motion:reduce){body.cel-page .cel-books .cel-home-cover-card{transition:none}body.cel-page .cel-books .cel-home-cover-card:hover{transform:none}}
+
+/* Carrousel stable : toutes les nouveautés occupent la même hauteur naturelle.
+   Les panneaux inactifs participent au calcul de hauteur mais restent invisibles. */
+body.cel-page .cel-feature-slider{display:grid;grid-template-columns:minmax(0,1fr)}
+body.cel-page .cel-feature-slider>.cel-feature-slide{grid-area:1/1;min-width:0;display:flex;align-items:center;box-sizing:border-box}
+body.cel-page .cel-feature-slider>.cel-feature-slide[hidden]{display:flex!important;visibility:hidden!important;pointer-events:none!important}
+body.cel-page .cel-feature-slider>.cel-feature-slide:not([hidden]){visibility:visible;animation:cel-feature-fade .38s ease both}
+body.cel-page .cel-feature-slider .cel-feature-layout{width:100%;box-sizing:border-box}
+body.cel-page .cel-feature-slider .cel-feature-pagination{z-index:5}
+@keyframes cel-feature-fade{from{opacity:0}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){body.cel-page .cel-feature-slider>.cel-feature-slide:not([hidden]){animation:none}}

@@ -41,6 +41,7 @@ $hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_si
  <?php if($options['hero_description']!==''): ?><p class="cel-hero-description"><?php echo nl2br(esc_html($options['hero_description'])); ?></p><?php endif; ?>
  <?php if($options['hero_button']): ?><a class="cel-button cel-primary" href="<?php echo esc_url($options['hero_link']?:'#cel-decouvrir'); ?>"><?php echo esc_html($options['hero_button']); ?> <span aria-hidden="true">→</span></a><?php endif; ?>
  </div>
+ <svg class="cel-hero-wave" viewBox="0 0 1440 65" preserveAspectRatio="none" aria-hidden="true"><path d="M0 20C300 80 500 0 780 30S1200 70 1440 15V65H0Z" fill="#fcf7ef"/></svg>
 </section>
 <section id="cel-decouvrir" class="cel-section cel-news<?php echo $news ? ' cel-news-has-items' : ''; ?>" aria-labelledby="cel-news-h">
   <h2 id="cel-news-h" class="screen-reader-text">Les nouveautés</h2>
@@ -63,7 +64,7 @@ $hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_si
          <a class="cel-news-image-link" href="<?php echo esc_url(get_permalink($item)); ?>" aria-label="<?php echo esc_attr($title); ?>">
          <?php if($img): ?><img src="<?php echo esc_url($img); ?>" alt="" loading="lazy"><?php else: ?><div class="cel-card-placeholder" aria-hidden="true">✦</div><?php endif; ?>
          </a>
-         <span class="cel-card-type"><?php echo esc_html($kind); ?></span>
+         <span class="cel-card-type cel-news-badge">Nouveauté</span>
          <?php if($preview): ?>
          <audio preload="none" src="<?php echo esc_url($preview); ?>"></audio>
          <button type="button" class="cel-audio-toggle" aria-label="<?php echo esc_attr('Écouter le résumé de '.$title); ?>" data-title="<?php echo esc_attr('le résumé de '.$title); ?>" aria-pressed="false">
@@ -71,7 +72,7 @@ $hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_si
          </button><span class="cel-audio-error" role="status" hidden>Audio indisponible.</span>
          <?php endif; ?>
         </div>
-        <div class="cel-card-body"><h3><a href="<?php echo esc_url(get_permalink($item)); ?>"><?php echo esc_html($title); ?></a></h3></div>
+        <div class="cel-card-body"><span class="cel-news-kind"><?php echo esc_html($kind); ?></span><h3><a href="<?php echo esc_url(get_permalink($item)); ?>"><?php echo esc_html($title); ?></a></h3></div>
       </article>
     <?php endforeach; ?>
   </div><div class="cel-news-controls"><button type="button" class="cel-news-prev" aria-label="Nouveautés précédentes">‹</button><button type="button" class="cel-news-pause" aria-label="Mettre le défilement en pause">Pause</button><button type="button" class="cel-news-next" aria-label="Nouveautés suivantes">›</button></div></div>

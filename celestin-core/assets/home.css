@@ -469,3 +469,29 @@ mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='
 }
 
 @media(max-width:720px){body.cel-page .cel-audio-feature>.cel-fox-divider{width:70vw!important}}
+
+/* Carrousel principal de nouveautés, palette extraite de chaque illustration. */
+body.cel-page .cel-feature-slider{position:relative;width:100%;background:#fcf7ef;isolation:isolate}
+body.cel-page .cel-feature-slide{--cel-slide-light:#fff1df;--cel-slide-mid:#f5d8b2;--cel-slide-dark:#8d4d23;background:linear-gradient(110deg,var(--cel-slide-mid),var(--cel-slide-light));padding:42px 24px 65px}
+body.cel-page .cel-feature-slide[hidden]{display:none!important}
+body.cel-page .cel-feature-layout{max-width:1050px;margin:auto;display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:70px;align-items:center;min-height:340px}
+body.cel-page .cel-feature-layout .cel-news-card{width:100%;max-width:320px;margin:auto;box-sizing:border-box;background:#fffdfa;border:2px solid white;border-radius:20px;padding:8px;box-shadow:0 12px 28px #39200e20;transition:transform .23s ease,box-shadow .23s ease,border-color .23s ease}
+body.cel-page .cel-feature-layout .cel-news-card:hover{transform:translateY(-3px) rotate(-2deg);border-color:#e98932;box-shadow:0 0 0 2px #e98932,0 12px 28px #39200e30}
+body.cel-page .cel-feature-layout .cel-card-image{aspect-ratio:1;height:auto;overflow:hidden;border-radius:12px;background:transparent;position:relative}
+body.cel-page .cel-feature-layout .cel-news-image-link{display:block;width:100%;height:100%;padding:0}
+body.cel-page .cel-feature-layout .cel-card-image img{display:block;width:100%;height:100%;object-fit:contain}
+body.cel-page .cel-feature-layout .cel-news-badge{left:8px;right:auto;top:8px;background:#e98932;color:#fff}
+body.cel-page .cel-feature-layout .cel-card-body{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:58px;padding:8px}
+body.cel-page .cel-feature-layout .cel-card-body h3{font-size:18px;margin:4px 0}
+body.cel-page .cel-feature-copy{color:#38251b;min-width:0}
+body.cel-page .cel-feature-kicker{font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:13px;color:#633619}
+body.cel-page .cel-feature-copy h2{font:700 clamp(28px,3vw,46px)/1.15 'Baloo 2',sans-serif;color:#38251b;margin:10px 0 16px}
+body.cel-page .cel-feature-summary{font-size:16px;line-height:1.65;max-width:550px;margin:0 0 24px}
+body.cel-page .cel-feature-link{display:inline-block;border-radius:28px;padding:12px 22px;color:#fff!important;background:#633619;font-weight:700;text-decoration:none;transition:background .2s,transform .2s}
+body.cel-page .cel-feature-link:hover{background:#a8531d;transform:translateY(-2px)}
+body.cel-page .cel-feature-pagination{position:absolute;bottom:17px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px}
+body.cel-page .cel-feature-pagination button{display:block;width:12px;height:12px;padding:0;border-radius:50%;border:1px solid #633619;background:#fffdfa;cursor:pointer}
+body.cel-page .cel-feature-pagination button[aria-current=true]{background:#633619}
+body.cel-page .cel-feature-pagination .cel-feature-pause{width:25px;height:25px;background:#fffdfa;color:#633619;font-size:12px;margin-left:5px}
+@media(max-width:720px){body.cel-page .cel-feature-layout{grid-template-columns:1fr;gap:20px;text-align:center;min-height:0}body.cel-page .cel-feature-layout .cel-news-card{max-width:220px}body.cel-page .cel-feature-slide{padding:24px 18px 55px}body.cel-page .cel-feature-summary{margin-inline:auto;font-size:14px}}
+@media(prefers-reduced-motion:reduce){body.cel-page .cel-feature-layout .cel-news-card{transition:none}body.cel-page .cel-feature-layout .cel-news-card:hover{transform:none}}

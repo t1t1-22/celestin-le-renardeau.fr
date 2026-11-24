@@ -13,5 +13,5 @@ $type=$p->post_type;
         elseif($type==='cel_histoire') Celestin_Public::story($p->ID);
         else Celestin_Public::simple($p->ID,$type); ?>
 </main>
-<footer class="cel-content-footer"><a href="<?php echo esc_url(home_url('/')); ?>">Célestin le renardeau · Revenir à l’accueil</a></footer>
+<?php require __DIR__.'/shared-footer.php'; ?>
 <?php wp_footer(); ?></body></html>

@@ -53,6 +53,7 @@ $summary=$summary?:$item->post_excerpt;
 $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir ce livre','cel_coloriage'=>'Découvrir cette activité','cel_personnage'=>'Rencontrer ce personnage'][$item->post_type]??'Découvrir';
 ?>
 <div class="cel-feature-slide" <?php if($idx!==0)echo 'hidden'; ?> data-slide="<?php echo esc_attr($idx); ?>">
+ <?php if($img): ?><div class="cel-feature-backdrop" aria-hidden="true"><img src="<?php echo esc_url(get_the_post_thumbnail_url($item->ID,'large')?:$img); ?>" alt="" decoding="async"></div><?php endif; ?>
  <div class="cel-feature-layout">
        <article class="cel-card cel-news-card cel-news-<?php echo esc_attr($item->post_type); ?>">
         <div class="cel-card-image">

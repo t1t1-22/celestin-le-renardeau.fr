@@ -333,11 +333,11 @@ final class Celestin_Fields {
         echo '<button class="button cel-remove-extra" type="button" aria-label="Supprimer la caractéristique">×</button></div>';
     }
 
-    const KINDS=['parent'=>'Est le parent de','child'=>'Est l’enfant de','spouse'=>'Est marié(e) avec','sibling'=>'Est frère ou sœur de','half'=>'Est demi-frère ou demi-sœur de','friend'=>'Est ami(e) avec'];
+    const KINDS=['parent'=>'Est le parent de','child'=>'Est l’enfant de','spouse'=>'Est marié(e) avec','sibling'=>'Est frère ou sœur de','half'=>'Est demi-frère ou demi-sœur de','friend'=>'Est ami(e) avec','bestfriend'=>'Est meilleur(e) ami(e) avec','neighbor'=>'Est voisin(e) de','classmate'=>'Est camarade de classe de','colleague'=>'Est collègue de','acquaintance'=>'Est une connaissance de'];
     static function family_graph(bool $public=false): array {
         $ids=get_posts(['post_type'=>'cel_personnage','post_status'=>$public?['publish']:['publish','draft','private','pending','future'],'posts_per_page'=>-1,'fields'=>'ids']);
         $valid=array_fill_keys($ids,true);$g=[];$direct=[];
-        $inverse=['parent'=>'child','child'=>'parent','spouse'=>'spouse','sibling'=>'sibling','half'=>'half','friend'=>'friend','grandparent'=>'grandchild','grandchild'=>'grandparent'];
+        $inverse=['parent'=>'child','child'=>'parent','spouse'=>'spouse','sibling'=>'sibling','half'=>'half','friend'=>'friend','bestfriend'=>'bestfriend','neighbor'=>'neighbor','classmate'=>'classmate','colleague'=>'colleague','acquaintance'=>'acquaintance','grandparent'=>'grandchild','grandchild'=>'grandparent'];
         $add=function($a,$b,$kind,$explicit=false)use(&$g,&$direct,$valid,$inverse){
             if($a===$b||!isset($valid[$a],$valid[$b],$inverse[$kind]))return false;
             if($explicit){$direct[$a][$kind][$b]=true;$direct[$b][$inverse[$kind]][$a]=true;}
@@ -380,29 +380,49 @@ final class Celestin_Fields {
     static function family_label(string $kind,int $other): string {
         $gender=mb_strtolower(trim(self::value($other,'genre')));
         $f=in_array($gender,['féminin','feminin','femme','fille'],true);$m=in_array($gender,['masculin','homme','garçon','garcon'],true);
-        $labels=['parent'=>[$f?'Fille':($m?'Fils':'Enfant')],'child'=>[$f?'Mère':($m?'Père':'Parent')],'spouse'=>[$f?'Épouse':($m?'Époux':'Conjoint(e)')],'sibling'=>[$f?'Sœur':($m?'Frère':'Frère ou sœur')],'half'=>[$f?'Demi-sœur':($m?'Demi-frère':'Demi-frère ou demi-sœur')],'friend'=>[$f?'Amie':($m?'Ami':'Ami(e)')],'grandparent'=>[$f?'Petite-fille':($m?'Petit-fils':'Petit-enfant')],'grandchild'=>[$f?'Grand-mère':($m?'Grand-père':'Grand-parent')]];
+        $labels=['parent'=>[$f?'Fille':($m?'Fils':'Enfant')],'child'=>[$f?'Mère':($m?'Père':'Parent')],'spouse'=>[$f?'Épouse':($m?'Époux':'Conjoint(e)')],'sibling'=>[$f?'Sœur':($m?'Frère':'Frère ou sœur')],'half'=>[$f?'Demi-sœur':($m?'Demi-frère':'Demi-frère ou demi-sœur')],'friend'=>[$f?'Amie':($m?'Ami':'Ami(e)')],'bestfriend'=>[$f?'Meilleure amie':($m?'Meilleur ami':'Meilleur(e) ami(e)')],'neighbor'=>[$f?'Voisine':($m?'Voisin':'Voisin(e)')],'classmate'=>['Camarade de classe'],'colleague'=>['Collègue'],'acquaintance'=>['Connaissance'],'grandparent'=>[$f?'Petite-fille':($m?'Petit-fils':'Petit-enfant')],'grandchild'=>[$f?'Grand-mère':($m?'Grand-père':'Grand-parent')]];
         return $labels[$kind][0]??'Proche';
     }
     static function family_panel(WP_Post $post): void {
         $items=get_posts(['post_type'=>'cel_personnage','post_status'=>['publish','draft','private','pending','future'],'posts_per_page'=>-1,'exclude'=>[$post->ID],'orderby'=>'title','order'=>'ASC']);
         $items=array_values(array_filter($items,fn($p)=>current_user_can('edit_post',$p->ID)));
         $rows=get_post_meta($post->ID,'_cel_family_links',true);if(!is_array($rows))$rows=[];
-        $row=function($value)use($items){
-            echo '<div class="cel-family-row" style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0"><select name="cel_family_kind[]" aria-label="Lien du personnage">';
-            foreach(self::KINDS as $kind=>$label)echo '<option value="'.esc_attr($kind).'"'.selected($value['kind']??'',$kind,false).'>'.esc_html($label).'</option>';
-            echo '</select><select name="cel_family_id[]" aria-label="Autre personnage"><option value="">Choisir un personnage</option>';
-            foreach($items as $item)echo '<option value="'.(int)$item->ID.'"'.selected((int)($value['id']??0),$item->ID,false).'>'.esc_html($item->post_title).'</option>';
-            echo '</select><button type="button" class="button cel-family-remove">Retirer</button></div>';
-        };
-        echo '<section class="cel-form-panel" data-panel="family" hidden><h3>Famille et relations</h3><p>Déclare le lien depuis ce personnage. Les liens réciproques et les déductions apparaissent automatiquement après enregistrement.</p><input type="hidden" name="cel_family_present" value="1"><div id="cel-family-rows">';
-        foreach($rows as $value)if(is_array($value))$row($value);
-        echo '</div><template id="cel-family-template">';$row([]);echo '</template><button type="button" class="button" id="cel-family-add">+ Ajouter un lien</button>';
-        [$graph,$direct]=self::family_graph();echo '<h3 style="margin-top:25px">Relations calculées et réciproques</h3><p>Les frères et sœurs partagent leurs parents dans cet univers; un conjoint est considéré comme coparent. Utilise demi-frère ou demi-sœur si nécessaire.</p><div style="display:grid;gap:8px">';
-        foreach($graph[$post->ID]??[] as $kind=>$others)foreach(array_keys($others) as $other){
-            if(!current_user_can('edit_post',$other))continue;
-            echo '<div style="display:flex;align-items:center;gap:12px;padding:8px;border:1px solid #ead5bb;border-radius:10px">'.get_the_post_thumbnail($other,[48,48]).'<a href="'.esc_url(get_edit_post_link($other)).'">'.esc_html(get_the_title($other)).'</a><strong>'.esc_html(self::family_label($kind,$other)).'</strong><small>'.(isset($direct[$post->ID][$kind][$other])?'Renseigné / réciproque':'Déduit automatiquement').'</small></div>';
+        $manual=[];foreach($rows as $row)if(is_array($row)&&isset(self::KINDS[$row['kind']??'']))$manual[(int)$row['id']][]=$row['kind'];
+        [$graph,$direct]=self::family_graph();$known=[];
+        foreach($graph[$post->ID]??[] as $kind=>$others)foreach(array_keys($others) as $other)$known[$other][]=$kind;
+        $groups=['manual'=>[],'auto'=>[],'none'=>[]];
+        foreach($items as $item){
+            $id=$item->ID;
+            $groups[isset($manual[$id])?'manual':(isset($known[$id])?'auto':'none')][]=$item;
         }
-        echo '</div></section><script>document.addEventListener("click",function(e){if(e.target.id==="cel-family-add"){const t=document.getElementById("cel-family-template");document.getElementById("cel-family-rows").append(t.content.cloneNode(true))}if(e.target.classList.contains("cel-family-remove"))e.target.closest(".cel-family-row").remove()})</script>';
+        $labels=['manual'=>['Relations manuelles','Liens que tu as renseignés sur cette fiche.'],'auto'=>['Relations automatiques','Liens réciproques ou déduits à partir des autres fiches. Tu peux aussi préciser une relation sociale.'],'none'=>['Personnages sans relation','Choisis un lien sous le portrait ou laisse « Aucun lien ».']];
+        echo '<section class="cel-form-panel" data-panel="family" hidden><h3>Famille et relations</h3><p>Choisis le lien de chaque personnage par rapport à '.esc_html($post->post_title?:'cette fiche').'. Les amitiés ne sont jamais déduites des liens familiaux.</p><input type="hidden" name="cel_family_present" value="1">';
+        echo '<style>.cel-family-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,155px),1fr));gap:12px;margin:12px 0 25px}.cel-family-card{min-width:0;background:#fffdfa;border:1px solid #ead5bb;border-radius:12px;padding:9px;display:flex;flex-direction:column;gap:7px}.cel-family-card[data-group=manual]{border-color:#e98932}.cel-family-card[data-group=auto]{background:#fff7eb}.cel-family-photo{width:100%;aspect-ratio:1/1;background:#f4e3cc;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center}.cel-family-photo img{width:100%;height:100%;object-fit:contain}.cel-family-card a{color:#633619;font-weight:700;line-height:1.3;text-decoration:none}.cel-family-card select{width:100%;max-width:100%;min-width:0;border:1px solid #e4c4a1;border-radius:7px;font-size:12px}.cel-family-tag{color:#89512a;background:#f3e5d2;padding:4px 6px;border-radius:6px;font-size:12px}.cel-family-card .cel-family-add-social{border:0;background:none;color:#a76129;text-align:left;cursor:pointer;padding:3px}.cel-family-heading{margin-top:22px!important}</style>';
+        foreach($groups as $group=>$people){
+            echo '<h3 class="cel-family-heading">'.esc_html($labels[$group][0]).' ('.count($people).')</h3><p>'.esc_html($labels[$group][1]).'</p>';
+            if(!$people){echo '<p class="description">Aucun personnage dans cette catégorie.</p>';continue;}
+            echo '<div class="cel-family-grid">';
+            foreach($people as $item){
+                $id=$item->ID;$local=array_values(array_unique($manual[$id]??[]));$all=array_values(array_unique($known[$id]??[]));
+                echo '<article class="cel-family-card" data-group="'.esc_attr($group).'"><div class="cel-family-photo">'.(has_post_thumbnail($item)?get_the_post_thumbnail($item,'medium'):'<span>Portrait à venir</span>').'</div><a href="'.esc_url(get_edit_post_link($id)).'">'.esc_html($item->post_title).'</a>';
+                foreach($all as $kind)if(!in_array($kind,$local,true)){
+                    echo '<span class="cel-family-tag">'.esc_html(self::family_label($kind,$id)).' · '.(isset($direct[$post->ID][$kind][$id])?'Réciproque':'Déduit').'</span>';
+                }
+                $select=function($current)use($id,$all,$local){
+                    echo '<select name="cel_family_cards['.(int)$id.'][]" aria-label="'.esc_attr('Lien avec '.get_the_title($id)).'"><option value="">Aucun lien manuel</option>';
+                    foreach(self::KINDS as $kind=>$label){
+                        if(in_array($kind,$all,true)&&!in_array($kind,$local,true)&&$kind!==$current)continue;
+                        echo '<option value="'.esc_attr($kind).'"'.selected($current,$kind,false).'>'.esc_html(self::family_label($kind,$id)).'</option>';
+                    }
+                    echo '</select>';
+                };
+                echo '<div class="cel-family-selects" style="display:grid;gap:6px">';
+                foreach($local?:[''] as $kind)$select($kind);
+                echo '</div><template>';$select('');echo '</template><button type="button" class="cel-family-add-social">+ Autre lien</button></article>';
+            }
+            echo '</div>';
+        }
+        echo '</section><script>document.addEventListener("click",function(e){const button=e.target.closest(".cel-family-add-social");if(!button)return;const card=button.closest(".cel-family-card");card.querySelector(".cel-family-selects").append(card.querySelector("template").content.cloneNode(true))})</script>';
     }
 
     static function relations(WP_Post $post): void {
@@ -489,6 +509,17 @@ final class Celestin_Fields {
         if($post->post_type==='cel_personnage'&&isset($_POST['cel_family_present'])){
             $k=(array)wp_unslash($_POST['cel_family_kind']??[]);$others=(array)wp_unslash($_POST['cel_family_id']??[]);$links=[];
             foreach($k as $i=>$kind){if(!is_string($kind)||!isset(self::KINDS[$kind]))continue;$other=absint($others[$i]??0);if(!$other||$other===$id||get_post_type($other)!=='cel_personnage'||!current_user_can('edit_post',$other))continue;$links[$kind.':'.$other]=['kind'=>$kind,'id'=>$other];}
+            if(isset($_POST['cel_family_cards'])&&is_array($_POST['cel_family_cards'])){
+                foreach(wp_unslash($_POST['cel_family_cards']) as $other=>$kinds){
+                    $other=absint($other);if(!$other||$other===$id||get_post_type($other)!=='cel_personnage'||!current_user_can('edit_post',$other)||!is_array($kinds))continue;
+                    foreach($kinds as $kind)if(is_string($kind)&&isset(self::KINDS[$kind]))$links[$kind.':'.$other]=['kind'=>$kind,'id'=>$other];
+                }
+                // Conserver les relations vers les fiches que cet utilisateur ne peut pas modifier.
+                foreach((array)get_post_meta($id,'_cel_family_links',true) as $old){
+                    if(!is_array($old))continue;$other=absint($old['id']??0);$kind=$old['kind']??'';
+                    if($other&&get_post_type($other)==='cel_personnage'&&!current_user_can('edit_post',$other)&&isset(self::KINDS[$kind]))$links[$kind.':'.$other]=$old;
+                }
+            }
             update_post_meta($id,'_cel_family_links',array_values($links));
         }
         $r=isset($_POST['cel_relation'])&&is_array($_POST['cel_relation'])?wp_unslash($_POST['cel_relation']):[];

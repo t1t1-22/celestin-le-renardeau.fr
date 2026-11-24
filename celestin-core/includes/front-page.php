@@ -20,6 +20,29 @@ $links=[
 <meta charset="<?php bloginfo('charset'); ?>">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <?php wp_head(); ?>
+<style>
+body.cel-page .cel-book-editorial .cel-books-layout{grid-template-columns:minmax(0, .9fr) minmax(0,1.1fr);gap:clamp(32px,6vw,85px);max-width:1000px;padding:30px 12px;align-items:center}
+body.cel-page .cel-book-editorial .cel-book-description{background:transparent;border:0;padding:0;box-shadow:none}
+body.cel-page .cel-book-editorial .cel-book-editorial-title{font:700 clamp(27px,3vw,38px)/1.15 'Baloo 2',sans-serif;margin:0 0 15px;color:#633619}
+body.cel-page .cel-book-editorial-title a{color:inherit;text-decoration:none}
+body.cel-page .cel-book-editorial .cel-book-preview{padding:15px 28px 25px 12px;perspective:1100px}
+body.cel-page .cel-book-editorial .cel-book-preview .cel-book-mockup{position:relative;isolation:isolate;display:block;max-width:340px;padding:0;border:0;border-radius:3px 6px 6px 3px;background:#fff5e7;transform:rotateY(-15deg) rotateZ(-3deg);box-shadow:12px 18px 24px #63361938;overflow:visible}
+body.cel-page .cel-book-editorial .cel-book-mockup:after{content:"";position:absolute;left:100%;top:3px;bottom:3px;width:18px;background:repeating-linear-gradient(90deg,#e7d9c4 0 1px,#fffaf1 1px 3px);transform-origin:left;transform:skewY(27deg);border-right:3px solid #bc8148;border-radius:0 3px 3px 0;z-index:-1}
+body.cel-page .cel-book-editorial .cel-book-mockup img{border-radius:3px 6px 6px 3px;box-shadow:inset 5px 0 7px #0002}
+body.cel-page .cel-book-editorial .cel-book-preview .cel-book-mockup:hover{transform:rotateY(-8deg) rotateZ(-1deg) translateY(-3px);box-shadow:12px 20px 30px #63361944}
+body.cel-page .cel-book-editorial .cel-feature-tags{margin-bottom:17px}
+body.cel-page .cel-book-editorial .cel-book-more summary{list-style:none;cursor:pointer;color:#633619;font-size:15px;line-height:1.65}
+body.cel-page .cel-book-editorial .cel-book-more summary::-webkit-details-marker{display:none}
+body.cel-page .cel-book-editorial .cel-book-more-label{display:block;color:#a75721;font-weight:700;font-size:14px;margin-top:5px}
+body.cel-page .cel-book-editorial .cel-book-close,body.cel-page .cel-book-editorial .cel-book-more[open] .cel-book-open,body.cel-page .cel-book-editorial .cel-book-more[open] .cel-book-excerpt{display:none}
+body.cel-page .cel-book-editorial .cel-book-more[open] .cel-book-close{display:inline}
+body.cel-page .cel-book-editorial .cel-book-listen{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:15px 0;color:#633619;font-size:14px;font-weight:700}
+body.cel-page .cel-book-editorial .cel-book-listen audio{width:100%;max-width:350px;height:42px}
+body.cel-page .cel-book-editorial .cel-home-book-all{margin-top:18px;background:#633619;color:white!important}
+@media(max-width:760px){body.cel-page .cel-book-editorial .cel-books-layout{grid-template-columns:1fr;gap:12px;padding:15px 8px}body.cel-page .cel-book-editorial .cel-book-preview .cel-book-mockup{max-width:240px}body.cel-page .cel-book-editorial .cel-feature-tags{justify-content:flex-start}}
+@media(prefers-reduced-motion:reduce){body.cel-page .cel-book-editorial .cel-book-preview .cel-book-mockup:hover{transform:rotateY(-15deg) rotateZ(-3deg)}}
+</style>
+
 </head>
 <body <?php body_class('cel-page'); ?>>
 <?php wp_body_open(); ?>
@@ -124,27 +147,25 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
 
 <?php endif; ?>
 
-<section class="cel-section cel-books" aria-labelledby="cel-book-title">
- <h2 id="cel-book-title" class="cel-section-title"><span>✦</span> Les livres <span>✦</span></h2>
+<section class="cel-section cel-books cel-book-editorial" aria-label="Livre à découvrir">
  <?php if($book):
-   $book_image=get_the_post_thumbnail_url($book->ID,'large');
-   $book_resume=Celestin_Fields::value($book->ID,'resume');
-   $book_month=Celestin_Fields::value($book->ID,'mois');
-   $book_collection=Celestin_Fields::value($book->ID,'collection');
-   $book_activities=Celestin_Fields::linked($book->ID,'cel_coloriage');
+ $book_resume=Celestin_Fields::value($book->ID,'resume');
+ $book_short=wp_trim_words(wp_strip_all_tags($book_resume),45,'…');
+ $book_audio=Celestin_Fields::value($book->ID,'resume_audio');
  ?>
  <div class="cel-books-layout">
-   <div class="cel-book-preview">
-     <a class="cel-home-cover-card" href="<?php echo esc_url(get_permalink($book)); ?>" aria-label="<?php echo esc_attr('Découvrir '.$book->post_title); ?>">
-     <?php echo Celestin_Public::illustration($book->ID,'large'); ?>
-     </a>
-   </div>
-   <div class="cel-book-description">
-    <h3><a href="<?php echo esc_url(get_permalink($book)); ?>"><?php echo esc_html($book->post_title); ?></a></h3>
-    <?php if($book_resume): ?><div class="cel-home-book-summary"><?php echo wpautop(esc_html($book_resume)); ?></div><?php endif; ?>
-    <div class="cel-chips"><?php foreach(['categorie','collection','mois','saison','age_lecture','evenement'] as $key): $value=Celestin_Fields::value($book->ID,$key); if($value): ?><span><?php echo esc_html($value); ?></span><?php endif; endforeach; ?></div>
-    <a class="cel-button cel-primary cel-home-book-all" href="<?php echo esc_url(Celestin_Home::url('cel_livre')); ?>">Découvrir tous les livres →</a>
-   </div>
+ <div class="cel-book-preview">
+ <a class="cel-home-cover-card cel-book-mockup" href="<?php echo esc_url(get_permalink($book)); ?>" aria-label="<?php echo esc_attr('Découvrir '.$book->post_title); ?>">
+ <?php echo Celestin_Public::illustration($book->ID,'large'); ?>
+ </a>
+ </div>
+ <div class="cel-book-description">
+ <h2 class="cel-book-editorial-title"><a href="<?php echo esc_url(get_permalink($book)); ?>"><?php echo esc_html($book->post_title); ?></a></h2>
+ <div class="cel-feature-tags"><?php foreach(['categorie'=>'Thème','collection'=>'Collection','saison'=>'Saison','mois'=>'Parution','age_lecture'=>'Âge','evenement'=>'Événement'] as $key=>$label): $value=Celestin_Fields::value($book->ID,$key); if($value): ?><span><?php echo esc_html($label.' : '.$value); ?></span><?php endif; endforeach; ?></div>
+ <?php if($book_resume): ?><div class="cel-home-book-summary"><?php if($book_short!==wp_strip_all_tags($book_resume) && mb_strlen($book_short)<mb_strlen(wp_strip_all_tags($book_resume))): ?><details class="cel-book-more"><summary><span class="cel-book-excerpt"><?php echo esc_html($book_short); ?></span><span class="cel-book-more-label"><span class="cel-book-open">Lire plus +</span><span class="cel-book-close">Lire moins −</span></span></summary><div class="cel-book-full"><?php echo wpautop(esc_html($book_resume)); ?></div></details><?php else: ?><p><?php echo esc_html($book_resume); ?></p><?php endif; ?></div><?php endif; ?>
+ <?php if($book_audio): ?><div class="cel-book-listen"><span>Écouter le résumé</span><audio controls preload="none" src="<?php echo esc_url($book_audio); ?>" aria-label="Écouter le résumé du livre"></audio></div><?php endif; ?>
+ <a class="cel-feature-link cel-home-book-all" href="<?php echo esc_url(Celestin_Home::url('cel_livre')); ?>">Découvrir tous les livres →</a>
+ </div>
  </div>
  <?php else: ?><p class="cel-home-empty">Sélectionne un livre depuis sa fiche WordPress pour l’afficher ici.</p><?php endif; ?>
 </section>

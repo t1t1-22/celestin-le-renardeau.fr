@@ -539,7 +539,7 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
  <div class="cel-origin-inner"><div class="cel-origin-copy">
  <h2 id="cel-origin-title"><?php echo esc_html($options['origin_title']); ?></h2>
  <p><?php echo esc_html($options['origin_description']); ?></p>
- <?php $origin_link=$options['origin_link']; if(!$origin_link){$origin_page=get_page_by_path('les-origines-de-celestin');if($origin_page&&$origin_page->post_status==='publish')$origin_link=get_permalink($origin_page);} ?>
+ <?php $origin_link=$options['origin_link']; if(!$origin_link){$origin_page=null;foreach(['origine','origines','les-origines-de-celestin','origine-de-celestin'] as $slug){$candidate=get_page_by_path($slug);if($candidate&&$candidate->post_status==='publish'){$origin_page=$candidate;break;}}if($origin_page&&$origin_page->post_status==='publish')$origin_link=get_permalink($origin_page);} ?>
  <?php if($origin_link): ?><a class="cel-origin-button" href="<?php echo esc_url($origin_link); ?>"><?php echo esc_html($options['origin_button']); ?> →</a><?php else: ?><span class="cel-origin-button cel-origin-pending"><?php echo esc_html($options['origin_button']); ?> · Bientôt</span><?php endif; ?>
  </div></div>
 </section>

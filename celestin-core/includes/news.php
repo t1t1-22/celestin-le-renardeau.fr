@@ -12,28 +12,48 @@ final class Celestin_News {
  }
  static function selection(){
   if(!current_user_can('manage_options'))return;
-  echo '<div class="cel-news-admin"><style>.cel-news-admin{color:#633619}.cel-news-admin h1{font-weight:800;color:#633619;font-size:28px}.cel-news-admin .cel-news-columns{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:24px;align-items:start}.cel-news-admin .cel-news-group{background:#fff8ef;border:1px solid #ead5bb;border-radius:14px;padding:14px;min-width:0}.cel-news-admin .cel-news-group h2{font-size:17px;color:#633619;margin:0 0 15px}.cel-news-admin .cel-news-items{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,135px),1fr));gap:10px}.cel-news-admin label:has(input:checked){border-color:#e98932!important;box-shadow:0 0 0 1px #e98932}.cel-news-admin input[type=checkbox]:checked:before{filter:sepia(1) saturate(5)}.cel-news-admin .button-primary{background:#e98932;border-color:#d47b29;border-radius:20px;padding:4px 18px;font-weight:700}@media(max-width:1100px){.cel-news-admin .cel-news-columns{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){.cel-news-admin .cel-news-columns{grid-template-columns:1fr}}</style><h1>Les nouveautés</h1><p>Choisis les contenus publiés à afficher dans le carrousel de la page d’accueil. Les fiches restent accessibles normalement, même si tu les décoches.</p>';
-  if(isset($_GET['saved']))echo '<div class="notice notice-success is-dismissible"><p>Sélection enregistrée.</p></div>';
-
   $order=array_values(array_map(fn($p)=>(int)$p->ID,Celestin_Home::cards()));
-  echo '<div class="cel-news-order"><h2>Ordre du carrousel</h2><p>Maintiens la poignée ⠿ à gauche et déplace-la vers une autre ligne, ou utilise les flèches. La première carte sera affichée en premier.</p><input type="hidden" name="cel_news_order" id="cel-news-order-value" value="'.esc_attr(implode(',',$order)).'"><div id="cel-news-order-list"></div><p id="cel-news-order-empty">Sélectionne des contenus ci-dessous.</p><button type="submit" class="button button-primary" style="margin-top:12px">Enregistrer l’ordre des nouveautés</button></div>';
-  echo '<div class="cel-news-columns">';
-  foreach(self::TYPES as $type=>$label){
-   $items=get_posts(['post_type'=>$type,'post_status'=>'publish','posts_per_page'=>-1,'orderby'=>'date','order'=>'DESC']);
-   echo '<section class="cel-news-group"><h2>'.esc_html($label).'</h2><div class="cel-news-items">';
-   if(!$items)echo '<p>Aucun contenu publié.</p>';
-   foreach($items as $p){
-    echo '<label style="display:flex;flex-direction:column;gap:9px;padding:12px;background:white;border:1px solid #e5d4c0;border-radius:12px;cursor:pointer"><span style="height:130px;background:#fff7eb;display:flex;align-items:center;justify-content:center;overflow:hidden">';
-    echo has_post_thumbnail($p)?get_the_post_thumbnail($p,'medium',['style'=>'width:100%;height:100%;object-fit:contain']):'<span>Illustration à venir</span>';
-    echo '</span><span><input type="checkbox" name="cel_news_ids[]" value="'.(int)$p->ID.'"'.checked(get_post_meta($p->ID,'_cel_en_nouveaute',true),'1',false).'> '.esc_html($p->post_title).'</span></label>';
-   }
-   echo '</div></section>';
-  }
-  echo '</div>';
-  echo '</div>';
-
-  echo '<style>.cel-news-order{background:#fff8ef;border:1px solid #ead5bb;border-radius:14px;padding:16px;margin-top:20px}.cel-news-order-row{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #ead5bb;border-radius:10px;padding:8px 12px;margin:7px 0;cursor:grab}.cel-news-order-row img{width:52px;height:52px;object-fit:contain;border-radius:6px}.cel-news-order-row strong{flex:1}.cel-news-order-row button{border-color:#e4c4a1;color:#77431f;background:#fff7eb;border-radius:8px}.cel-news-order-row.dragging{opacity:.45}</style>';
-  echo '<script type="application/json" id="cel-news-order-data">'.wp_json_encode($order).'</script>';
+  ?>
+  <style>
+  .cel-news-admin{color:#633619}.cel-news-admin h2,.cel-news-admin h3{color:#633619}
+  .cel-news-layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:22px;align-items:start;margin-top:20px}
+  .cel-news-order,.cel-news-library{background:#fff8ef;border:1px solid #ead5bb;border-radius:16px;padding:18px;min-width:0}
+  .cel-news-order-row,.cel-news-choice{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #ead5bb;border-radius:10px;padding:8px;margin:8px 0}
+  .cel-news-order-row img,.cel-news-choice img{width:56px!important;height:56px!important;object-fit:contain;border-radius:6px;flex:none}
+  .cel-news-order-row strong,.cel-news-choice span{flex:1;min-width:0;overflow-wrap:anywhere}
+  .cel-news-order-row button,.cel-news-admin .cel-news-filter{border:1px solid #e4c4a1;color:#77431f;background:#fff7eb;border-radius:8px;padding:5px 10px;cursor:pointer}
+  .cel-news-admin .cel-news-filter.active,.cel-news-admin .cel-news-save{background:#e98932!important;color:white!important;border-color:#d47b29!important}
+  .cel-news-admin .cel-news-save{border-radius:10px;padding:7px 15px;margin-top:12px;font-weight:700}
+  .cel-news-order-row.dragging{opacity:.55}.cel-news-choice{cursor:pointer}.cel-news-choice input{accent-color:#e98932}
+  .cel-news-choice:has(input:checked){border-color:#e98932;background:#fff3e3}
+  .cel-news-admin .cel-news-filters{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+  .cel-news-admin .cel-news-search{width:100%;border:1px solid #e4c4a1;border-radius:8px;margin-bottom:8px}
+  .cel-news-admin [hidden]{display:none!important}.cel-news-library .cel-news-items{max-height:580px;overflow:auto}
+  .cel-news-choice small{display:block;color:#94603c}.cel-news-order-row .cel-news-grip{color:#a7622b}
+  @media(max-width:900px){.cel-news-layout{grid-template-columns:1fr}}
+  </style>
+  <div class="cel-news-admin">
+  <h2>Les nouveautés de l’accueil</h2><p>Compose ton carrousel et choisis dans quel ordre les contenus apparaissent.</p>
+  <div class="cel-news-layout">
+  <section class="cel-news-order"><h3>Slides affichés <span id="cel-news-count"></span></h3><p>Déplace les lignes avec la poignée ou les flèches.</p>
+  <input type="hidden" name="cel_news_order" id="cel-news-order-value" value="<?php echo esc_attr(implode(',',$order)); ?>">
+  <div id="cel-news-order-list"></div><p id="cel-news-order-empty">Ajoute des contenus depuis la bibliothèque.</p>
+  <button type="submit" class="button button-primary cel-news-save">Enregistrer les nouveautés</button></section>
+  <section class="cel-news-library"><h3>Contenus disponibles</h3><input class="cel-news-search" type="search" placeholder="Rechercher un contenu…" aria-label="Rechercher un contenu">
+  <div class="cel-news-filters"><button type="button" class="cel-news-filter active" data-type="">Tous</button>
+  <?php foreach(self::TYPES as $type=>$label): ?><button type="button" class="cel-news-filter" data-type="<?php echo esc_attr($type); ?>"><?php echo esc_html($label); ?></button><?php endforeach; ?></div>
+  <div class="cel-news-items">
+  <?php foreach(self::TYPES as $type=>$label): foreach(get_posts(['post_type'=>$type,'post_status'=>'publish','posts_per_page'=>-1,'orderby'=>'date','order'=>'DESC']) as $p): ?>
+  <label class="cel-news-choice" data-type="<?php echo esc_attr($type); ?>">
+  <?php echo get_the_post_thumbnail($p,'thumbnail'); ?>
+  <span><strong><?php echo esc_html($p->post_title); ?></strong><small><?php echo esc_html($label); ?></small></span>
+  <input type="checkbox" name="cel_news_ids[]" value="<?php echo (int)$p->ID; ?>" <?php checked(get_post_meta($p->ID,'_cel_en_nouveaute',true),'1'); ?> aria-label="<?php echo esc_attr('Ajouter '.$p->post_title); ?>">
+  </label>
+  <?php endforeach; endforeach; ?>
+  </div></section></div>
+  <script type="application/json" id="cel-news-order-data"><?php echo wp_json_encode($order); ?></script>
+  </div>
+  <?php
   ?>
   <script>
   function initCelNewsOrder(){
@@ -41,7 +61,7 @@ final class Celestin_News {
     const list=root.querySelector('#cel-news-order-list'),hidden=root.querySelector('#cel-news-order-value'),empty=root.querySelector('#cel-news-order-empty');
     const inputs=Array.from(root.querySelectorAll('input[name="cel_news_ids[]"]'));
     let order=JSON.parse(root.querySelector('#cel-news-order-data').textContent).map(String),drag=null;
-    function sync(){hidden.value=order.join(',');empty.hidden=order.length>0;}
+    function sync(){hidden.value=order.join(',');empty.hidden=order.length>0;root.querySelector('#cel-news-count').textContent='('+order.length+')';}
     function render(){
       const active=inputs.filter(x=>x.checked).map(x=>x.value);
       order=order.filter(id=>active.includes(id));active.forEach(id=>{if(!order.includes(id))order.push(id)});
@@ -50,8 +70,9 @@ final class Celestin_News {
         const input=inputs.find(x=>x.value===id),label=input.closest('label'),row=document.createElement('div');row.className='cel-news-order-row';row.draggable=true;row.dataset.id=id;
         const grip=document.createElement('span');grip.textContent='⠿ '+(index+1);grip.className='cel-news-grip';grip.style.cssText='cursor:grab;touch-action:none;user-select:none;font-size:22px;padding:8px';row.append(grip);row.draggable=false;
         const image=label.querySelector('img');if(image){const thumb=image.cloneNode(true);thumb.draggable=false;row.append(thumb)}
-        const title=document.createElement('strong');title.textContent=input.parentElement.textContent.trim();row.append(title);
+        const title=document.createElement('strong');title.textContent=label.querySelector('strong').textContent.trim();row.append(title);
         [-1,1].forEach(step=>{const button=document.createElement('button');button.type='button';button.className='button';button.textContent=step<0?'↑':'↓';button.setAttribute('aria-label',step<0?'Monter '+title.textContent:'Descendre '+title.textContent);button.disabled=index+step<0||index+step>=order.length;button.onclick=()=>{[order[index],order[index+step]]=[order[index+step],order[index]];render()};row.append(button)});
+        const remove=document.createElement('button');remove.type='button';remove.textContent='×';remove.setAttribute('aria-label','Retirer '+title.textContent);remove.onclick=()=>{input.checked=false;render()};row.append(remove);
         grip.addEventListener('pointerdown',e=>{
           if(e.button!==0)return;e.preventDefault();grip.setPointerCapture(e.pointerId);
           const startY=e.clientY;let target=id;row.classList.add('dragging');grip.style.cursor='grabbing';
@@ -75,6 +96,9 @@ final class Celestin_News {
       });sync();
     }
     inputs.forEach(input=>input.addEventListener('change',render));
+    let type='';const search=root.querySelector('.cel-news-search');
+    function filter(){const q=search.value.toLocaleLowerCase().trim();root.querySelectorAll('.cel-news-choice').forEach(el=>{el.hidden=!!((type&&el.dataset.type!==type)||!el.textContent.toLocaleLowerCase().includes(q))})}
+    root.querySelectorAll('.cel-news-filter').forEach(btn=>btn.addEventListener('click',()=>{type=btn.dataset.type;root.querySelectorAll('.cel-news-filter').forEach(b=>b.classList.toggle('active',b===btn));filter()}));search.addEventListener('input',filter);
     const form=root.closest('form');if(form)form.addEventListener('submit',sync);
     render();
   }

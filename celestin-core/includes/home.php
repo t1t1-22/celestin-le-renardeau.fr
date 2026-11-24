@@ -91,6 +91,7 @@ final class Celestin_Home {
         $o = self::options();
         $tabs = [
             'identite' => ['Identité visuelle', 'dashicons-admin-appearance'],
+            'reseaux' => ['Réseaux sociaux', 'dashicons-share'],
             'accueil' => ['Page d’accueil', 'dashicons-admin-home'],
             'rubriques' => ['Contenus mis en avant', 'dashicons-screenoptions'],
             'nouveautes' => ['Nouveautés', 'dashicons-megaphone'],
@@ -120,7 +121,9 @@ final class Celestin_Home {
         echo '<h2>Identité visuelle</h2><p>Le logo en haut du site est aussi utilisé dans le pied de page si aucun autre n’est sélectionné.</p>';
         self::image_setting('logo', 'Logo principal (haut du site)', $o);
         self::image_setting('footer_logo', 'Logo alternatif pour le pied de page (facultatif)', $o);
-        echo '<h2>Réseaux sociaux</h2><p>Les icônes apparaissent dans le header des pages intérieures lorsque leur lien est renseigné.</p>';
+        echo '</section>';
+        echo '<section id="cel-panel-reseaux" class="cel-design-panel" role="tabpanel" aria-labelledby="cel-tab-reseaux"' . ($active !== 'reseaux' ? ' hidden' : '') . '>';
+        echo '<h2>Réseaux sociaux</h2><p>Les liens renseignés sont utilisés dans l’en-tête du site.</p>';
         foreach(['facebook'=>'Facebook','instagram'=>'Instagram','pinterest'=>'Pinterest'] as $key=>$label)self::text_setting($key,'Lien '.$label,$o);
         echo '</section>';
 
@@ -196,7 +199,7 @@ final class Celestin_Home {
         }
         update_option(self::OPTION,$out);
         if(isset($_POST['cel_news_present']))Celestin_News::save_selection((array)($_POST['cel_news_ids']??[]));
-        $allowed_tabs = ['identite', 'accueil', 'rubriques', 'nouveautes', 'fleuriville', 'newsletter'];
+        $allowed_tabs = ['identite', 'reseaux', 'accueil', 'rubriques', 'nouveautes', 'fleuriville', 'newsletter'];
         $active = isset($_POST['cel_active_tab']) ? sanitize_key(wp_unslash($_POST['cel_active_tab'])) : 'identite';
         if (!in_array($active, $allowed_tabs, true)) $active = 'identite';
         wp_safe_redirect(add_query_arg(['saved' => '1', 'tab' => $active], admin_url('admin.php?page=celestin-design')));

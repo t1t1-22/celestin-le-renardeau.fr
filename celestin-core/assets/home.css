@@ -366,3 +366,12 @@ body.cel-page .cel-audio-feature .cel-audio-cta>.cel-audio-all{background:#fffdf
 body.cel-page .cel-audio-feature .cel-audio-cta>.cel-audio-all:hover{background:#633619;color:#fff}
 body .cel-interior-header nav.cel-nav>a:hover,body .cel-interior-header nav.cel-nav>a:focus-visible,body .cel-interior-header nav.cel-nav>a.is-active:hover,body .cel-interior-header nav.cel-nav>a.is-active:focus-visible,body .cel-town-nav>a:hover,body .cel-town-dropdown>div a:hover{background:var(--cel-brand-orange)!important;color:#38200e!important}
 body .cel-interior-header nav.cel-nav>a:hover>span,body .cel-interior-header nav.cel-nav>a:focus-visible>span{color:#38200e!important}
+
+/* Recherche à l'extrémité droite du header, indépendante du menu. */
+body .cel-interior-header-inner>.cel-nav-search{flex:0 0 auto;margin:0;display:flex;align-items:center;gap:6px;order:4}
+body .cel-interior-header-inner>.cel-nav-search input{width:120px;max-width:100%}
+body .cel-interior-header-inner>.cel-nav-search button svg{display:block;width:24px;height:24px}
+body .cel-interior-header-inner>.cel-social-links:empty{display:none}
+@media(min-width:1251px){body .cel-interior-header .cel-interior-header-inner{max-width:1600px;gap:16px}body .cel-interior-header nav.cel-nav.cel-nav-illustrated{flex:1 1 auto;min-width:0}}
+@media(max-width:1250px){body .cel-interior-header-inner>.cel-nav-search{order:2;margin-left:auto}body .cel-interior-header-inner>.cel-social-links{order:1;margin-left:auto}body .cel-interior-header-inner>.cel-social-links:not(:empty)+.cel-nav-search{margin-left:0}}
+@media(max-width:600px){body .cel-interior-header-inner>.cel-nav-search input{width:100px}body .cel-interior-header-inner>.cel-nav-search button svg{width:20px;height:20px}}

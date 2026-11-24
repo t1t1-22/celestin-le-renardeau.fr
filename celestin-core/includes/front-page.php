@@ -35,17 +35,13 @@ $links=[
 <section class="cel-hero" aria-labelledby="cel-hero-title">
  <?php if(Celestin_Home::image('hero')) echo '<img class="cel-hero-art" src="'.esc_url(Celestin_Home::image('hero')).'" alt="L’univers illustré de Célestin et de Fleuriville" fetchpriority="high">'; ?>
  <div class="cel-hero-copy">
- <p class="cel-eyebrow">Bienvenue dans l’univers de Célestin</p>
+ <p class="cel-eyebrow"><?php echo esc_html($options['hero_intro']); ?></p>
  <h1 id="cel-hero-title"><?php echo esc_html($options['headline']); ?><i>✦</i></h1>
- <p>Des histoires à lire, des aventures à écouter et plein de petites activités à découvrir.</p>
- <a class="cel-button cel-primary" href="#cel-decouvrir">Découvrir l’univers <span aria-hidden="true">→</span></a>
+ <p><?php echo nl2br(esc_html($options['hero_description'])); ?></p>
+ <?php if($options['hero_button']): ?><a class="cel-button cel-primary" href="<?php echo esc_url($options['hero_link']?:'#cel-decouvrir'); ?>"><?php echo esc_html($options['hero_button']); ?> <span aria-hidden="true">→</span></a><?php endif; ?>
  </div>
 </section>
-<nav class="cel-nav" aria-label="Explorer les rubriques">
- <?php foreach($links as $label=>$v): ?>
- <a href="<?php echo esc_url($v['url']); ?>"><span aria-hidden="true"><?php echo esc_html($v['symbol']); ?></span><?php echo esc_html($label); ?></a>
- <?php endforeach; ?>
-</nav>
+<?php require __DIR__.'/navigation.php'; ?>
 <section id="cel-decouvrir" class="cel-section cel-news" aria-labelledby="cel-news-h">
   <h2 id="cel-news-h" class="cel-section-title"><span>✦</span> Les nouveautés <span>✦</span></h2>
   <?php if($news): ?>

@@ -190,6 +190,8 @@ body.cel-page .cel-audio-feature .cel-audio-grid>.cel-audio-card:hover,body.cel-
  body.cel-page .cel-audio-feature .cel-audio-toggle[aria-pressed="false"] svg{animation:cel-play-glimmer 3.8s ease-in-out infinite}
  body.cel-page .cel-audio-feature .cel-audio-card:nth-child(2n) .cel-audio-toggle svg{animation-delay:.7s}
 }
+
+body.cel-page .cel-audio-feature .cel-section-title{font:700 clamp(29px,3vw,40px)/1.12 'Baloo 2',sans-serif!important;color:#fff!important}
 </style>
 
 </head>

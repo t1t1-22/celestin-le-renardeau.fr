@@ -272,6 +272,12 @@ body.cel-page .cel-play-card{padding:6px;border-radius:12px}
 body.cel-page .cel-play-caption{padding:7px 3px 2px}
 body.cel-page .cel-play-caption h3{font-size:15px}
 @media(max-width:450px){body.cel-page .cel-two-columns .cel-play-grid{grid-template-columns:repeat(2,minmax(0,145px))}body.cel-page .cel-two-columns .cel-play-grid.cel-play-single{grid-template-columns:minmax(0,165px)}}
+
+.cel-play-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px;align-items:center}
+.cel-play-tabs button{border:1px solid #dfb584;background:transparent;color:#a76129;border-radius:20px;padding:5px 14px;font:600 13px/1.5 Nunito,sans-serif;cursor:pointer;transition:background .2s,color .2s}
+.cel-play-tabs button[aria-pressed=true],.cel-play-tabs button:hover{background:#e98932;color:#fff;border-color:#e98932}
+.cel-play-panel [hidden]{display:none!important}
+.cel-play-filter-empty{font-size:13px;color:#80532b;text-align:center;padding:15px 0}
 </style>
 
 </head>
@@ -482,10 +488,11 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
    <h2 id="cel-play-title" class="cel-section-title small">À toi de jouer !</h2>
    <p class="cel-character-intro">Sors tes crayons et laisse parler ton imagination avec les petites activités de Célestin.</p>
    <?php $activities=Celestin_Home::featured('cel_coloriage',4); ?>
+   <div class="cel-play-tabs" role="group" aria-label="Type d’activité"><button type="button" data-play-filter="all" aria-pressed="true">Tout</button><button type="button" data-play-filter="coloriage" aria-pressed="false">Coloriages</button><button type="button" data-play-filter="jeu" aria-pressed="false">Jeux</button></div>
    <?php if($activities): ?>
    <div class="cel-play-grid<?php echo count($activities)===1?' cel-play-single':''; ?>">
    <?php foreach($activities as $act): $kind=Celestin_Fields::value($act->ID,'type'); ?>
-    <a class="cel-play-card" href="<?php echo esc_url(get_permalink($act)); ?>">
+    <a class="cel-play-card" data-play-type="<?php echo esc_attr(stripos($kind,'coloriage')!==false?'coloriage':'jeu'); ?>" href="<?php echo esc_url(get_permalink($act)); ?>">
       <div class="cel-play-paper">
         <?php echo Celestin_Public::illustration($act->ID,'medium_large'); ?>
         <?php if($kind): ?><span class="cel-play-tag"><?php echo esc_html($kind); ?></span><?php endif; ?>
@@ -494,6 +501,7 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
     </a>
    <?php endforeach; ?>
    </div>
+   <p class="cel-play-filter-empty" hidden>Aucune activité de ce type pour le moment.</p>
    <a class="cel-play-all" href="<?php echo esc_url(Celestin_Home::url('cel_coloriage')); ?>">Toutes les activités →</a>
    <?php else: ?><p class="cel-home-empty">De nouvelles activités arrivent bientôt !</p><?php endif; ?>
  </section>
@@ -506,6 +514,14 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
 <?php require __DIR__.'/shared-footer.php'; ?>
 </div>
 <script>
+document.querySelectorAll('.cel-play-panel').forEach(panel=>{
+ const buttons=panel.querySelectorAll('[data-play-filter]'),cards=Array.from(panel.querySelectorAll('[data-play-type]')),grid=panel.querySelector('.cel-play-grid'),empty=panel.querySelector('.cel-play-filter-empty');
+ buttons.forEach(button=>button.addEventListener('click',()=>{
+  const type=button.dataset.playFilter;buttons.forEach(b=>b.setAttribute('aria-pressed',String(b===button)));
+  let count=0;cards.forEach(card=>{card.hidden=type!=='all'&&card.dataset.playType!==type;if(!card.hidden)count++;});
+  if(grid)grid.classList.toggle('cel-play-single',count===1);if(empty)empty.hidden=count!==0;
+ }));
+});
 document.querySelectorAll('[data-cel-deck]').forEach(deck=>{
  const stack=deck.querySelector('.cel-identity-stack'), counter=deck.querySelector('[data-deck-count]');
  const shuffled=Array.from(stack.children);

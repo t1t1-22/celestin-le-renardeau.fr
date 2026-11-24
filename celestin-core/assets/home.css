@@ -281,3 +281,16 @@ body.cel-page .cel-audio-feature .cel-audio-card h3{margin-top:8px}
 /* Aucun aplat derrière les nouveautés, y compris sur les conteneurs internes. */
 body .cel-news-band,body .cel-news-band .cel-news,body .cel-news-band .cel-news-carousel,body .cel-news-band .cel-news-track{background:transparent!important;background-image:none!important}
 body .cel-news-band::before,body .cel-news-band::after,body .cel-news-band .cel-news::before,body .cel-news-band .cel-news::after{content:none!important;display:none!important}
+
+/* Mini-histoires : même gabarit horizontal que les nouveautés. */
+body.cel-page .cel-audio-feature .cel-audio-inner{width:min(1320px,94%);max-width:none}
+body.cel-page .cel-audio-feature .cel-audio-grid{display:flex;justify-content:center;gap:22px;padding:0 16px;box-sizing:border-box}
+body.cel-page .cel-audio-feature .cel-audio-card{flex:0 0 calc((100% - 88px)/5);max-width:245px;min-width:0;box-sizing:border-box}
+body.cel-page .cel-audio-feature .cel-section-title{font:600 24px/1.25 'Baloo 2',sans-serif}
+body.cel-page .cel-audio-feature .cel-audio-card h3{font:600 17px/1.22 'Baloo 2',sans-serif}
+body.cel-page .cel-audio-feature .cel-audio-intro{font-size:15px}
+body.cel-page .cel-audio-feature .cel-audio-all{font-size:15px}
+body.cel-page .cel-audio-feature .cel-audio-toggle{width:43px;height:43px}
+@media(max-width:1050px){body.cel-page .cel-audio-feature .cel-audio-card{flex-basis:calc((100% - 66px)/4)}}
+@media(max-width:720px){body.cel-page .cel-audio-feature .cel-audio-grid{gap:12px;padding-inline:12px}body.cel-page .cel-audio-feature .cel-audio-card{flex-basis:calc((100% - 24px)/3)}}
+@media(max-width:480px){body.cel-page .cel-audio-feature .cel-audio-grid{flex-wrap:wrap}body.cel-page .cel-audio-feature .cel-audio-card{flex-basis:calc((100% - 12px)/2)}body.cel-page .cel-audio-feature .cel-audio-card h3{font-size:15px}}

@@ -333,16 +333,12 @@ body.cel-page .cel-feature-layout .cel-news-cel_histoire .cel-card-image{positio
 body.cel-page .cel-feature-layout .cel-news-duration-overlay{position:absolute;bottom:10px;left:10px;z-index:5;background:rgba(255,250,243,.96);color:#633619;border-radius:20px;padding:6px 10px;box-shadow:0 2px 8px #63361922;line-height:1.3;font-size:12px;pointer-events:none}
 body.cel-page .cel-feature-layout .cel-news-duration-overlay .cel-feature-duration{display:flex;align-items:center;gap:5px;font-size:13px;font-weight:700}
 
-/* Mise en avant éditoriale réservée au slide nouveauté livre. */
-body.cel-page .cel-feature-slider .cel-feature-book-slide .cel-feature-layout article.cel-news-cel_livre{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;transform:none!important}
-body.cel-page .cel-feature-slider .cel-feature-book-slide .cel-feature-layout article.cel-news-cel_livre>.cel-card-image{background:transparent!important;border:0!important;box-shadow:none!important;overflow:visible!important;perspective:1000px;aspect-ratio:1/1}
-body.cel-page .cel-feature-book-slide .cel-feature-layout .cel-news-cel_livre .cel-news-image-link{width:94%!important;max-width:405px!important;height:auto!important;aspect-ratio:1/1}
-body.cel-page .cel-feature-book-slide .cel-feature-layout .cel-news-cel_livre .cel-card-image:before{left:5%;right:5%;bottom:0;height:28px;background:radial-gradient(ellipse,#51371980,transparent 70%);filter:blur(7px)}
-body.cel-page .cel-feature-book-slide .cel-feature-backdrop img{opacity:.35!important}
-body.cel-page .cel-feature-book-slide .cel-feature-backdrop:after{background:linear-gradient(110deg,#f2e4d0b0,#fcf7ef95)!important}
-body.cel-page .cel-feature-book-slide .cel-news-under-image{margin-top:18px;gap:5px 18px}
-body.cel-page .cel-feature-slider .cel-feature-book-slide .cel-feature-layout article.cel-news-cel_livre>.cel-news-badge{top:0!important;left:0!important}
-@media(max-width:720px){body.cel-page .cel-feature-book-slide .cel-feature-layout .cel-news-cel_livre .cel-news-image-link{max-width:285px!important;width:90%!important}}
+
+/* Couverture carrée, même présentation que les mini-histoires, uniquement dans les nouveautés. */
+body.cel-page .cel-feature-slider .cel-feature-book-slide .cel-feature-layout article.cel-news-cel_livre>.cel-card-image{aspect-ratio:1/1;height:auto;overflow:hidden!important;perspective:none;background:#f5eadb!important}
+body.cel-page .cel-feature-book-slide .cel-feature-layout .cel-news-cel_livre .cel-news-image-link,body.cel-page .cel-feature-book-slide .cel-feature-layout .cel-news-cel_livre:hover .cel-news-image-link{width:100%!important;height:100%!important;max-width:none!important;aspect-ratio:1/1;display:block;padding:0;transform:none!important;animation:none!important;box-shadow:none!important;border-radius:inherit}
+body.cel-page .cel-feature-book-slide .cel-news-image-link:before,body.cel-page .cel-feature-book-slide .cel-news-image-link:after,body.cel-page .cel-feature-book-slide .cel-card-image:before{content:none!important}
+body.cel-page .cel-feature-book-slide .cel-news-image-link img{width:100%;height:100%;object-fit:contain;display:block;border-radius:inherit;box-shadow:none}
 </style>
 
 </head>
@@ -418,7 +414,7 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
         <div class="cel-card-image">
          <?php if($item->post_type==='cel_coloriage' && $img): ?><div class="cel-paper-stack" aria-hidden="true"><img src="<?php echo esc_url($img); ?>" alt=""><img src="<?php echo esc_url($img); ?>" alt=""></div><?php endif; ?>
          <a class="cel-news-image-link" href="<?php echo esc_url(get_permalink($item)); ?>" aria-label="<?php echo esc_attr($title); ?>">
-         <?php if($img&&$item->post_type==='cel_livre'): ?><span class="cel-book-pages" aria-hidden="true"></span><span class="cel-book-face"><?php echo Celestin_Public::illustration($item->ID,'large'); ?></span><?php elseif($img): ?><img src="<?php echo esc_url($img); ?>" alt="" loading="lazy"><?php else: ?><div class="cel-card-placeholder" aria-hidden="true">✦</div><?php endif; ?>
+         <?php if($img): ?><img src="<?php echo esc_url($img); ?>" alt="" loading="lazy"><?php else: ?><div class="cel-card-placeholder" aria-hidden="true">✦</div><?php endif; ?>
          </a>
          
          <?php if($preview): ?>

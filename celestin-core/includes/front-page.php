@@ -42,7 +42,7 @@ $hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_si
       ][$item->post_type] ?? 'Découverte';
       // Illustration de la fiche uniquement : ne pas présenter une autre illustration à sa place.
       $img = get_the_post_thumbnail_url($item->ID, 'medium_large');
-      $preview=$item->post_type==='cel_histoire'?(Celestin_Fields::value($item->ID,'resume_audio')?:Celestin_Fields::value($item->ID,'audio')):'';
+      $preview=$item->post_type==='cel_histoire'?(Celestin_Fields::value($item->ID,'resume_audio')?:Celestin_Fields::value($item->ID,'audio')):($item->post_type==='cel_personnage'?Celestin_Fields::value($item->ID,'audio'):'');
       $title=get_the_title($item);
       $new_label=['cel_coloriage'=>'Nouvelle activité','cel_personnage'=>'Nouveau personnage','cel_livre'=>'Nouveau livre','cel_histoire'=>'Nouvelle mini-histoire audio'][$item->post_type]??'Nouvelle découverte';
     ?>
@@ -51,6 +51,7 @@ $hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_si
 $summary=Celestin_Fields::value($item->ID,'resume');
 if(!$summary && $item->post_type==='cel_personnage')$summary=Celestin_Fields::value($item->ID,'description');
 $summary=$summary?:$item->post_excerpt;
+$kicker=$item->post_type==='cel_coloriage'?(Celestin_Fields::value($item->ID,'type')?:'Activité'):($item->post_type==='cel_personnage'?'':$new_label);
 $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir ce livre','cel_coloriage'=>'Découvrir cette activité','cel_personnage'=>'Rencontrer ce personnage'][$item->post_type]??'Découvrir';
 ?>
 <div class="cel-feature-slide" <?php if($idx!==0)echo 'hidden'; ?> data-slide="<?php echo esc_attr($idx); ?>">
@@ -66,14 +67,21 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
          
          <?php if($preview): ?>
          <audio preload="metadata" src="<?php echo esc_url($preview); ?>"></audio>
-         <button type="button" class="cel-audio-toggle" aria-label="<?php echo esc_attr('Écouter '.$title); ?>" data-title="<?php echo esc_attr($title); ?>" aria-pressed="false">
+         <button type="button" class="cel-audio-toggle" aria-label="<?php echo esc_attr(($item->post_type==='cel_personnage'?'Écouter la présentation de ':'Écouter ').$title); ?>" data-title="<?php echo esc_attr($title); ?>" aria-pressed="false">
          <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="30" fill="#fffaf3"/><circle cx="32" cy="32" r="26" fill="none" stroke="#e9d3bb" stroke-width="4"/><circle class="cel-audio-ring" cx="32" cy="32" r="26" fill="none" stroke="#e98932" stroke-width="4" pathLength="100" stroke-dasharray="0 100" stroke-linecap="round" transform="rotate(-90 32 32)"/><path class="cel-audio-play" d="M25 20L44 32L25 44Z" fill="#a45b2c"/><rect class="cel-audio-stop" x="23" y="23" width="18" height="18" rx="3" fill="#a45b2c"/></svg>
          </button><span class="cel-audio-error" role="status" hidden>Audio indisponible.</span>
          <?php endif; ?>
         </div>
       </article>
- <div class="cel-feature-copy"><p class="cel-feature-kicker"><?php echo esc_html($new_label); ?></p><h2><?php echo esc_html($title); ?></h2>
- <?php if($summary): ?><p class="cel-feature-summary"><?php echo esc_html(wp_trim_words(wp_strip_all_tags($summary),65,'…')); ?></p><?php endif; ?>
+ <div class="cel-feature-copy"><?php if($kicker): ?><p class="cel-feature-kicker"><?php echo esc_html($kicker); ?></p><?php endif; ?><h2><?php echo esc_html($title); ?></h2>
+ <?php if($summary): ?><p class="cel-feature-summary"><?php echo esc_html(wp_trim_words(wp_strip_all_tags($summary),$item->post_type==='cel_personnage'?38:65,'…')); ?></p><?php endif; ?>
+<?php if($item->post_type==='cel_personnage'): ?>
+<div class="cel-feature-character-facts">
+<?php foreach(['anniversaire'=>['Anniversaire','<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>'],'age'=>['Âge','<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'],'espece'=>['Espèce','<path d="M4 4l5 3h6l5-3v9l-8 7-8-7z"/><path d="M9 12h.01M15 12h.01M10 16h4"/>']] as $key=>$fact): $value=Celestin_Fields::value($item->ID,$key); if($value): ?>
+<div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><?php echo $fact[1]; ?></svg><span><strong><?php echo esc_html($fact[0]); ?></strong> : <?php echo esc_html($value); ?></span></div>
+<?php endif; endforeach; ?>
+</div>
+<?php endif; ?>
         <?php if($item->post_type==='cel_histoire'): ?><div class="cel-feature-audio-info"><?php if($preview): ?><div class="cel-feature-audio-progress"><input type="range" min="0" max="1000" value="0" aria-label="Progression audio" disabled><div class="cel-feature-audio-times"><span class="cel-time-current">0:00</span><span class="cel-time-total">--:--</span></div></div><?php elseif($item->post_type==='cel_histoire'): ?><span>Audio bientôt disponible</span><?php endif; ?></div><?php endif; ?>
  <a class="cel-feature-link" href="<?php echo esc_url(get_permalink($item)); ?>"><?php echo esc_html($cta); ?> →</a></div>
  </div>

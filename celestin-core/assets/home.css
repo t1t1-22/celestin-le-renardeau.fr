@@ -444,3 +444,9 @@ body.cel-page .cel-hero{position:relative!important;overflow:hidden!important;ma
 body.cel-page .cel-hero>.cel-news-transition{position:absolute!important;display:block!important;left:0!important;bottom:-2px!important;width:100%!important;height:clamp(100px,14vw,220px)!important;max-width:none!important;max-height:none!important;background:transparent!important;z-index:4;pointer-events:none}
 body.cel-page .cel-hero>.cel-news-transition path{fill:#e98932!important;stroke:none!important}
 body.cel-page .cel-site .cel-news-band{background:#e98932!important;margin-top:-1px!important;padding-top:0!important}
+
+/* Forme CSS indépendante des styles SVG du thème, superposée au slide. */
+body.cel-page .cel-site .cel-news-band{position:relative!important;isolation:auto!important;z-index:5!important;overflow:visible!important;background:#e98932!important;margin-top:-2px!important;padding:0 0 30px!important}
+body.cel-page .cel-news-band>.cel-fox-divider{display:block!important;position:absolute!important;bottom:calc(100% - 2px)!important;left:50%!important;width:min(52vw,800px)!important;height:auto!important;aspect-ratio:4/1;background:#e98932!important;transform:translateX(-50%);z-index:20!important}
+body.cel-page .cel-hero{z-index:0!important;margin:0!important}
+@media(max-width:720px){body.cel-page .cel-news-band>.cel-fox-divider{width:70vw!important}}

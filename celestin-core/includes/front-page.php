@@ -328,6 +328,10 @@ body.cel-page .cel-news-theme-label{font:700 11px/1.3 Nunito,sans-serif;color:#6
 body.cel-page .cel-news-theme-list{display:flex;flex-wrap:wrap;gap:7px}
 body.cel-page .cel-news-theme-list>span{display:inline-flex;align-items:center;gap:5px;background:#633619;color:#fffaf0;border-radius:7px;padding:5px 10px;font:700 14px/1.35 'Baloo 2',sans-serif}
 body.cel-page .cel-news-theme-list svg{flex:none;width:13px;height:13px}
+
+body.cel-page .cel-feature-layout .cel-news-cel_histoire .cel-card-image{position:relative}
+body.cel-page .cel-feature-layout .cel-news-duration-overlay{position:absolute;bottom:10px;left:10px;z-index:5;background:rgba(255,250,243,.96);color:#633619;border-radius:20px;padding:6px 10px;box-shadow:0 2px 8px #63361922;line-height:1.3;font-size:12px;pointer-events:none}
+body.cel-page .cel-feature-layout .cel-news-duration-overlay .cel-feature-duration{display:flex;align-items:center;gap:5px;font-size:13px;font-weight:700}
 </style>
 
 </head>
@@ -401,6 +405,7 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
          <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="30" fill="#fffaf3"/><circle cx="32" cy="32" r="26" fill="none" stroke="#e9d3bb" stroke-width="4"/><circle class="cel-audio-ring" cx="32" cy="32" r="26" fill="none" stroke="#e98932" stroke-width="4" pathLength="100" stroke-dasharray="0 100" stroke-linecap="round" transform="rotate(-90 32 32)"/><path class="cel-audio-play" d="M25 20L44 32L25 44Z" fill="#a45b2c"/><rect class="cel-audio-stop" x="23" y="23" width="18" height="18" rx="3" fill="#a45b2c"/></svg>
          </button><span class="cel-audio-error" role="status" hidden>Audio indisponible.</span>
          <?php endif; ?>
+         <?php if($item->post_type==='cel_histoire'): ?><div class="cel-feature-audio-info cel-news-duration-overlay"><?php if($preview): ?><div class="cel-feature-duration"><svg width="16" height="16" style="width:16px!important;height:16px!important;max-width:16px!important;max-height:16px!important;flex:0 0 16px!important;display:inline-block!important" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="cel-time-total">--:--</span></div><?php elseif($item->post_type==='cel_histoire'): ?><span>Audio bientôt disponible</span><?php endif; ?></div><?php endif; ?>
         </div>
       </article>
       <?php if($story_under_image): ?><div class="cel-news-under-image"><?php foreach($story_under_image as $label=>$value): ?><div><strong><?php echo esc_html($label); ?></strong> <span><?php echo esc_html($value); ?></span></div><?php endforeach; ?></div><?php endif; ?></div>
@@ -414,7 +419,7 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
 <?php endif; endforeach; ?>
 </div>
 <?php endif; ?>
-        <?php if($item->post_type==='cel_histoire'): ?><div class="cel-feature-audio-info"><?php if($preview): ?><div class="cel-feature-duration"><svg width="16" height="16" style="width:16px!important;height:16px!important;max-width:16px!important;max-height:16px!important;flex:0 0 16px!important;display:inline-block!important" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="cel-time-total">--:--</span></div><?php elseif($item->post_type==='cel_histoire'): ?><span>Audio bientôt disponible</span><?php endif; ?></div><?php endif; ?>
+        
  <a class="cel-feature-link" href="<?php echo esc_url(get_permalink($item)); ?>"><?php echo esc_html($cta); ?> →</a></div>
  </div>
 </div>

@@ -43,13 +43,13 @@ final class Celestin_Library {
   if(is_wp_error($terms))$terms=[];if(is_wp_error($selected))$selected=[];
   echo '<div class="cel-field"><label>'.esc_html(self::LABELS[$key]).'</label><div class="cel-lib-choices">';
   foreach($terms as $t)echo '<label><input type="checkbox" name="cel_lib['.esc_attr($key).'][]" value="'.(int)$t->term_id.'"'.checked(in_array((int)$t->term_id,array_map('intval',$selected),true),true,false).'> '.esc_html($t->name).'</label>';
-  echo '</div><input type="text" name="cel_lib_new['.esc_attr($key).']" placeholder="Ajouter une valeur réutilisable (facultatif)"></div>';
+  echo '</div><input type="text" name="cel_lib_new['.esc_attr($key).']" placeholder="'.esc_attr($key==='evenement'?'Créer un nouvel événement':'Ajouter une valeur réutilisable (facultatif)').'"></div>';
  }
  static function identity($post){
   wp_nonce_field('cel_core_save','cel_core_nonce');
   echo '<div class="cel-field-grid cel-library-identity">';
   foreach(self::TAX as $key=>$tax)self::choices($post->ID,$key);
-  echo '<div class="cel-field"><label>Visibilité sur le site</label><label><input type="checkbox" name="cel_en_nouveaute" value="1"'.checked(get_post_meta($post->ID,'_cel_en_nouveaute',true),'1',false).'> Afficher dans les nouveautés</label><label><input type="checkbox" name="cel_feature_home" value="1"'.checked(get_post_meta($post->ID,'_cel_feature_home',true),'1',false).'> Mettre en avant sur l’accueil</label></div></div>';
+  echo '<div class="cel-field"><label>Visibilité sur le site</label><label><input type="checkbox" name="cel_feature_home" value="1"'.checked(get_post_meta($post->ID,'_cel_feature_home',true),'1',false).'> Mettre en avant sur l’accueil</label></div></div>';
  }
  static function save($id,$post){
   if(!isset($_POST['cel_fields_nonce'])||!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['cel_fields_nonce'])),'cel_fields_save')||!current_user_can('edit_post',$id)||wp_is_post_revision($id)||(defined('DOING_AUTOSAVE')&&DOING_AUTOSAVE))return;
@@ -75,7 +75,7 @@ final class Celestin_Library {
  }
  static function filter_form(){
   echo '<form class="cel-library-filters" method="get" action="'.esc_url(get_post_type_archive_link('cel_livre')).'">';
-  foreach(self::TAX as $key=>$tax){$terms=get_terms(['taxonomy'=>$tax,'hide_empty'=>true]);if(is_wp_error($terms)||!$terms)continue;$current=sanitize_title(wp_unslash($_GET[$tax]??''));echo '<label>'.esc_html(self::LABELS[$key]).'<select name="'.esc_attr('filtre_'.$key).'"><option value="">Tous</option>';foreach($terms as $t)echo '<option value="'.esc_attr($t->slug).'"'.selected($current,$t->slug,false).'>'.esc_html($t->name).'</option>';echo '</select></label>';}
+  foreach(self::TAX as $key=>$tax){$terms=get_terms(['taxonomy'=>$tax,'hide_empty'=>true]);if(is_wp_error($terms)||!$terms)continue;$current=sanitize_title(wp_unslash($_GET['filtre_'.$key]??''));echo '<label>'.esc_html(self::LABELS[$key]).'<select name="'.esc_attr('filtre_'.$key).'"><option value="">Tous</option>';foreach($terms as $t)echo '<option value="'.esc_attr($t->slug).'"'.selected($current,$t->slug,false).'>'.esc_html($t->name).'</option>';echo '</select></label>';}
   echo '<button type="submit">Filtrer</button><a href="'.esc_url(get_post_type_archive_link('cel_livre')).'">Réinitialiser</a></form>';
  }
 }

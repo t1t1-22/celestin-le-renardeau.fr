@@ -341,20 +341,7 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
  <div class="cel-welcome-copy"><h2 id="cel-welcome-title">Bienvenue à Fleuriville !</h2><p><?php echo esc_html($options['welcome']); ?></p><a class="cel-button cel-primary" href="<?php echo esc_url(Celestin_Home::url('cel_lieu')); ?>">Découvrir Fleuriville →</a></div>
 </section>
 </main>
-<footer class="cel-footer cel-footer-fox"><div aria-hidden="true" class="cel-fox-divider" style="position:absolute;bottom:calc(100% - 2px);left:50%;transform:translateX(-50%);width:min(52vw,800px);aspect-ratio:4/1;z-index:20;pointer-events:none;background:#e98932;"></div>
- <div class="cel-footer-columns">
- <div class="cel-footer-brand"><a href="<?php echo esc_url(home_url('/')); ?>" aria-label="Accueil — Célestin le renardeau"><?php
-   // Le logo spécifique du pied de page est facultatif : à défaut, reprendre celui de l'en-tête.
-   $footer_logo=Celestin_Home::image('footer_logo') ?: Celestin_Home::image('logo');
-   if($footer_logo) echo '<img class="cel-footer-logo" src="'.esc_url($footer_logo).'" alt="Célestin le renardeau" loading="lazy">';
-   else echo '<span class="cel-script">Célestin<small>le renardeau</small></span>';
- ?></a></div>
- <div><h3>Explorer</h3><a href="<?php echo esc_url(home_url('/')); ?>">Accueil</a><?php foreach($links as $label=>$v): ?><a href="<?php echo esc_url($v['url']); ?>"><?php echo esc_html($label); ?></a><?php endforeach; ?></div>
- <div><h3>À propos</h3><p>L’univers de Célestin et toutes ses petites aventures.</p></div>
- <div><h3>La newsletter de Fleuriville</h3><p>Retrouve les nouvelles histoires, les livres et les activités !</p><?php if($options['newsletter']): ?><a class="cel-button" href="<?php echo esc_url($options['newsletter']); ?>">S’inscrire →</a><?php else: ?><p class="cel-footer-note">Bientôt disponible</p><?php endif; ?></div>
- </div>
- <div class="cel-legal">© <?php echo esc_html(date_i18n('Y')); ?> Célestin le renardeau · Tous droits réservés</div>
-</footer>
+<?php require __DIR__.'/shared-footer.php'; ?>
 </div>
 <?php wp_footer(); ?>
 </body></html>

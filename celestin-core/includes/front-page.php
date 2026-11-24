@@ -433,7 +433,7 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
 <?php endif; ?>
 <div class="cel-two-columns">
  <section class="cel-info-panel" aria-labelledby="cel-character-title">
-   <h2 id="cel-character-title" class="cel-section-title small">Fiches personnages</h2>
+   <h2 id="cel-character-title" class="cel-section-title small" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0">Fiches personnages</h2>
    <?php
    $characters=Celestin_Home::featured('cel_personnage',8);
    if($characters): ?>

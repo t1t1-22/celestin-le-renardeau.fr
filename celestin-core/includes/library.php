@@ -24,7 +24,7 @@ final class Celestin_Library {
   foreach(self::SEEDS as $key=>$names)foreach($names as $name)self::term(self::TAX[$key],$name);
   foreach(get_posts(['post_type'=>'cel_livre','post_status'=>'any','posts_per_page'=>-1,'fields'=>'ids']) as $id){
    foreach(self::TAX as $key=>$tax){
-    if(wp_get_object_terms($id,$tax,['fields'=>'ids']))continue;
+    $existing=wp_get_object_terms($id,$tax,['fields'=>'ids']);if(is_wp_error($existing)||$existing)continue;
     $old=trim((string)get_post_meta($id,'_cel_f_'.$key,true));if(!$old)continue;
     $names=[$old];
     if($key==='age_lecture'&&preg_match('/^(\d+)\s*[-–]\s*(\d+)(?:\s*ans)?$/u',$old,$m)){

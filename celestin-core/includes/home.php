@@ -245,7 +245,7 @@ final class Celestin_Home {
     // Accueil : uniquement les fiches explicitement cochées dans leur administration.
     // Les quatre types de contenus sont mélangés et triés par date de publication.
     static function cards(): array {
-        return get_posts([
+        $posts=get_posts([
             'post_type' => ['cel_coloriage', 'cel_personnage', 'cel_livre', 'cel_histoire'],
             'post_status' => 'publish',
             'posts_per_page' => -1,
@@ -255,6 +255,11 @@ final class Celestin_Home {
             'order' => 'DESC',
             'suppress_filters' => false,
         ]);
+        $order=array_map('absint',(array)get_option('cel_news_order',[]));
+        if(!$order)return $posts;
+        $by_id=[];foreach($posts as $post)$by_id[$post->ID]=$post;
+        $sorted=[];foreach($order as $id){if(isset($by_id[$id])){$sorted[]=$by_id[$id];unset($by_id[$id]);}}
+        return array_merge($sorted,array_values($by_id));
     }
     static function url(string $type): string {
         $url=get_post_type_archive_link($type);

@@ -251,13 +251,13 @@ body.cel-page,body.cel-page .cel-site{background:#fcf7ef!important}
 @media(prefers-reduced-motion:reduce){.cel-news-track .cel-news-card{transition:none}.cel-news-track .cel-news-card:hover{transform:none}}
 
 /* Fond orange pastel pleine largeur sous le slide, avec cartes en chevauchement. */
-.cel-news-band{display:flow-root;background:#fce5ce;padding:0 0 22px;position:relative;isolation:auto}
+.cel-news-band{display:flow-root;background:transparent;padding:0 0 22px;position:relative;isolation:auto}
 .cel-news-band .cel-news{background:transparent;margin-bottom:0}
 .cel-news-band .cel-news.cel-news-has-items{margin-top:-48px}
 @media(max-width:720px){.cel-news-band .cel-news.cel-news-has-items{margin-top:-24px}.cel-news-band{padding-bottom:14px}}
 
 /* Nouveautés : véritable section pleine largeur, cartes plus présentes. */
-body.cel-page .cel-site .cel-news-band{background:#fce5ce!important;width:100%;max-width:none;margin:0;padding:0;display:flow-root}
+body.cel-page .cel-site .cel-news-band{background:transparent!important;width:100%;max-width:none;margin:0;padding:0;display:flow-root}
 body.cel-page .cel-news-band .cel-news{width:min(1320px,94%);max-width:none;background:transparent!important;padding:0;margin-bottom:0}
 body.cel-page .cel-news-band .cel-news.cel-news-has-items{margin-top:-15px}
 .cel-news-band .cel-news-track{gap:22px;padding:16px 16px 26px}
@@ -277,3 +277,7 @@ body.cel-page .cel-audio-feature .cel-section-title{margin:0 0 5px}
 body.cel-page .cel-audio-feature .cel-audio-intro{margin:0 0 14px}
 body.cel-page .cel-audio-feature .cel-audio-all{margin-top:14px;padding:7px 16px}
 body.cel-page .cel-audio-feature .cel-audio-card h3{margin-top:8px}
+
+/* Aucun aplat derrière les nouveautés, y compris sur les conteneurs internes. */
+body .cel-news-band,body .cel-news-band .cel-news,body .cel-news-band .cel-news-carousel,body .cel-news-band .cel-news-track{background:transparent!important;background-image:none!important}
+body .cel-news-band::before,body .cel-news-band::after,body .cel-news-band .cel-news::before,body .cel-news-band .cel-news::after{content:none!important;display:none!important}

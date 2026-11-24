@@ -264,6 +264,14 @@ body.cel-page .cel-two-columns .cel-play-grid.cel-play-single{grid-template-colu
 body.cel-page .cel-two-columns .cel-play-all{text-align:center;margin-top:14px}
 @media(min-width:1001px){body.cel-page .cel-two-columns>.cel-play-panel{position:relative}body.cel-page .cel-two-columns>.cel-play-panel:before{content:'';position:absolute;left:-10px;top:10px;bottom:0;border-left:1px solid #e8d5bd}}
 @media(max-width:1000px){body.cel-page .cel-two-columns{grid-template-columns:1fr;gap:42px;max-width:640px;margin:40px auto}body.cel-page .cel-two-columns .cel-character-intro{min-height:0}body.cel-page .cel-two-columns .cel-play-grid.cel-play-single{justify-content:center}body.cel-page .cel-two-columns .cel-play-all{text-align:center}}
+
+/* Activités : petites vignettes carrées, sans modifier les cartes personnages. */
+body.cel-page .cel-two-columns .cel-play-grid{grid-template-columns:repeat(2,minmax(0,180px));justify-content:center;gap:14px}
+body.cel-page .cel-two-columns .cel-play-grid.cel-play-single{grid-template-columns:minmax(0,180px);justify-content:center}
+body.cel-page .cel-play-card{padding:6px;border-radius:12px}
+body.cel-page .cel-play-caption{padding:7px 3px 2px}
+body.cel-page .cel-play-caption h3{font-size:15px}
+@media(max-width:450px){body.cel-page .cel-two-columns .cel-play-grid{grid-template-columns:repeat(2,minmax(0,145px))}body.cel-page .cel-two-columns .cel-play-grid.cel-play-single{grid-template-columns:minmax(0,165px)}}
 </style>
 
 </head>

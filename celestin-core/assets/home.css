@@ -120,3 +120,25 @@ body.cel-page{font-family:'Nunito',sans-serif!important}
 .cel-audio-inner{width:min(960px,92%)}
 .cel-audio-card h3{font-size:19px;font-weight:600}
 @media(max-width:650px){.cel-header .cel-logo img{width:150px}.cel-nav-illustrated a{font-size:13px;padding:7px}.cel-section-title,.cel-section-title.small{font-size:24px}.cel-header-cta{font-size:11px;padding:8px 12px}}
+
+/* Header partagé, toujours visible pendant le défilement. */
+.cel-interior-header{position:sticky;top:0;z-index:1000;background:#fffdf8;border-bottom:1px solid #ead9c5;padding:10px 24px;box-shadow:0 3px 12px #6336190c}
+.cel-interior-header-inner{max-width:1600px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.cel-interior-header .cel-logo{flex:0 0 auto;display:block}
+.cel-interior-header .cel-logo img{display:block;width:150px;max-height:65px;object-fit:contain}
+.cel-interior-header .cel-script{font-size:26px}
+.cel-interior-header .cel-script small{font-size:13px}
+.cel-interior-header .cel-nav-illustrated{flex:1;margin:0;width:auto;max-width:none;padding:0;border:0;border-radius:0;box-shadow:none;background:transparent;gap:3px}
+.cel-interior-header .cel-nav-illustrated a{font:600 15px/1.2 'Baloo 2',sans-serif;padding:7px 9px;gap:6px}
+.cel-interior-header .cel-nav-illustrated svg{width:22px;height:22px}
+.cel-interior-header .cel-nav-search input{width:90px}
+.cel-social-links{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.cel-social-links a{display:grid;place-items:center;width:30px;height:30px;color:#633619;border-radius:50%;background:#f7ecdd}
+.cel-social-links a:hover{color:#fff;background:#d97c30}
+.cel-social-links svg{width:19px;height:19px}
+body.admin-bar .cel-interior-header{top:32px}
+.cel-site{overflow:visible}
+html{scroll-padding-top:110px}
+@media(max-width:1180px){.cel-interior-header-inner{flex-wrap:wrap;gap:8px}.cel-interior-header .cel-nav-illustrated{order:3;flex-basis:100%}.cel-social-links{margin-left:auto}html{scroll-padding-top:165px}}
+@media(max-width:782px){body.admin-bar .cel-interior-header{top:46px}}
+@media(max-width:600px){.cel-interior-header{padding:8px 12px}body.admin-bar .cel-interior-header{top:0}.cel-interior-header .cel-logo img{width:125px}.cel-interior-header .cel-nav-illustrated{display:flex;flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;scrollbar-width:thin;min-width:0}.cel-interior-header .cel-nav-illustrated a{font-size:13px;padding:6px;flex-shrink:0}.cel-interior-header .cel-nav-illustrated svg{width:19px;height:19px}.cel-interior-header .cel-nav-search{flex-shrink:0}}

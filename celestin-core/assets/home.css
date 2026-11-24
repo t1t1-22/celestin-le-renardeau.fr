@@ -269,3 +269,11 @@ body.cel-page .cel-news-band .cel-news.cel-news-has-items{margin-top:-15px}
 
 /* Nouveautés sur le fond général, sans bandeau coloré. */
 body.cel-page .cel-site .cel-news-band{background:transparent!important}
+
+/* Section audio compacte : réduire les espaces, conserver les illustrations. */
+body.cel-page .cel-audio-feature .cel-audio-wave{height:clamp(16px,2vw,32px)}
+body.cel-page .cel-audio-feature .cel-audio-inner{padding:12px 0 16px}
+body.cel-page .cel-audio-feature .cel-section-title{margin:0 0 5px}
+body.cel-page .cel-audio-feature .cel-audio-intro{margin:0 0 14px}
+body.cel-page .cel-audio-feature .cel-audio-all{margin-top:14px;padding:7px 16px}
+body.cel-page .cel-audio-feature .cel-audio-card h3{margin-top:8px}

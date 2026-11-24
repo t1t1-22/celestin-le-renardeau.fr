@@ -13,16 +13,16 @@ final class Celestin_Public {
     }
     static function template(string $default): string {
         if(is_singular(self::TYPES))return __DIR__.'/single-content.php';
-        if(is_post_type_archive(self::TYPES))return __DIR__.'/archive-content.php';
+        if(is_tax(array_values(Celestin_Library::TAX))||is_post_type_archive(self::TYPES))return __DIR__.'/archive-content.php';
         return $default;
     }
     static function assets(): void {
-        if(!is_singular(self::TYPES) && !is_post_type_archive(self::TYPES))return;
-        wp_enqueue_style('celestin-home',plugins_url('../assets/home.css',__FILE__),[],'0.4.3');
-        wp_enqueue_style('cel-content',plugins_url('../assets/content.css',__FILE__),['celestin-home'],'0.4.3');
+        if(!is_singular(self::TYPES) && !is_post_type_archive(self::TYPES) && !is_tax(array_values(Celestin_Library::TAX)))return;
+        wp_enqueue_style('celestin-home',plugins_url('../assets/home.css',__FILE__),[],'0.4.4');
+        wp_enqueue_style('cel-content',plugins_url('../assets/content.css',__FILE__),['celestin-home'],'0.4.4');
         if(is_singular('cel_livre')){
             wp_enqueue_script('cel-pdfjs','https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',[],'3.11.174',true);
-            wp_enqueue_script('cel-reader',plugins_url('../assets/reader.js',__FILE__),['cel-pdfjs'],'0.4.3',true);
+            wp_enqueue_script('cel-reader',plugins_url('../assets/reader.js',__FILE__),['cel-pdfjs'],'0.4.4',true);
         }
         if(is_singular('cel_histoire'))wp_enqueue_script('cel-story',plugins_url('../assets/story.js',__FILE__),[],'0.3.0',true);
     }
@@ -105,7 +105,7 @@ final class Celestin_Public {
         echo '<h1>'.esc_html(get_the_title($id)).'</h1>';
         if($resume)echo '<div class="cel-book-resume-wrap"><div id="cel-book-resume" class="cel-book-resume">'.wpautop(esc_html($resume)).'</div><button type="button" class="cel-resume-toggle" aria-controls="cel-book-resume" aria-expanded="false" hidden>Lire plus ↓</button></div>';
         if($demo)echo '<p class="cel-demo-notice">Livre de démonstration — contenu provisoire.</p>';
-        echo '<div class="cel-book-meta"><span data-cel-page-total>Pages du livre</span>';
+        echo '<div class="cel-book-meta"><span data-cel-page-total>'.(absint(Celestin_Fields::value($id,'nombre_pages'))?absint(Celestin_Fields::value($id,'nombre_pages')).' pages':'Pages du livre').'</span>';
         foreach(['Âge'=>$age,'Thème'=>$season,'Collection'=>$collection] as $label=>$value)if($value)echo '<span><strong>'.esc_html($label).'</strong> '.esc_html($value).'</span>';
         echo '</div></div>';
         if($highlights){echo '<aside class="cel-book-note"><h2>Dans ce livre…</h2><ul>';

@@ -409,3 +409,6 @@ body.cel-page .cel-audio-feature .cel-audio-cta>.cel-audio-all:hover,body.cel-pa
 /* Oreilles complètes, sans recadrage ni dégradé. */
 body.cel-page .cel-audio-feature{background:#e98932!important;background-image:none!important}
 body.cel-page .cel-audio-feature .cel-audio-fox-ears{display:block;width:100%;height:clamp(100px,15.28vw,220px);max-height:none;overflow:visible}
+
+/* Découpe nette : tracé de silhouette, sans liseré ni dégradé. */
+body.cel-page .cel-audio-feature .cel-audio-fox-ears{height:clamp(100px,17.36vw,250px);background:#fcf7ef;overflow:hidden;margin-bottom:-1px}

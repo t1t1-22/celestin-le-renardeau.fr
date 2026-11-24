@@ -517,3 +517,11 @@ body.cel-page .cel-feature-audio-progress{width:100%;padding:4px 5px;box-sizing:
 body.cel-page .cel-feature-audio-progress input{width:100%;accent-color:#e98932;margin:6px 0;cursor:pointer}
 body.cel-page .cel-feature-audio-times{display:flex;justify-content:space-between;font-size:12px;color:#633619;font-variant-numeric:tabular-nums}
 body.cel-page .cel-feature-layout .cel-news-cel_histoire .cel-card-body{min-height:58px}
+
+/* Accueil livres : couverture en carte, visionneuse réservée à la fiche. */
+body.cel-page .cel-books .cel-books-layout{grid-template-columns:minmax(0,340px) minmax(0,1fr);max-width:1000px;margin-inline:auto;align-items:center;gap:40px}
+body.cel-page .cel-books .cel-book-preview .cel-home-cover-card{display:block;width:100%;max-width:320px;margin:auto;box-sizing:border-box;background:#fffdfa;border:2px solid white;border-radius:18px;padding:8px;box-shadow:0 5px 18px #63361920;transition:transform .23s,border-color .23s,box-shadow .23s}
+body.cel-page .cel-books .cel-home-cover-card img{display:block;width:100%;height:auto;aspect-ratio:1;object-fit:contain;border-radius:10px}
+body.cel-page .cel-books .cel-home-cover-card:hover{transform:translateY(-3px) rotate(-2deg);border-color:#e98932;box-shadow:0 8px 20px #63361930}
+@media(max-width:760px){body.cel-page .cel-books .cel-books-layout{grid-template-columns:1fr;gap:18px}body.cel-page .cel-books .cel-home-cover-card{max-width:245px}}
+@media(prefers-reduced-motion:reduce){body.cel-page .cel-books .cel-home-cover-card{transition:none}body.cel-page .cel-books .cel-home-cover-card:hover{transform:none}}

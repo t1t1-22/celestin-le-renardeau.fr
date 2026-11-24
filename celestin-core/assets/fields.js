@@ -45,3 +45,21 @@ jQuery(function($){
     media.open();
   });
 });
+
+jQuery(function($){
+ if(!$('body').hasClass('post-type-cel_livre'))return;
+ const slot=$('.cel-book-title-slot'),title=$('#titlediv'),bar=$('.cel-book-savebar');
+ if(!slot.length||!title.length||!bar.length)return;
+ title.appendTo(slot);
+ // Preserve WordPress' native submit actions, nonce, draft and preview logic.
+ const publish=$('#publish'),draft=$('#save-post'),preview=$('#post-preview');
+ if(!publish.length)return;
+ $('body').addClass('cel-book-custom-editor');
+ bar.find('.cel-book-save-action').on('click',()=>{if(draft.length&&bar.find('.cel-book-publish-action').length)draft[0].click();else publish[0].click()});
+ bar.find('.cel-book-publish-action').on('click',()=>publish[0].click());
+ bar.find('.cel-book-preview-action').on('click',()=>{if(preview.length)preview[0].click()});
+ if(!preview.length)bar.find('.cel-book-preview-action').hide();
+ const update=()=>{bar.find('.cel-book-save-action,.cel-book-publish-action').prop('disabled',publish.prop('disabled')||$('#post').hasClass('is-submitting'));};
+ if(window.MutationObserver)new MutationObserver(update).observe(publish[0],{attributes:true,attributeFilter:['disabled','class']});
+ update();
+});

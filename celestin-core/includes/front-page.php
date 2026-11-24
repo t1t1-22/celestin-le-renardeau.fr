@@ -33,7 +33,7 @@ $hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_si
 ?>
 <section class="cel-hero <?php echo $hero_below?'cel-hero-below':'cel-hero-overlay'; ?>" aria-labelledby="cel-hero-title" style="<?php echo esc_attr($hero_style); ?>">
  <div class="cel-hero-picture">
- <?php if(Celestin_Home::image('hero')) echo '<img class="cel-hero-art" src="'.esc_url(Celestin_Home::image('hero')).'" alt="L’univers illustré de Célestin et de Fleuriville" fetchpriority="high">'; ?>
+ <?php if(!empty($options['hero'])) echo wp_get_attachment_image((int)$options['hero'],'full',false,['class'=>'cel-hero-art','alt'=>'L’univers illustré de Célestin et de Fleuriville','fetchpriority'=>'high','loading'=>'eager']); ?>
  </div>
  <div class="cel-hero-copy">
  <?php if($options['hero_intro']!==''): ?><p class="cel-eyebrow"><?php echo esc_html($options['hero_intro']); ?></p><?php endif; ?>

@@ -301,6 +301,21 @@ body.cel-page .cel-play-detail{font:500 12px/1.4 Nunito,sans-serif;color:#a76129
 
 body.cel-page .cel-origin-section>.cel-origin-wave{position:absolute;top:-1px;left:0;width:100%;height:clamp(24px,3.5vw,55px);display:block;z-index:1;pointer-events:none}
 body.cel-page .cel-origin-inner{padding-top:clamp(60px,6vw,90px)}
+
+body.cel-page .cel-feature-layout .cel-news-cel_livre .cel-news-image-link{--book-depth:28px;position:relative;display:block;width:100%;max-width:365px;aspect-ratio:1;padding:0;border:0;border-radius:4px 9px 9px 4px;background:#f4e7d4;transform-style:preserve-3d;transform:rotateY(9deg) rotateX(0deg) rotateZ(0deg);box-shadow:none;overflow:visible;transition:none}
+body.cel-page .cel-feature-layout .cel-news-cel_livre .cel-news-image-link:before{content:"";position:absolute;inset:1px;border-radius:4px 9px 9px 4px;background:#d9791f;transform:translateZ(calc(-1 * var(--book-depth)));box-shadow:none;pointer-events:none}
+body.cel-page .cel-feature-layout .cel-news-cel_livre .cel-news-image-link:after{content:"";position:absolute;left:0;top:0;bottom:0;width:var(--book-depth);transform-origin:left center;transform:rotateY(90deg);background:linear-gradient(90deg,#b85e13 0%,#e98932 18%,#f3a24e 45%,#cf741f 100%);border-radius:3px 0 0 3px;pointer-events:none}
+body.cel-page .cel-feature-layout .cel-news-cel_livre .cel-news-image-link .cel-book-face{position:absolute;inset:0;display:block;overflow:hidden;border-radius:inherit;background:#f4e7d4;transform:translateZ(.5px);box-shadow:0 0 0 1px #88674630}
+body.cel-page .cel-feature-layout .cel-news-cel_livre .cel-news-image-link .cel-book-face:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#33200d36 0%,#fff2 1.2%,#34220f16 2.2%,transparent 4%);pointer-events:none}
+body.cel-page .cel-feature-layout .cel-news-cel_livre .cel-news-image-link img{display:block;width:100%;height:100%;max-width:none;object-fit:contain;border-radius:inherit;box-shadow:none}
+body.cel-page .cel-feature-layout .cel-news-cel_livre .cel-news-image-link .cel-book-pages{display:none}
+body.cel-page .cel-feature-layout .cel-news-cel_livre .cel-news-image-link:hover{transform:rotateY(9deg) rotateX(0deg) rotateZ(0deg);box-shadow:none;border:0}
+body.cel-page .cel-feature-layout .cel-news-cel_livre .cel-card-image{perspective:1000px;isolation:isolate}
+body.cel-page .cel-feature-layout .cel-news-cel_livre .cel-news-image-link{width:78%;height:auto;max-width:365px;aspect-ratio:1/1;--book-depth:28px;box-shadow:none;transform:rotateY(9deg);transform-style:preserve-3d}
+body.cel-page .cel-feature-layout .cel-news-cel_livre .cel-news-image-link::after{inset:0 auto 0 0;width:var(--book-depth);transform-origin:left center;transform:rotateY(90deg);background:linear-gradient(90deg,#b85e13,#e98932 18%,#f3a24e 45%,#cf741f)}
+body.cel-page .cel-feature-layout .cel-news-cel_livre:hover .cel-news-image-link{transform:rotateY(9deg);box-shadow:none}
+body.cel-page .cel-feature-layout .cel-news-cel_livre .cel-card-image:before{content:"";position:absolute;left:12%;right:12%;bottom:5%;height:20px;background:radial-gradient(ellipse,#51371965,transparent 72%);filter:blur(6px);z-index:-1;pointer-events:none}
+@media(prefers-reduced-motion:no-preference){body.cel-page .cel-feature-layout .cel-news-cel_livre .cel-news-image-link{animation:cel-home-book-float 5s ease-in-out infinite}}
 </style>
 
 </head>
@@ -364,7 +379,7 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
         <div class="cel-card-image">
          <?php if($item->post_type==='cel_coloriage' && $img): ?><div class="cel-paper-stack" aria-hidden="true"><img src="<?php echo esc_url($img); ?>" alt=""><img src="<?php echo esc_url($img); ?>" alt=""></div><?php endif; ?>
          <a class="cel-news-image-link" href="<?php echo esc_url(get_permalink($item)); ?>" aria-label="<?php echo esc_attr($title); ?>">
-         <?php if($img): ?><img src="<?php echo esc_url($img); ?>" alt="" loading="lazy"><?php else: ?><div class="cel-card-placeholder" aria-hidden="true">✦</div><?php endif; ?>
+         <?php if($img&&$item->post_type==='cel_livre'): ?><span class="cel-book-pages" aria-hidden="true"></span><span class="cel-book-face"><?php echo Celestin_Public::illustration($item->ID,'large'); ?></span><?php elseif($img): ?><img src="<?php echo esc_url($img); ?>" alt="" loading="lazy"><?php else: ?><div class="cel-card-placeholder" aria-hidden="true">✦</div><?php endif; ?>
          </a>
          
          <?php if($preview): ?>

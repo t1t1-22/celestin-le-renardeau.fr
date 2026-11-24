@@ -1,7 +1,7 @@
 <?php
 if (!defined('ABSPATH')) exit;
 $options=Celestin_Home::options();
-$story=Celestin_Home::latest('cel_histoire');
+$stories=Celestin_Home::featured('cel_histoire',3);
 $book=Celestin_Home::latest('cel_livre');
 $character=Celestin_Home::latest('cel_personnage');
 $city=Celestin_Home::latest('cel_lieu');
@@ -80,28 +80,38 @@ $hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_si
   <p class="cel-news-empty">Les prochaines nouveautés de Célestin arrivent bientôt !</p>
   <?php endif; ?>
 </section>
-<section class="cel-section cel-story-section" aria-labelledby="cel-story-title">
- <h2 id="cel-story-title" class="cel-section-title"><span>✦</span> Mini-histoires audio <span>✦</span></h2>
- <?php if($story):
-   $story_image=get_the_post_thumbnail_url($story->ID,'large');
-   $mp3=Celestin_Fields::value($story->ID,'audio');
-   $story_text=Celestin_Home::story_text($story);
-   $story_summary=Celestin_Fields::value($story->ID,'resume');
+<?php if($stories): ?>
+<section class="cel-story-section cel-audio-feature" aria-labelledby="cel-story-title">
+ <svg class="cel-audio-wave" viewBox="0 0 1440 70" preserveAspectRatio="none" aria-hidden="true"><path d="M0 0H1440V25C1100 85 850 0 540 36S120 66 0 24Z" fill="#fcf7ef"/></svg>
+ <div class="cel-audio-inner">
+ <h2 id="cel-story-title" class="cel-section-title">Les mini-histoires du moment</h2>
+ <p class="cel-audio-intro">Installe-toi confortablement et laisse-toi raconter une histoire.</p>
+ <div class="cel-audio-grid">
+ <?php foreach($stories as $story):
+ $title=get_the_title($story);$mp3=Celestin_Fields::value($story->ID,'audio')?:get_post_meta($story->ID,'_cel_story_mp3',true);
+ $terms=get_the_terms($story->ID,'cel_theme_cel_histoire');$theme=($terms&&!is_wp_error($terms))?$terms[0]->name:'';
  ?>
- <div class="cel-story-panel">
-  <a class="cel-story-image" href="<?php echo esc_url(get_permalink($story)); ?>">
-   <?php if($story_image): ?><img src="<?php echo esc_url($story_image); ?>" alt="<?php echo esc_attr($story->post_title); ?>" loading="lazy"><?php else: ?><div class="cel-illustration-placeholder"><span aria-hidden="true">✦</span><span>Illustration de l’histoire à venir</span></div><?php endif; ?>
-  </a>
-  <div class="cel-story-player">
-    <h3><?php echo esc_html($story->post_title); ?></h3>
-    <?php if($mp3): ?><audio controls preload="metadata" src="<?php echo esc_url($mp3); ?>" aria-label="Écouter <?php echo esc_attr($story->post_title); ?>"></audio><?php else: ?><p>Le fichier audio sera bientôt disponible.</p><?php endif; ?>
-    <?php if($story_summary): ?><p><?php echo esc_html($story_summary); ?></p><?php endif; ?>
-    <a class="cel-text-link" href="<?php echo esc_url(get_permalink($story)); ?>">Écouter ou lire cette histoire →</a>
-  </div>
-  <div class="cel-story-text"><div class="cel-story-scroll"><?php echo wp_kses_post(wpautop(esc_html(wp_trim_words($story_text,110,'…')))); ?></div></div>
+ <article class="cel-audio-card">
+ <div class="cel-audio-art">
+ <a href="<?php echo esc_url(get_permalink($story)); ?>" aria-label="<?php echo esc_attr($title); ?>">
+ <?php if(has_post_thumbnail($story))echo get_the_post_thumbnail($story->ID,'large',['loading'=>'lazy','alt'=>'']);else echo '<div class="cel-illustration-placeholder" aria-hidden="true"><span>✦</span></div>'; ?>
+ </a>
+ <?php if($theme): ?><span class="cel-audio-theme"><?php echo esc_html($theme); ?></span><?php endif; ?>
+ <?php if($mp3): ?>
+ <audio preload="none" src="<?php echo esc_url($mp3); ?>"></audio>
+ <button type="button" class="cel-audio-toggle" aria-label="<?php echo esc_attr('Écouter '.$title); ?>" data-title="<?php echo esc_attr($title); ?>" aria-pressed="false">
+ <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="30" fill="#fffaf3"/><circle cx="32" cy="32" r="26" fill="none" stroke="#e9d3bb" stroke-width="4"/><circle class="cel-audio-ring" cx="32" cy="32" r="26" fill="none" stroke="#e98932" stroke-width="4" pathLength="100" stroke-dasharray="0 100" stroke-linecap="round" transform="rotate(-90 32 32)"/><path class="cel-audio-play" d="M25 20L44 32L25 44Z" fill="#a45b2c"/><rect class="cel-audio-stop" x="23" y="23" width="18" height="18" rx="3" fill="#a45b2c"/></svg>
+ </button><span class="cel-audio-error" role="status" hidden>Audio indisponible.</span>
+ <?php endif; ?>
+ </div><h3><a href="<?php echo esc_url(get_permalink($story)); ?>"><?php echo esc_html($title); ?></a></h3>
+ </article>
+ <?php endforeach; ?>
  </div>
- <?php else: ?><p class="cel-home-empty">Choisis une mini-histoire dans son administration pour la présenter ici.</p><?php endif; ?>
+ <a class="cel-audio-all" href="<?php echo esc_url(Celestin_Home::url('cel_histoire')); ?>">Découvrir toutes les mini-histoires →</a>
+ </div>
+ <svg class="cel-audio-wave" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0 32Q360 -12 720 32T1440 15V60H0Z" fill="#fcf7ef"/></svg>
 </section>
+<?php endif; ?>
 <section class="cel-section cel-books" aria-labelledby="cel-book-title">
  <h2 id="cel-book-title" class="cel-section-title"><span>✦</span> Les livres <span>✦</span></h2>
  <?php if($book):

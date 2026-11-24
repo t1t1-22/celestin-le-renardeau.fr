@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Célestin Core
  * Description: Gestion des contenus de l'univers Célestin le renardeau.
- * Version: 0.4.39
+ * Version: 0.4.40
  * Requires PHP: 8.0
  * Text Domain: celestin-core
  */
@@ -34,7 +34,7 @@ final class Celestin_Core {
         return ['cb'=>$columns['cb']??'<input type="checkbox">','cel_story_cover'=>'Illustration','title'=>'Mini-histoire','cel_story_info'=>'Informations','date'=>'Date'];
     }
     static function story_column($column,$id): void {
-        if($column==='cel_story_cover'){echo has_post_thumbnail($id)?get_the_post_thumbnail($id,'medium_large',['class'=>'cel-list-cover','loading'=>'lazy']):'<div class="cel-list-cover"></div>';return;}
+        if($column==='cel_story_cover'){echo '<div class="cel-list-cover">'.(has_post_thumbnail($id)?get_the_post_thumbnail($id,'medium_large',['loading'=>'lazy']):'<span>Illustration à venir</span>').'</div>';return;}
         if($column!=='cel_story_info')return;
         $terms=wp_get_post_terms($id,'cel_collection',['fields'=>'names']);
         if(!is_wp_error($terms))foreach($terms as $term)echo '<span class="cel-list-tag">'.esc_html($term).'</span> ';
@@ -85,6 +85,24 @@ final class Celestin_Core {
         body.post-type-cel_histoire .column-cel_story_info p{margin:4px 0;font-size:12px}
         body.post-type-cel_histoire .column-date{font-size:12px;color:#80532b}
         body.post-type-cel_histoire .toggle-row{display:none}
+        body.post-type-cel_histoire #wpbody-content .wrap h1.wp-heading-inline{font-size:26px;font-weight:700;color:#633619}
+        body.post-type-cel_histoire #wpbody-content .wrap .page-title-action{background:#e98932;color:#fff;border:1px solid #e98932;border-radius:8px;padding:7px 13px;font-weight:600}
+        body.post-type-cel_histoire .tablenav .button,body.post-type-cel_histoire .search-box .button{border-color:#d6b18c;color:#87481e;background:#fff8ef;border-radius:7px}
+        body.post-type-cel_histoire .tablenav select{border-color:#d6c2ac;border-radius:7px;color:#633619;background-color:#fffdfa}
+        body.post-type-cel_histoire .subsubsub a{color:#a95b26}
+        body.post-type-cel_histoire .wp-list-table tbody{grid-template-columns:repeat(auto-fill,minmax(225px,270px));align-items:start}
+        body.post-type-cel_histoire .wp-list-table tbody tr{min-height:0;padding:12px;box-sizing:border-box}
+        body.post-type-cel_histoire .wp-list-table td.column-cel_story_cover{width:100%!important;max-width:100%;padding:0!important;flex:none;min-height:0}
+        body.post-type-cel_histoire .wp-list-table .cel-list-cover{display:block;position:relative;width:100%!important;height:auto!important;aspect-ratio:1/1;max-height:246px;overflow:hidden;padding:0;margin:0 0 8px;box-sizing:border-box}
+        body.post-type-cel_histoire .wp-list-table .cel-list-cover img{display:block;position:absolute;inset:0;width:100%!important;height:100%!important;max-height:100%!important;object-fit:contain;margin:0!important}
+        body.post-type-cel_histoire .wp-list-table .row-title{font-size:17px;line-height:1.35;font-weight:700;color:#633619!important}
+        body.post-type-cel_histoire .wp-list-table .row-actions{left:auto!important;position:static!important;visibility:visible!important;font-size:0;gap:5px}
+        body.post-type-cel_histoire .wp-list-table .row-actions span{font-size:0}
+        body.post-type-cel_histoire .wp-list-table .row-actions a,body.post-type-cel_histoire .wp-list-table .row-actions button{display:inline-block;font-size:12px;line-height:1.4;padding:5px 8px;border:1px solid #ead5bb;border-radius:6px;background:#fff7eb;color:#633619;text-decoration:none}
+        body.post-type-cel_histoire .wp-list-table .row-actions .cel_duplicate a{background:#e98932;color:#fff;border-color:#e98932}
+        body.post-type-cel_histoire .wp-list-table .row-actions .trash a{color:#a63b32;background:#fff4ef}
+        body.post-type-cel_histoire .wp-list-table .row-actions .inline{display:none}
+        body.post-type-cel_histoire .wp-list-table .row-actions a:hover{border-color:#e98932}
         </style>';
     }
     static function register(): void {

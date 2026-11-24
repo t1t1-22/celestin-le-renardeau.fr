@@ -33,6 +33,9 @@ final class Celestin_Core {
         add_action('add_meta_boxes', [__CLASS__, 'meta_boxes']);
         add_action('save_post', [__CLASS__, 'save'], 10, 2);
         add_action('admin_menu', [__CLASS__, 'menu']);
+        add_action('admin_menu', [__CLASS__, 'organize_menu'], 99);
+        add_filter('parent_file',[__CLASS__,'universe_parent']);
+        add_filter('submenu_file',[__CLASS__,'universe_submenu']);
         add_shortcode('celestin_nouveautes', [__CLASS__, 'news']);
         add_action('wp_enqueue_scripts', [__CLASS__, 'styles']);
     }
@@ -244,6 +247,52 @@ final class Celestin_Core {
     static function menu(): void {
         add_menu_page('Célestin Core', 'Célestin Core', 'manage_options',
           'celestin-core', [__CLASS__, 'dashboard'], 'dashicons-admin-home', 2);
+    }
+    static function organize_menu(): void {
+        add_menu_page('L’univers de Célestin','L’univers de Célestin','edit_posts','cel-universe',[__CLASS__,'universe_dashboard'],'dashicons-book-alt',3);
+        foreach(['cel_livre','cel_histoire','cel_coloriage','cel_personnage','cel_lieu'] as $type){
+            $object=get_post_type_object($type);
+            if(!$object)continue;
+            add_submenu_page('cel-universe',self::TYPES[$type][0],self::TYPES[$type][0],$object->cap->edit_posts,'edit.php?post_type='.$type);
+            remove_menu_page('edit.php?post_type='.$type);
+        }
+        add_menu_page('Catégories et classement','Catégories et classement','manage_categories','cel-classification',[__CLASS__,'classification_dashboard'],'dashicons-tag',4);
+        foreach(Celestin_Library::TAX as $key=>$taxonomy){
+            $object=get_taxonomy($taxonomy);
+            if(!$object)continue;
+            add_submenu_page('cel-classification',Celestin_Library::LABELS[$key],Celestin_Library::LABELS[$key],$object->cap->manage_terms,'edit-tags.php?taxonomy='.$taxonomy.'&post_type=cel_livre');
+        }
+    }
+    static function universe_parent($parent){
+        $screen=get_current_screen();
+        if(!$screen)return $parent;
+        if(in_array($screen->taxonomy??'',array_values(Celestin_Library::TAX),true))return 'cel-classification';
+        if(isset(self::TYPES[$screen->post_type??'']))return 'cel-universe';
+        return $parent;
+    }
+    static function universe_submenu($submenu){
+        $screen=get_current_screen();
+        if(!$screen)return $submenu;
+        if(in_array($screen->taxonomy??'',array_values(Celestin_Library::TAX),true))return 'edit-tags.php?taxonomy='.$screen->taxonomy.'&post_type=cel_livre';
+        if(isset(self::TYPES[$screen->post_type??'']))return 'edit.php?post_type='.$screen->post_type;
+        return $submenu;
+    }
+    static function universe_dashboard(): void {
+        echo '<div class="wrap"><h1 style="color:#633619;font-weight:800">L’univers de Célestin</h1><p>Retrouve et organise tous les contenus de ton univers.</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px;max-width:1200px;margin-top:24px">';
+        foreach(['cel_livre','cel_histoire','cel_coloriage','cel_personnage','cel_lieu'] as $type){
+            $object=get_post_type_object($type);if(!$object||!current_user_can($object->cap->edit_posts))continue;
+            $count=wp_count_posts($type);
+            echo '<section style="background:#fffdfa;border:1px solid #ead5bb;border-radius:16px;padding:22px;color:#633619"><span class="dashicons '.esc_attr(self::TYPES[$type][2]).'" style="color:#e98932;font-size:28px;width:28px;height:28px"></span><h2>'.esc_html(self::TYPES[$type][0]).'</h2><p>'.absint($count->publish??0).' publié(s)</p><a class="button" href="'.esc_url(admin_url('edit.php?post_type='.$type)).'">Gérer</a> <a class="button" href="'.esc_url(admin_url('post-new.php?post_type='.$type)).'">Ajouter</a></section>';
+        }
+        echo '</div></div>';
+    }
+    static function classification_dashboard(): void {
+        echo '<div class="wrap"><h1 style="color:#633619;font-weight:800">Catégories et classement</h1><p>Gère les classifications communes aux contenus depuis un seul endroit.</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;max-width:1200px;margin-top:24px">';
+        foreach(Celestin_Library::TAX as $key=>$taxonomy){
+            $object=get_taxonomy($taxonomy);if(!$object||!current_user_can($object->cap->manage_terms))continue;
+            echo '<section style="background:#fffdfa;border:1px solid #ead5bb;border-radius:16px;padding:22px;color:#633619"><h2>'.esc_html(Celestin_Library::LABELS[$key]).'</h2><a class="button" href="'.esc_url(admin_url('edit-tags.php?taxonomy='.$taxonomy.'&post_type=cel_livre')).'">Gérer</a></section>';
+        }
+        echo '</div></div>';
     }
     static function dashboard(): void {
         if (!current_user_can('manage_options')) return;

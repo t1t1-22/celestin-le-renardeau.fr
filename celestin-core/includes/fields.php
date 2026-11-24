@@ -110,7 +110,7 @@ final class Celestin_Fields {
             echo '</div>';
             if($post->post_type==='cel_livre' && $slug==='principal') Celestin_Library::identity($post);
             if($post->post_type==='cel_livre' && $slug==='fichier'){
-                echo '<div id="cel-pdf-preview"><h3>Aperçu des pages du livre</h3><p class="cel-pdf-status" aria-live="polite">Choisis le PDF pour afficher ses pages.</p><div class="cel-pdf-grid"></div></div>';
+                echo '<div id="cel-pdf-preview"><h3>Aperçu des pages du livre</h3><p class="cel-pdf-status" aria-live="polite">Choisis le PDF pour afficher ses pages.</p><div class="cel-admin-reader" hidden><button type="button" class="button cel-admin-prev">←</button><div class="cel-admin-spread"><canvas></canvas><canvas></canvas></div><button type="button" class="button cel-admin-next">→</button><p class="cel-admin-counter"></p></div><div class="cel-pdf-grid"></div></div>';
             } else self::section_image($post,$slug,$title);
           }
           echo '</section>';
@@ -126,7 +126,7 @@ final class Celestin_Fields {
         $id=absint(get_post_meta($post->ID,'_cel_section_image_'.$section,true));
         if(!$id && $section===$primary)$id=(int)get_post_thumbnail_id($post);
         $url=$id?wp_get_attachment_image_url($id,'medium'):'';
-        echo '<div class="cel-section-image"><h4>'.esc_html($section===$primary?'Illustration principale / photo du personnage':'Illustration de cette rubrique').'</h4>';
+        echo '<div class="cel-section-image"><h4>'.esc_html($section===$primary?($post->post_type==='cel_livre'?'Première de couverture':'Illustration principale / photo du personnage'):'Illustration de cette rubrique').'</h4>';
         echo '<p class="description">'.($section===$primary?'Cette image sera aussi utilisée comme vignette sur le site et dans les nouveautés.':'Illustration facultative propre à « '.esc_html($title).' ».').'</p>';
         echo '<input type="hidden" name="cel_section_images['.esc_attr($section).']" value="'.esc_attr((string)$id).'" class="cel-section-image-id">';
         echo '<img class="cel-section-image-preview" src="'.esc_url($url?:'').'" alt="Aperçu de l’illustration" style="display:'.($url?'block':'none').'">';
@@ -145,7 +145,7 @@ final class Celestin_Fields {
             echo '<textarea id="cel_f_'.esc_attr($key).'" name="cel_f['.esc_attr($key).']" rows="'.($key==='texte'?12:($key==='synchronisation'?5:4)).'">'.esc_textarea($value).'</textarea>';
             if($key==='synchronisation') echo '<p class="description">Facultatif : une ligne par phrase, sous la forme <code>0.0|Première phrase</code> puis <code>4.5|Deuxième phrase</code>. À ajuster en écoutant le MP3.</p>';
         } else {
-            echo '<div class="cel-input-row"><input id="cel_f_'.esc_attr($key).'" name="cel_f['.esc_attr($key).']" type="'.($media?'url':'text').'" value="'.esc_attr($value).'" '.($media?'class="cel-media-value" placeholder="Choisir un fichier dans la médiathèque"':'').'>';
+            echo '<div class="cel-input-row"><input id="cel_f_'.esc_attr($key).'" name="cel_f['.esc_attr($key).']" type="'.($media?'url':($key==='nombre_pages'?'number':'text')).'" value="'.esc_attr($value).'" '.($media?'class="cel-media-value" placeholder="Choisir un fichier dans la médiathèque"':'').'>';
             if($media) echo '<button type="button" class="button cel-pick-media" data-media-type="'.($key==='pdf'?'application/pdf':($key==='audio'?'audio':'image')).'">Choisir un fichier</button>';
             echo '</div>';
         }

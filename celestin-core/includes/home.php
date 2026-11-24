@@ -63,17 +63,17 @@ final class Celestin_Home {
         echo '</div>';
     }
     static function featured_settings(): void {
-        echo '<h2 style="margin-top:32px">Contenus mis en avant</h2><p>Choisis les contenus publiés, jusqu’à trois mini-histoires et huit personnages dans leur ordre d’affichage. Les nouveautés sont gérées dans leur propre onglet.</p><div class="cel-feature-settings">';
+        echo '<h2 style="margin-top:32px">Contenus mis en avant</h2><p>Choisis les contenus publiés, jusqu’à trois mini-histoires, quatre activités et huit personnages dans leur ordre d’affichage. Les nouveautés sont gérées dans leur propre onglet.</p><div class="cel-feature-settings">';
         foreach(Celestin_Core::TYPES as $type=>$config){
-            $current=self::featured($type,$type==='cel_histoire'?3:($type==='cel_personnage'?8:1));
+            $current=self::featured($type,$type==='cel_histoire'?3:($type==='cel_personnage'?8:($type==='cel_coloriage'?4:1)));
             $id=$current?(int)$current[0]->ID:0;
             $posts=get_posts(['post_type'=>$type,'post_status'=>'publish','posts_per_page'=>-1,'orderby'=>'title','order'=>'ASC']);
             echo '<div class="cel-feature-setting"><label for="featured_'.esc_attr($type).'"><strong>'.esc_html($config[0]).'</strong></label>';
-            if(in_array($type,['cel_histoire','cel_personnage'],true)){
-                $max=$type==='cel_histoire'?3:8;
+            if(in_array($type,['cel_histoire','cel_personnage','cel_coloriage'],true)){
+                $max=$type==='cel_histoire'?3:($type==='cel_coloriage'?4:8);
                 for($i=0;$i<$max;$i++){
                     $chosen=isset($current[$i])?(int)$current[$i]->ID:0;
-                    echo '<label for="featured_'.$type.'_'.$i.'">'.($type==='cel_histoire'?'Histoire':'Personnage').' '.($i+1).'</label><select id="featured_'.$type.'_'.$i.'" name="design[featured]['.$type.'][]"><option value="0">Aucun contenu</option>';
+                    echo '<label for="featured_'.$type.'_'.$i.'">'.($type==='cel_histoire'?'Histoire':($type==='cel_coloriage'?'Activité':'Personnage')).' '.($i+1).'</label><select id="featured_'.$type.'_'.$i.'" name="design[featured]['.$type.'][]"><option value="0">Aucun contenu</option>';
                     foreach($posts as $p)echo '<option value="'.(int)$p->ID.'"'.selected($chosen,$p->ID,false).'>'.esc_html($p->post_title).'</option>';
                     echo '</select>';
                 }
@@ -188,9 +188,9 @@ final class Celestin_Home {
         $out['featured']=is_array($previous)?($previous['featured']??[]):[];
         if(isset($raw['featured'])&&is_array($raw['featured'])){
             foreach(Celestin_Core::TYPES as $type=>$config){
-                if(in_array($type,['cel_histoire','cel_personnage'],true)){
+                if(in_array($type,['cel_histoire','cel_personnage','cel_coloriage'],true)){
                     $ids=array_unique(array_map('absint',(array)($raw['featured'][$type]??[])));
-                    $out['featured'][$type]=array_slice(array_values(array_filter($ids,fn($id)=>$id&&get_post_type($id)===$type&&get_post_status($id)==='publish')),0,$type==='cel_histoire'?3:8);
+                    $out['featured'][$type]=array_slice(array_values(array_filter($ids,fn($id)=>$id&&get_post_type($id)===$type&&get_post_status($id)==='publish')),0,$type==='cel_histoire'?3:($type==='cel_coloriage'?4:8));
                     continue;
                 }
                 $id=absint($raw['featured'][$type]??0);
@@ -222,12 +222,12 @@ final class Celestin_Home {
         if(is_array($saved)&&array_key_exists($type,$saved)){
             $ids=array_unique(array_map('absint',(array)$saved[$type]));$result=[];
             foreach($ids as $id){$p=$id?get_post($id):null;if($p&&$p->post_type===$type&&$p->post_status==='publish')$result[]=$p;}
-            return array_slice($result,0,$type==='cel_histoire'?max(1,min(3,$limit)):($type==='cel_personnage'?max(1,min(8,$limit)):1));
+            return array_slice($result,0,$type==='cel_histoire'?max(1,min(3,$limit)):($type==='cel_personnage'?max(1,min(8,$limit)):($type==='cel_coloriage'?max(1,min(4,$limit)):1)));
         }
         return get_posts([
             'post_type' => $type,
             'post_status' => 'publish',
-            'posts_per_page' => $type==='cel_histoire'?max(1,min(3,$limit)):($type==='cel_personnage'?max(1,min(8,$limit)):1),
+            'posts_per_page' => $type==='cel_histoire'?max(1,min(3,$limit)):($type==='cel_personnage'?max(1,min(8,$limit)):($type==='cel_coloriage'?max(1,min(4,$limit)):1)),
             'meta_key' => '_cel_feature_home',
             'meta_value' => '1',
             'orderby' => 'date',

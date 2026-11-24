@@ -1,8 +1,9 @@
 document.addEventListener('DOMContentLoaded',()=>{
 document.querySelectorAll('.cel-book-reader').forEach(reader=>{
  const spread=reader.querySelector('.cel-reader-spread'),left=reader.querySelector('.cel-reader-left'),right=reader.querySelector('.cel-reader-right'),flip=reader.querySelector('.cel-reader-flip');
- const prev=reader.querySelector('.cel-reader-prev'),next=reader.querySelector('.cel-reader-next'),range=reader.querySelector('.cel-reader-progress'),counter=reader.querySelector('.cel-reader-counter'),thumbs=reader.querySelector('.cel-reader-thumbs'),error=reader.querySelector('.cel-reader-error');
- if(!spread||!left||!right)return;
+ const controlsRoot=reader.closest('.cel-reader-section')||reader;
+ const prev=controlsRoot.querySelector('.cel-reader-prev'),next=controlsRoot.querySelector('.cel-reader-next'),range=controlsRoot.querySelector('.cel-reader-progress'),counter=controlsRoot.querySelector('.cel-reader-counter'),thumbs=reader.querySelector('.cel-reader-thumbs'),error=controlsRoot.querySelector('.cel-reader-error');
+ if(!spread||!left||!right||!prev||!next||!range||!counter||!thumbs||!error)return;
  let pdf,page=1,busy=false,zoom=1,resizeTimer;
  const single=()=>matchMedia('(max-width: 720px)').matches;
  const cover=()=>page===1||(!single()&&page===pdf.numPages&&page%2===0);
@@ -40,9 +41,9 @@ document.querySelectorAll('.cel-book-reader').forEach(reader=>{
  function turn(d){if(!pdf||busy)return;const n=single()?page+d:d>0?(page===1?2:page+2):(page<=2?1:page-2);show(n,d)}
  prev.addEventListener('click',()=>turn(-1));next.addEventListener('click',()=>turn(1));range.addEventListener('change',()=>show(Number(range.value)));
  function changeZoom(d){zoom=Math.min(2,Math.max(1,zoom+d));spread.style.width=(zoom*100)+'%';}
- reader.querySelector('.cel-reader-zoom-in').onclick=()=>changeZoom(.25);
- reader.querySelector('.cel-reader-zoom-out').onclick=()=>changeZoom(-.25);
- reader.querySelector('.cel-reader-full').onclick=()=>{if(document.fullscreenElement)document.exitFullscreen?.();else if(reader.requestFullscreen)reader.requestFullscreen().catch(()=>{});else reader.classList.toggle('expanded')};
+ controlsRoot.querySelector('.cel-reader-zoom-in').onclick=()=>changeZoom(.25);
+ controlsRoot.querySelector('.cel-reader-zoom-out').onclick=()=>changeZoom(-.25);
+ controlsRoot.querySelector('.cel-reader-full').onclick=()=>{if(document.fullscreenElement)document.exitFullscreen?.();else if(controlsRoot.requestFullscreen)controlsRoot.requestFullscreen().catch(()=>{});else reader.classList.toggle('expanded')};
  let touchX=0;spread.addEventListener('touchstart',e=>{touchX=e.changedTouches[0].clientX},{passive:true});spread.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-touchX;if(Math.abs(dx)>65&&zoom===1)turn(dx<0?1:-1)},{passive:true});
  window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>show(page),200)});
  if(!window.pdfjsLib){fail();return}

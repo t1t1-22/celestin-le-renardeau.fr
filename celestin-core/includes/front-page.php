@@ -44,7 +44,7 @@ $hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_si
  
 
 </section>
-<div class="cel-news-band"><div aria-hidden="true" class="cel-fox-divider" style="position:absolute;bottom:calc(100% - 2px);left:50%;transform:translateX(-50%);width:min(52vw,800px);aspect-ratio:4/1;z-index:20;pointer-events:none;background:#e98932;clip-path:polygon(0% 100%,8% 94%,14% 82%,12% 57%,11% 30%,12% 10%,14% 3%,17% 4%,25% 15%,33% 33%,40% 57%,43% 54%,40% 42%,44% 43%,48% 49%,45% 32%,49% 35%,54% 46%,52% 25%,57% 34%,62% 49%,65% 54%,73% 30%,81% 12%,88% 3%,91% 4%,93% 12%,94% 33%,93% 58%,90% 82%,95% 94%,100% 100%);"></div><section id="cel-decouvrir" class="cel-section cel-news<?php echo $news ? ' cel-news-has-items' : ''; ?>" aria-labelledby="cel-news-h">
+<div class="cel-news-band"><div aria-hidden="true" class="cel-fox-divider" style="position:absolute;bottom:calc(100% - 2px);left:50%;transform:translateX(-50%);width:min(52vw,800px);aspect-ratio:4/1;z-index:20;pointer-events:none;background:#e98932;"></div><section id="cel-decouvrir" class="cel-section cel-news<?php echo $news ? ' cel-news-has-items' : ''; ?>" aria-labelledby="cel-news-h">
   <h2 id="cel-news-h" class="screen-reader-text">Les nouveautés</h2>
   <?php if($news): ?>
   <div class="cel-news-carousel" aria-label="Carrousel des nouveautés"><div class="cel-cards cel-news-track" tabindex="0">

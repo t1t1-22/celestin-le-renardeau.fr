@@ -79,6 +79,10 @@ jQuery(function($){
    function filter(){const q=normalize(search.val()||'');let count=0;list.children('label').each(function(){const match=normalize($(this).text()).includes(q);$(this).toggle(match);if(match)count++});root.find('.cel-tax-empty').prop('hidden',count!==0);}
    list.on('change','input',refresh);search.on('input',filter);
    root.find('input:not([type=checkbox])').on('keydown',e=>{if(e.key==='Enter'){e.preventDefault();if($(e.target).hasClass('cel-tax-new'))root.find('.cel-tax-add').trigger('click')}});
+   const dialog=root.find('.cel-tax-dialog')[0],opener=root.find('.cel-tax-open');
+   opener.on('click',()=>{if(!dialog)return;root.find('.cel-tax-status').text('');root.find('.cel-tax-new').val('');dialog.showModal();root.find('.cel-tax-new').trigger('focus')});
+   root.find('.cel-tax-cancel').on('click',()=>dialog.close());
+   if(dialog)dialog.addEventListener('close',()=>opener.trigger('focus'));
    root.find('.cel-tax-add').on('click',function(){
      const button=$(this),input=root.find('.cel-tax-new'),name=input.val().trim(),status=root.find('.cel-tax-status');
      if(!name){status.text('Indique un nom.');return;}
@@ -87,7 +91,7 @@ jQuery(function($){
        if(!r.success){status.text(typeof r.data==='string'?r.data:'Création impossible.');return;}
        let choice=list.find('input').filter(function(){return Number(this.value)===Number(r.data.id)});
        if(!choice.length){choice=$('<input>',{type:'checkbox',name:'cel_lib['+root.data('key')+'][]',value:r.data.id});$('<label>').append(choice,' ',$('<span>').text(r.data.name)).appendTo(list);}
-       choice.prop('checked',true);input.val('');search.val('');refresh();filter();status.text('Valeur créée et sélectionnée.');
+       choice.prop('checked',true);input.val('');search.val('');refresh();filter();status.text('Valeur créée et sélectionnée.');if(dialog&&dialog.open)dialog.close();
      }).fail(xhr=>status.text(xhr.responseJSON?.data||'Impossible de créer cette valeur. Réessaie.')).always(()=>button.prop('disabled',false));
    });
    refresh();filter();

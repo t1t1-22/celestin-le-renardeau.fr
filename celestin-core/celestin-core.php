@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Célestin Core
  * Description: Gestion des contenus de l'univers Célestin le renardeau.
- * Version: 0.4.4
+ * Version: 0.4.5
  * Requires PHP: 8.0
  * Text Domain: celestin-core
  */
@@ -64,7 +64,6 @@ final class Celestin_Core {
     }
     static function meta_boxes(): void {
         foreach (array_keys(self::TYPES) as $type) {
-            add_meta_box('cel_news_box', 'Nouveautés', [__CLASS__, 'news_box'], $type, 'side', 'default');
             add_meta_box('cel_home_box', 'Page d’accueil', [__CLASS__, 'home_box'], $type, 'side', 'high');
         }
         // Champs détaillés regroupés dans le formulaire de fiche (Celestin_Fields).
@@ -106,7 +105,6 @@ final class Celestin_Core {
           !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['cel_core_nonce'])), 'cel_core_save')) return;
         if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) || wp_is_post_revision($id)) return;
         if (!current_user_can('edit_post', $id)) return;
-        update_post_meta($id, '_cel_en_nouveaute', isset($_POST['cel_en_nouveaute']) ? '1' : '0');
         update_post_meta($id, '_cel_feature_home', isset($_POST['cel_feature_home']) ? '1' : '0');
         $fields = ['cel_pdf_url' => '_cel_pdf_url', 'cel_book_pdf' => '_cel_book_pdf', 'cel_story_mp3' => '_cel_story_mp3'];
         foreach ($fields as $field => $key) {
@@ -120,7 +118,7 @@ final class Celestin_Core {
     static function dashboard(): void {
         if (!current_user_can('manage_options')) return;
         echo '<div class="wrap"><h1>Célestin Core</h1><p>Gère les activités, livres, mini-histoires audio, personnages et lieux dans les menus WordPress.</p>';
-        echo '<p>Pour mettre en avant des contenus : cocher « Les nouveautés » puis utiliser <code>[celestin_nouveautes]</code> sur une page.</p>';
+        echo '<p>Pour sélectionner les contenus à afficher sur l’accueil, ouvre <a href="'.esc_url(admin_url('admin.php?page=celestin-news')).'">Nouveautés</a>.</p>';
         echo '<p>Version initiale : les visionneuses, le feuilletage, les relations entre contenus et la synchronisation audio/texte seront développés ultérieurement.</p></div>';
     }
     static function news($atts=[]): string {
@@ -154,6 +152,7 @@ final class Celestin_Core {
     static function deactivate(): void { flush_rewrite_rules(); }
 }
 require_once __DIR__ . '/includes/home.php';
+require_once __DIR__ . '/includes/news.php';
 require_once __DIR__ . '/includes/library.php';
 require_once __DIR__ . '/includes/fields.php';
 require_once __DIR__ . '/includes/public.php';

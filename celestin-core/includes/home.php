@@ -45,8 +45,8 @@ final class Celestin_Home {
     static function admin_assets($hook): void {
         if ($hook !== 'celestin-core_page_celestin-design') return;
         wp_enqueue_media();
-        wp_enqueue_script('celestin-media', plugins_url('../assets/admin.js',__FILE__), ['jquery'], '0.4.11', true);
-        wp_enqueue_style('celestin-admin', plugins_url('../assets/admin.css',__FILE__), [], '0.4.11');
+        wp_enqueue_script('celestin-media', plugins_url('../assets/admin.js',__FILE__), ['jquery'], '0.4.12', true);
+        wp_enqueue_style('celestin-admin', plugins_url('../assets/admin.css',__FILE__), [], '0.4.12');
     }
     static function image_setting(string $key, string $label, array $options): void {
         $id = absint($options[$key] ?? 0);
@@ -63,12 +63,21 @@ final class Celestin_Home {
         echo '</div>';
     }
     static function featured_settings(): void {
-        echo '<h2 style="margin-top:32px">Contenus mis en avant</h2><p>Choisis un contenu publié par rubrique. Les nouveautés sont gérées séparément.</p><div class="cel-feature-settings">';
+        echo '<h2 style="margin-top:32px">Contenus mis en avant</h2><p>Choisis un contenu publié par rubrique, et jusqu’à trois mini-histoires dans leur ordre d’affichage. Les nouveautés sont gérées séparément.</p><div class="cel-feature-settings">';
         foreach(Celestin_Core::TYPES as $type=>$config){
-            $current=self::featured($type,1);
+            $current=self::featured($type,$type==='cel_histoire'?3:1);
             $id=$current?(int)$current[0]->ID:0;
             $posts=get_posts(['post_type'=>$type,'post_status'=>'publish','posts_per_page'=>-1,'orderby'=>'title','order'=>'ASC']);
             echo '<div class="cel-feature-setting"><label for="featured_'.esc_attr($type).'"><strong>'.esc_html($config[0]).'</strong></label>';
+            if($type==='cel_histoire'){
+                for($i=0;$i<3;$i++){
+                    $chosen=isset($current[$i])?(int)$current[$i]->ID:0;
+                    echo '<label for="featured_story_'.$i.'">Histoire '.($i+1).'</label><select id="featured_story_'.$i.'" name="design[featured][cel_histoire][]"><option value="0">Aucune histoire</option>';
+                    foreach($posts as $p)echo '<option value="'.(int)$p->ID.'"'.selected($chosen,$p->ID,false).'>'.esc_html($p->post_title).'</option>';
+                    echo '</select>';
+                }
+                echo '</div>';continue;
+            }
             if($id&&has_post_thumbnail($id))echo get_the_post_thumbnail($id,'thumbnail',['class'=>'cel-feature-thumb']);
             echo '<select id="featured_'.esc_attr($type).'" name="design[featured]['.esc_attr($type).']"><option value="0">Aucun contenu</option>';
             foreach($posts as $p)echo '<option value="'.(int)$p->ID.'"'.selected($id,$p->ID,false).'>'.esc_html($p->post_title).'</option>';
@@ -171,6 +180,11 @@ final class Celestin_Home {
         $out['featured']=is_array($previous)?($previous['featured']??[]):[];
         if(isset($raw['featured'])&&is_array($raw['featured'])){
             foreach(Celestin_Core::TYPES as $type=>$config){
+                if($type==='cel_histoire'){
+                    $ids=array_unique(array_map('absint',(array)($raw['featured'][$type]??[])));
+                    $out['featured'][$type]=array_slice(array_values(array_filter($ids,fn($id)=>$id&&get_post_type($id)===$type&&get_post_status($id)==='publish')),0,3);
+                    continue;
+                }
                 $id=absint($raw['featured'][$type]??0);
                 $out['featured'][$type]=$id&&get_post_type($id)===$type&&get_post_status($id)==='publish'?$id:0;
             }
@@ -184,8 +198,8 @@ final class Celestin_Home {
     }
     static function assets(): void {
         if (!is_front_page()) return;
-        wp_enqueue_style('celestin-home', plugins_url('../assets/home.css',__FILE__), [], '0.4.5');
-        wp_enqueue_script('celestin-home', plugins_url('../assets/home.js',__FILE__), [], '0.4.5', true);
+        wp_enqueue_style('celestin-home', plugins_url('../assets/home.css',__FILE__), [], '0.4.12');
+        wp_enqueue_script('celestin-home', plugins_url('../assets/home.js',__FILE__), [], '0.4.12', true);
     }
     static function template(string $template): string {
         if (is_front_page() && !is_admin() && !is_feed() && !is_embed() && !is_preview()) return __DIR__.'/front-page.php';
@@ -197,13 +211,14 @@ final class Celestin_Home {
         if (!in_array($type, array_keys(Celestin_Core::TYPES), true)) return [];
         $saved=self::options()['featured']??[];
         if(is_array($saved)&&array_key_exists($type,$saved)){
-            $id=absint($saved[$type]);$p=$id?get_post($id):null;
-            return $p&&$p->post_type===$type&&$p->post_status==='publish'?[$p]:[];
+            $ids=array_unique(array_map('absint',(array)$saved[$type]));$result=[];
+            foreach($ids as $id){$p=$id?get_post($id):null;if($p&&$p->post_type===$type&&$p->post_status==='publish')$result[]=$p;}
+            return array_slice($result,0,$type==='cel_histoire'?max(1,min(3,$limit)):1);
         }
         return get_posts([
             'post_type' => $type,
             'post_status' => 'publish',
-            'posts_per_page' => 1,
+            'posts_per_page' => $type==='cel_histoire'?max(1,min(3,$limit)):1,
             'meta_key' => '_cel_feature_home',
             'meta_value' => '1',
             'orderby' => 'date',

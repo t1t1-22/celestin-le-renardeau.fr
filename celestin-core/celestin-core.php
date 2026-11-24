@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Célestin Core
  * Description: Gestion des contenus de l'univers Célestin le renardeau.
- * Version: 0.4.50
+ * Version: 0.4.51
  * Requires PHP: 8.0
  * Text Domain: celestin-core
  */
@@ -234,6 +234,7 @@ require_once __DIR__ . '/includes/news.php';
 require_once __DIR__ . '/includes/library.php';
 require_once __DIR__ . '/includes/fields.php';
 require_once __DIR__ . '/includes/public.php';
+require_once __DIR__ . '/includes/town.php';
 Celestin_Core::init();
 register_activation_hook(__FILE__, ['Celestin_Core','activate']);
 register_deactivation_hook(__FILE__, ['Celestin_Core','deactivate']);

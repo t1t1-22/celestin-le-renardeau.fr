@@ -421,3 +421,13 @@ body.cel-page .cel-news-band .cel-news-card{background:#fffdfa}
 body.cel-page .cel-audio-feature{background:#fcf7ef!important}
 body.cel-page .cel-audio-feature .cel-section-title,body.cel-page .cel-audio-feature .cel-audio-intro{color:#633619!important}
 body.cel-page .cel-audio-feature .cel-audio-wave{display:none}
+
+/* Transition continue : la silhouette garde son ratio naturel et appartient au bandeau. */
+body.cel-page .cel-hero{margin-bottom:0!important;padding-bottom:0}
+body.cel-page .cel-site .cel-news-band{--cel-news-orange:#e98932;background:var(--cel-news-orange)!important;position:relative;isolation:isolate;margin:0!important;padding:8px 0 30px!important;overflow:visible!important}
+body.cel-page .cel-news-band .cel-news-silhouette{position:absolute;left:0;right:0;bottom:calc(100% - 2px);height:clamp(125px,22vw,310px);display:flex;justify-content:center;align-items:flex-end;color:var(--cel-news-orange);pointer-events:none;z-index:0}
+body.cel-page .cel-news-band .cel-news-silhouette svg{display:block;width:auto;height:100%;max-width:96%;overflow:visible}
+body.cel-page .cel-news-band .cel-news-silhouette::after{content:"";position:absolute;bottom:0;left:0;right:0;height:5px;background:var(--cel-news-orange)}
+body.cel-page .cel-news-band .cel-news{position:relative;z-index:1;margin-top:0!important;background:transparent!important}
+body.cel-page .cel-news-band .cel-news-carousel,body.cel-page .cel-news-band .cel-news-track{background:transparent!important}
+body.cel-page .cel-news-band .cel-news-empty{color:white}

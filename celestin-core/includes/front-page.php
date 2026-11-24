@@ -165,10 +165,10 @@ body.cel-page .cel-book-editorial .cel-book-more[open] .cel-book-collapse{displa
 .cel-identity-info>a{margin-top:14px}
 .cel-identity-body .cel-identity-info h3{white-space:normal;overflow-wrap:normal;font-size:clamp(16px,1.4vw,23px)}
 
-/* Transition ondulée vers la section suivante et contour blanc des cartes. */
+/* Transition ondulée vers la section suivante et contour marron des cartes. */
 body.cel-page .cel-audio-feature>.cel-audio-wave:last-child{display:block!important;position:relative!important;width:100%;height:clamp(30px,4vw,65px)!important;margin:0 0 -1px;pointer-events:none;flex-shrink:0}
 body.cel-page .cel-audio-feature>.cel-audio-wave:last-child path{fill:#fcf7ef}
-body.cel-page .cel-audio-feature .cel-audio-card:hover,body.cel-page .cel-audio-feature .cel-audio-card:focus-within{border-color:#fff!important;box-shadow:0 0 0 3px #fff,0 9px 17px rgba(99,54,25,.21)!important}
+body.cel-page .cel-audio-feature .cel-audio-card:hover,body.cel-page .cel-audio-feature .cel-audio-card:focus-within{border-color:#633619!important;box-shadow:0 0 0 3px #633619,0 9px 17px rgba(99,54,25,.21)!important}
 body.cel-page .cel-audio-feature .cel-audio-card:hover .cel-audio-art,body.cel-page .cel-audio-feature .cel-audio-card:focus-within .cel-audio-art{box-shadow:none!important}
 </style>
 

@@ -1,5 +1,6 @@
 <?php
 if(!defined('ABSPATH'))exit;
+require_once __DIR__.'/town-vector.php';
 final class Celestin_Town {
  static function init(){
   add_action('add_meta_boxes', [__CLASS__,'boxes']);
@@ -51,7 +52,7 @@ final class Celestin_Town {
   wp_nonce_field('cel_position_save','cel_position_nonce');
   $o=get_option('cel_town',[]);
   echo '<p>Coordonnées en pourcentage depuis le bord gauche et le bord supérieur. Clique sur le plan pour placer le lieu.</p>';
-  if(!empty($o['map']))echo '<img id="cel-map-picker" style="max-width:100%;cursor:crosshair" src="'.esc_url($o['map']).'" alt="Plan de Fleuriville">';
+  echo '<div style="max-width:950px;cursor:crosshair">'.Celestin_Town_Vector::render('cel-map-picker').'</div>';
   foreach(['x'=>'Horizontal (%)','y'=>'Vertical (%)'] as $k=>$label)echo '<p><label>'.esc_html($label).' <input id="cel-pos-'.$k.'" name="cel_pos_'.$k.'" type="number" min="0" max="100" step="0.1" value="'.esc_attr(get_post_meta($p->ID,'_cel_map_'.$k,true)).'"></label></p>';
   echo '<script>document.getElementById("cel-map-picker")?.addEventListener("click",e=>{const r=e.currentTarget.getBoundingClientRect();document.getElementById("cel-pos-x").value=((e.clientX-r.left)/r.width*100).toFixed(1);document.getElementById("cel-pos-y").value=((e.clientY-r.top)/r.height*100).toFixed(1)})</script>';
  }
@@ -78,11 +79,11 @@ final class Celestin_Town {
   $o=get_option('cel_town',[]);$places=get_posts(['post_type'=>'cel_lieu','post_status'=>'publish','numberposts'=>-1,'orderby'=>'title','order'=>'ASC']);
   echo '<div class="cel-town-hero"><span aria-hidden="true">✿ ❀ ✿</span><h1>Bienvenue à Fleuriville !</h1><p>'.nl2br(esc_html(($o['intro']??'')?:'Découvre le petit monde de Célestin, ses habitants et les lieux de ses aventures.')).'</p>';
   if(!empty($o['hero']))echo '<img src="'.esc_url($o['hero']).'" alt="Fleuriville">';echo '</div><h2>Explore Fleuriville</h2>';
-  if(!empty($o['map'])){
-   echo '<div class="cel-town-map"><img src="'.esc_url($o['map']).'" alt="Plan illustré de Fleuriville">';
+  {
+   echo '<div class="cel-vector-tools" style="display:flex;gap:8px;align-items:center;margin:12px 0"><button type="button" data-zoom="in" aria-label="Agrandir le plan">+</button><button type="button" data-zoom="out" aria-label="Réduire le plan">−</button><button type="button" data-zoom="reset">Vue entière</button><span>Explore la carte et clique sur les lieux.</span></div><div id="cel-vector-viewport" style="overflow:auto;border-radius:18px;max-height:75vh;overscroll-behavior:contain"><div class="cel-town-map" id="cel-vector-stage" style="width:100%;max-width:none;margin:0;border:0;box-shadow:none;border-radius:0">'.Celestin_Town_Vector::render();
    foreach($places as $p){$x=get_post_meta($p->ID,'_cel_map_x',true);$y=get_post_meta($p->ID,'_cel_map_y',true);if($x===''||$y==='')continue;echo '<button class="cel-town-pin" type="button" style="left:'.esc_attr($x).'%;top:'.esc_attr($y).'%;" data-place="'.esc_attr($p->ID).'" aria-label="'.esc_attr(get_the_title($p)).'">✿</button>';}
-   echo '</div>';
-  }else echo '<p class="cel-town-map-note">Le plan illustré de Fleuriville sera bientôt disponible. En attendant, découvre les lieux ci-dessous.</p>';
+   echo '</div></div><style>.cel-vector-tools button{border:1px solid #e0b58b;border-radius:20px;background:#fff8ed;color:#633619;padding:7px 15px;cursor:pointer;font-weight:700}.cel-vector-tools button:hover{background:#e98932;color:white}.cel-vector-tools span{font-size:13px;color:#80532b}@media(prefers-reduced-motion:reduce){#cel-town-vector animate{display:none}}</style><script>(()=>{const stage=document.getElementById("cel-vector-stage"),viewport=document.getElementById("cel-vector-viewport");let z=1;document.querySelectorAll(".cel-vector-tools [data-zoom]").forEach(b=>b.addEventListener("click",()=>{const old=z;z=b.dataset.zoom==="reset"?1:Math.max(1,Math.min(3,z+(b.dataset.zoom==="in"?.35:-.35)));const x=(viewport.scrollLeft+viewport.clientWidth/2)/old,y=(viewport.scrollTop+viewport.clientHeight/2)/old;stage.style.width=(100*z)+"%";viewport.scrollLeft=z===1?0:x*z-viewport.clientWidth/2;viewport.scrollTop=z===1?0:y*z-viewport.clientHeight/2}))})();</script>';
+  }
   echo '<div class="cel-town-place-list">';
   foreach($places as $p){echo '<article class="cel-town-place" id="cel-place-'.absint($p->ID).'">'.Celestin_Public::illustration($p->ID,'medium').'<div><h3>'.esc_html(get_the_title($p)).'</h3><p>'.esc_html(wp_trim_words(Celestin_Fields::value($p->ID,'resume')?:Celestin_Fields::value($p->ID,'histoire'),40)).'</p><a href="'.esc_url(get_permalink($p)).'">Découvrir ce lieu →</a></div></article>';}
   echo '</div><script>document.querySelectorAll(".cel-town-pin").forEach(b=>b.addEventListener("click",()=>{const a=document.getElementById("cel-place-"+b.dataset.place);document.querySelectorAll(".cel-town-place").forEach(p=>p.classList.remove("is-selected"));a?.classList.add("is-selected");a?.scrollIntoView({behavior:"smooth",block:"center"})}))</script>';

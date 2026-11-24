@@ -70,7 +70,6 @@ final class Celestin_Library {
  }
  static function identity($post){
   wp_nonce_field('cel_core_save','cel_core_nonce');
-  echo '<div class="cel-field"><label>Visibilité sur le site</label><label><input type="checkbox" name="cel_feature_home" value="1"'.checked(get_post_meta($post->ID,'_cel_feature_home',true),'1',false).'> Mettre en avant sur l’accueil</label></div>';
  }
  static function categories($post){
   echo '<section class="cel-form-panel" data-panel="categories" hidden><h3>Catégories et classement</h3><p>Les valeurs créées sont disponibles dans tous les livres. Enregistre la fiche pour conserver tes sélections.</p><div class="cel-field-grid cel-library-identity">';

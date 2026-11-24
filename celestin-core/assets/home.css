@@ -307,3 +307,16 @@ body.cel-page .cel-audio-feature .cel-audio-card:focus-within .cel-audio-art{box
  body.cel-page .cel-audio-feature .cel-audio-card,body.cel-page .cel-audio-feature .cel-audio-art{transition:none}
  body.cel-page .cel-audio-feature .cel-audio-card:hover{transform:none}
 }
+
+/* Mini-histoires : cadre blanc englobant l'illustration et le titre. */
+body.cel-page .cel-audio-feature .cel-audio-card{background:#fffdfa;border:2px solid #fff;border-radius:15px;padding:6px;display:flex;flex-direction:column;box-shadow:0 3px 9px #63361918;transition:transform .23s ease,border-color .23s ease,box-shadow .23s ease}
+body.cel-page .cel-audio-feature .cel-audio-art{border-radius:10px;box-shadow:none}
+body.cel-page .cel-audio-feature .cel-audio-card h3{display:flex;align-items:center;justify-content:center;flex:1;min-height:56px;margin:0;padding:10px 5px 6px;text-align:center}
+@media(hover:hover) and (pointer:fine){
+ body.cel-page .cel-audio-feature .cel-audio-card:hover{border-color:#e98932;box-shadow:0 0 0 1px #e98932,0 9px 17px rgba(99,54,25,.21)}
+ body.cel-page .cel-audio-feature .cel-audio-card:hover .cel-audio-art{box-shadow:none}
+}
+body.cel-page .cel-audio-feature .cel-audio-card:focus-within{border-color:#e98932;box-shadow:0 0 0 1px #e98932,0 9px 17px rgba(99,54,25,.21)}
+body.cel-page .cel-audio-feature .cel-audio-card:focus-within .cel-audio-art{box-shadow:none}
+@media(max-width:480px){body.cel-page .cel-audio-feature .cel-audio-card{padding:4px}}
+@media(prefers-reduced-motion:reduce){body.cel-page .cel-audio-feature .cel-audio-card{transition:none}}

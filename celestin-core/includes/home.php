@@ -21,6 +21,9 @@ final class Celestin_Home {
             'headline'=>'Pars à l’aventure à Fleuriville',
             'hero_title_size'=>64, 'hero_text_size'=>18, 'hero_x'=>50, 'hero_y'=>50, 'hero_width'=>680, 'hero_text_location'=>'overlay',
             'hero_intro'=>'Bienvenue dans l’univers de Célestin', 'hero_description'=>'Des histoires à lire, des aventures à écouter et plein de petites activités à découvrir.', 'hero_button'=>'Découvrir l’univers', 'hero_link'=>'#cel-decouvrir',
+            'origin_title'=>'Il était une fois… Célestin',
+            'origin_description'=>'Derrière chaque aventure se cache une histoire. Découvre les origines de Célestin le renardeau et de son petit univers.',
+            'origin_button'=>'Découvrir son histoire','origin_link'=>'',
             'welcome'=>'Un petit coin de nature plein de charme où Célestin vit de grandes et de petites aventures avec Octet, son fidèle compagnon.',
             'newsletter'=>'','facebook'=>'','instagram'=>'','pinterest'=>''
         ];
@@ -96,7 +99,7 @@ final class Celestin_Home {
             'accueil' => ['Page d’accueil', 'dashicons-admin-home'],
             'rubriques' => ['Contenus mis en avant', 'dashicons-screenoptions'],
             'nouveautes' => ['Nouveautés', 'dashicons-megaphone'],
-            'fleuriville' => ['Fleuriville & pied de page', 'dashicons-location-alt'],
+            'fleuriville' => ['Origines & pied de page', 'dashicons-location-alt'],
             'newsletter' => ['Newsletter', 'dashicons-email-alt']
         ];
         $active = isset($_GET['tab']) ? sanitize_key(wp_unslash($_GET['tab'])) : 'identite';
@@ -154,10 +157,13 @@ final class Celestin_Home {
         echo '</section>';
 
         echo '<section id="cel-panel-fleuriville" class="cel-design-panel" role="tabpanel" aria-labelledby="cel-tab-fleuriville"' . ($active !== 'fleuriville' ? ' hidden' : '') . '>';
-        echo '<h2>Fleuriville & bienvenue</h2><p>Configure les visuels de Fleuriville et la bannière de bienvenue, juste avant le pied de page.</p>';
+        echo '<h2>Les origines de Célestin</h2><p>Configure la section juste avant le pied de page. Le texte reste à gauche des oreilles.</p>';
         self::image_setting('city', 'Carte illustrée de Fleuriville', $o);
-        self::image_setting('footer', 'Bannière « Bienvenue à Fleuriville »', $o);
-        self::text_setting('welcome', 'Texte de bienvenue', $o, true);
+        self::image_setting('footer', 'Image de fond facultative', $o);
+        self::text_setting('origin_title', 'Titre de la section', $o);
+        self::text_setting('origin_description', 'Description', $o, true);
+        self::text_setting('origin_button', 'Texte du bouton', $o);
+        self::text_setting('origin_link', 'Lien vers la page des origines (URL)', $o);
         echo '</section>';
 
         echo '<section id="cel-panel-newsletter" class="cel-design-panel" role="tabpanel" aria-labelledby="cel-tab-newsletter"' . ($active !== 'newsletter' ? ' hidden' : '') . '>';
@@ -176,7 +182,8 @@ final class Celestin_Home {
         $raw=isset($_POST['design'])&&is_array($_POST['design'])?wp_unslash($_POST['design']):[];
         $out=self::options();
         foreach(['logo','footer_logo','hero','footer','story','book','character','city','activity'] as $key) $out[$key]=absint($raw[$key]??$out[$key]??0);
-        foreach(['headline','welcome','hero_intro','hero_description','hero_button'] as $key) $out[$key]=sanitize_textarea_field($raw[$key]??$out[$key]);
+        foreach(['headline','welcome','hero_intro','hero_description','hero_button','origin_title','origin_description','origin_button'] as $key) $out[$key]=sanitize_textarea_field($raw[$key]??$out[$key]);
+        $out['origin_link']=esc_url_raw($raw['origin_link']??$out['origin_link']);
         $out['hero_link']=esc_url_raw($raw['hero_link']??'#cel-decouvrir');
         foreach(['hero_title_size'=>[24,100],'hero_text_size'=>[12,32],'hero_x'=>[0,100],'hero_y'=>[0,100],'hero_width'=>[240,1100]] as $key=>[$min,$max]){
             $out[$key]=max($min,min($max,(int)($raw[$key]??$out[$key])));

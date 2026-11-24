@@ -105,3 +105,18 @@ body.cel-page{font-family:'Nunito',sans-serif!important}
 .cel-audio-error{position:absolute;bottom:12px;left:12px;background:#fffaf3;padding:6px;border-radius:8px;font-size:12px}
 @media(max-width:760px){.cel-audio-grid{gap:16px}.cel-audio-card{flex-basis:calc((100% - 32px)/3)}.cel-audio-toggle{width:48px;height:48px;right:8px;bottom:8px}.cel-audio-theme{font-size:11px;top:8px;left:8px;padding:4px 8px}.cel-audio-card h3{font-size:17px}}
 @media(max-width:490px){.cel-audio-card{flex-basis:calc((100% - 16px)/2)}}
+
+/* Échelle éditoriale : dimensions réelles, sans zoom CSS. */
+.cel-header .cel-logo img{width:200px;max-height:68px}
+.cel-nav-illustrated a{font-size:15px;font-weight:600;padding:8px 12px;gap:7px}
+.cel-nav-illustrated svg{width:24px;height:24px}
+.cel-section{width:min(1200px,94%);margin:32px auto}
+.cel-section-title,.cel-section-title.small{font-size:clamp(24px,2.3vw,30px);font-weight:600;line-height:1.25;margin-bottom:20px}
+.cel-section-title span{font-size:.65em;margin:0 5px}
+.cel-story-player h3,.cel-character-wrap h3,.cel-featured-activity h3,.cel-book-description h3,.cel-welcome-copy h2{font-family:'Baloo 2',sans-serif;font-size:24px;font-weight:600}
+.cel-button{font-size:15px;font-weight:700;padding:9px 19px;box-shadow:0 3px 0 #cb6d1e,0 4px 9px #b75b2920}
+.cel-primary{box-shadow:0 3px 0 #d38e16,0 4px 9px #b57d2e30}
+.cel-two-columns{width:min(1200px,94%);margin:32px auto}
+.cel-audio-inner{width:min(960px,92%)}
+.cel-audio-card h3{font-size:19px;font-weight:600}
+@media(max-width:650px){.cel-header .cel-logo img{width:150px}.cel-nav-illustrated a{font-size:13px;padding:7px}.cel-section-title,.cel-section-title.small{font-size:24px}.cel-header-cta{font-size:11px;padding:8px 12px}}

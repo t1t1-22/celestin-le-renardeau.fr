@@ -41,9 +41,9 @@ $hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_si
  <?php if($options['hero_description']!==''): ?><p class="cel-hero-description"><?php echo nl2br(esc_html($options['hero_description'])); ?></p><?php endif; ?>
  <?php if($options['hero_button']): ?><a class="cel-button cel-primary" href="<?php echo esc_url($options['hero_link']?:'#cel-decouvrir'); ?>"><?php echo esc_html($options['hero_button']); ?> <span aria-hidden="true">→</span></a><?php endif; ?>
  </div>
- <svg class="cel-hero-wave cel-news-fox-ears" viewBox="0 0 1440 250" preserveAspectRatio="none" aria-hidden="true"><path fill="#e98932" d="M0 250H1440V244H1225C1170 244 1135 235 1100 213C1060 187 1027 152 1007 119C1035 55 1029 9 1012 4C993 -2 915 39 824 121Q781 111 746 85Q731 74 737 87L746 100Q708 76 689 84Q681 89 708 109Q670 94 656 100Q646 104 670 120L642 130C575 54 480 -1 455 4C432 9 423 57 444 119C427 151 394 189 353 213C318 235 280 244 215 244H0Z"/></svg>
+ 
 </section>
-<div class="cel-news-band"><section id="cel-decouvrir" class="cel-section cel-news<?php echo $news ? ' cel-news-has-items' : ''; ?>" aria-labelledby="cel-news-h">
+<div class="cel-news-band"><div class="cel-news-silhouette" aria-hidden="true"><svg viewBox="0 0 600 310" preserveAspectRatio="xMidYMax meet"><path fill="currentColor" d="M0 310V299C25 285 48 273 72 264C48 193 39 111 46 36Q48 5 64 9C112 18 171 64 224 139C246 128 263 121 280 119Q270 100 254 91Q277 87 304 109Q296 84 283 72Q316 77 340 111Q350 92 359 88L355 123Q373 127 386 137C436 63 492 20 537 9Q552 5 555 36C563 111 552 193 528 264C555 275 577 287 600 299V310Z"/></svg></div><section id="cel-decouvrir" class="cel-section cel-news<?php echo $news ? ' cel-news-has-items' : ''; ?>" aria-labelledby="cel-news-h">
   <h2 id="cel-news-h" class="screen-reader-text">Les nouveautés</h2>
   <?php if($news): ?>
   <div class="cel-news-carousel" aria-label="Carrousel des nouveautés"><div class="cel-cards cel-news-track" tabindex="0">

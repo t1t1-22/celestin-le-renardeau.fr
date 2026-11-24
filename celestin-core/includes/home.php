@@ -63,8 +63,9 @@ final class Celestin_Home {
         echo '</div>';
     }
     static function featured_settings(): void {
-        echo '<h2 style="margin-top:32px">Contenus mis en avant</h2><p>Choisis les contenus publiés, jusqu’à trois mini-histoires, quatre activités et huit personnages dans leur ordre d’affichage. Les nouveautés sont gérées dans leur propre onglet.</p><div class="cel-feature-settings">';
+        echo '<h2 style="margin-top:32px">Contenus mis en avant</h2><p>Choisis les contenus publiés, jusqu’à trois mini-histoires et quatre activités dans leur ordre d’affichage. Tous les personnages publiés sont affichés automatiquement dans un ordre aléatoire. Les nouveautés sont gérées dans leur propre onglet.</p><div class="cel-feature-settings">';
         foreach(Celestin_Core::TYPES as $type=>$config){
+            if($type==='cel_personnage')continue;
             $current=self::featured($type,$type==='cel_histoire'?3:($type==='cel_personnage'?8:($type==='cel_coloriage'?4:1)));
             $id=$current?(int)$current[0]->ID:0;
             $posts=get_posts(['post_type'=>$type,'post_status'=>'publish','posts_per_page'=>-1,'orderby'=>'title','order'=>'ASC']);

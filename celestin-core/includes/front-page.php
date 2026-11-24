@@ -339,6 +339,7 @@ body.cel-page .cel-feature-slider .cel-feature-book-slide .cel-feature-layout ar
 body.cel-page .cel-feature-book-slide .cel-feature-layout .cel-news-cel_livre .cel-news-image-link,body.cel-page .cel-feature-book-slide .cel-feature-layout .cel-news-cel_livre:hover .cel-news-image-link{width:100%!important;height:100%!important;max-width:none!important;aspect-ratio:1/1;display:block;padding:0;transform:none!important;animation:none!important;box-shadow:none!important;border-radius:inherit}
 body.cel-page .cel-feature-book-slide .cel-news-image-link:before,body.cel-page .cel-feature-book-slide .cel-news-image-link:after,body.cel-page .cel-feature-book-slide .cel-card-image:before{content:none!important}
 body.cel-page .cel-feature-book-slide .cel-news-image-link img{width:100%;height:100%;object-fit:contain;display:block;border-radius:inherit;box-shadow:none}
+body.cel-page .cel-feature-slider .cel-news-theme-list>span.cel-news-activity-type{background:#e98932;color:#fff;font-weight:800}
 </style>
 
 </head>
@@ -374,9 +375,10 @@ if(!$summary && $item->post_type==='cel_personnage')$summary=Celestin_Fields::va
 $summary=$summary?:$item->post_excerpt;
 $kicker=$item->post_type==='cel_coloriage'?(Celestin_Fields::value($item->ID,'type')?:'Activité'):($item->post_type==='cel_personnage'?'':$new_label);
 $story_tags=[];$story_under_image=[];$themes=[];
-if($item->post_type==='cel_histoire'){
+if(in_array($item->post_type,['cel_histoire','cel_coloriage'],true)){
  $themes=wp_get_object_terms($item->ID,Celestin_Library::TAX['categorie'],['fields'=>'names']);
- $kicker=(!is_wp_error($themes)&&$themes)?implode(' · ',$themes):'Mini-histoire audio';
+ if($item->post_type==='cel_coloriage'&&(is_wp_error($themes)||!$themes))$themes=wp_get_object_terms($item->ID,'cel_theme_cel_coloriage',['fields'=>'names']);
+ if($item->post_type==='cel_histoire')$kicker=(!is_wp_error($themes)&&$themes)?implode(' · ',$themes):'Mini-histoire audio';
  $labels=['collection'=>'Collection','saison'=>'Saison','mois'=>'Date de sortie','age_lecture'=>'Âge','evenement'=>'Événement'];
  foreach($labels as $key=>$label){
   $terms=wp_get_object_terms($item->ID,Celestin_Library::TAX[$key],['fields'=>'names']);
@@ -391,7 +393,7 @@ if($item->post_type==='cel_histoire'){
   if(in_array($key,['collection','mois'],true))$story_under_image[$label]=implode(', ',$terms);
   else $story_tags[]=$label.' : '.implode(', ',$terms);
  }
- if(!$summary)$summary=Celestin_Fields::value($item->ID,'texte');
+ if(!$summary&&$item->post_type==='cel_histoire')$summary=Celestin_Fields::value($item->ID,'texte');
 }
 if($item->post_type==='cel_livre'){
  $themes=wp_get_object_terms($item->ID,Celestin_Library::TAX['categorie'],['fields'=>'names']);
@@ -427,7 +429,7 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
         </div>
       </article>
       <?php if($story_under_image): ?><div class="cel-news-under-image"><?php foreach($story_under_image as $label=>$value): ?><div><strong><?php echo esc_html($label); ?></strong> <span><?php echo esc_html($value); ?></span></div><?php endforeach; ?></div><?php endif; ?></div>
- <div class="cel-feature-copy"><?php if(in_array($item->post_type,['cel_histoire','cel_livre'],true)&&!is_wp_error($themes)&&$themes): ?><div class="cel-news-themes"><span class="cel-news-theme-label">Les thèmes de cette histoire</span><div class="cel-news-theme-list"><?php foreach($themes as $theme): ?><span><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z"/></svg><?php echo esc_html($theme); ?></span><?php endforeach; ?></div></div><?php elseif($kicker): ?><p class="cel-feature-kicker"><?php echo esc_html($kicker); ?></p><?php endif; ?><h2><?php echo esc_html($title); ?></h2>
+ <div class="cel-feature-copy"><?php if(($item->post_type==='cel_coloriage'||(in_array($item->post_type,['cel_histoire','cel_livre'],true)&&!is_wp_error($themes)&&$themes))): ?><div class="cel-news-themes"><span class="cel-news-theme-label"><?php echo $item->post_type==='cel_coloriage'?'Type d’activité et thèmes':'Les thèmes de cette histoire'; ?></span><div class="cel-news-theme-list"><?php if($item->post_type==='cel_coloriage'): ?><span class="cel-news-activity-type"><?php echo esc_html($kicker); ?></span><?php endif; ?><?php foreach(is_wp_error($themes)?[]:$themes as $theme): ?><span><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z"/></svg><?php echo esc_html($theme); ?></span><?php endforeach; ?></div></div><?php elseif($kicker): ?><p class="cel-feature-kicker"><?php echo esc_html($kicker); ?></p><?php endif; ?><h2><?php echo esc_html($title); ?></h2>
  <?php if($story_tags): ?><div class="cel-feature-tags"><?php foreach($story_tags as $tag): ?><span><?php echo esc_html($tag); ?></span><?php endforeach; ?></div><?php endif; ?>
  <?php if($summary): ?><p class="cel-feature-summary"><?php echo esc_html(wp_trim_words(wp_strip_all_tags($summary),$item->post_type==='cel_personnage'?38:65,'…')); ?></p><?php endif; ?>
 <?php if($item->post_type==='cel_personnage'): ?>

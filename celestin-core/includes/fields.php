@@ -32,6 +32,8 @@ final class Celestin_Fields {
 
     static function init(): void {
         add_action('init',[__CLASS__,'remove_editor'],30);
+        add_filter('post_row_actions',[__CLASS__,'character_duplicate_action'],20,2);
+        add_action('admin_post_cel_duplicate_character',[__CLASS__,'duplicate_character']);
         add_action('wp_ajax_cel_activity_type_add',[__CLASS__,'add_activity_type']);
         add_filter('wp_insert_post_data',[__CLASS__,'automatic_character_title'],20,2);
         add_action('add_meta_boxes',[__CLASS__,'boxes'],30);
@@ -42,6 +44,39 @@ final class Celestin_Fields {
         add_action('admin_enqueue_scripts',[__CLASS__,'admin_assets']);
         add_filter('enter_title_here',[__CLASS__,'title_placeholder'],10,2);
         add_filter('use_block_editor_for_post_type',[__CLASS__,'disable_blocks'],10,2);
+    }
+    static function duplicate_character_url(int $id): string {
+        return wp_nonce_url(admin_url('admin-post.php?action=cel_duplicate_character&post='.$id),'cel_duplicate_character_'.$id);
+    }
+    static function character_duplicate_action(array $actions,WP_Post $post): array {
+        $type=get_post_type_object('cel_personnage');
+        if($post->post_type==='cel_personnage'&&$post->post_status!=='trash'&&$type&&current_user_can($type->cap->create_posts)&&current_user_can('edit_post',$post->ID)){
+            $actions['cel_duplicate']='<a href="'.esc_url(self::duplicate_character_url($post->ID)).'">Dupliquer</a>';
+        }
+        return $actions;
+    }
+    static function duplicate_character(): void {
+        $id=absint($_GET['post']??0);
+        $source=get_post($id);$type=get_post_type_object('cel_personnage');
+        if(!$source||$source->post_type!=='cel_personnage'||$source->post_status==='trash'||!$type||!current_user_can($type->cap->create_posts)||!current_user_can('edit_post',$id))wp_die('Accès refusé.');
+        check_admin_referer('cel_duplicate_character_'.$id);
+        $new=wp_insert_post(wp_slash([
+            'post_type'=>'cel_personnage','post_status'=>'draft','post_author'=>get_current_user_id(),
+            'post_title'=>$source->post_title.' — Copie','post_content'=>$source->post_content,
+            'post_excerpt'=>$source->post_excerpt,'menu_order'=>$source->menu_order
+        ]),true);
+        if(is_wp_error($new)||!$new)wp_die('Impossible de dupliquer la fiche.');
+        foreach(get_post_meta($id) as $key=>$values){
+            if(strpos($key,'_cel_f_')!==0&&strpos($key,'_cel_section_image_')!==0&&!in_array($key,['_cel_relations','_thumbnail_id'],true))continue;
+            foreach($values as $value)add_post_meta($new,$key,wp_slash(maybe_unserialize($value)));
+        }
+        foreach(get_object_taxonomies('cel_personnage') as $taxonomy){
+            $terms=wp_get_object_terms($id,$taxonomy,['fields'=>'ids']);
+            if(!is_wp_error($terms))wp_set_object_terms($new,array_map('intval',$terms),$taxonomy);
+        }
+        update_post_meta($new,'_cel_en_nouveaute','0');
+        update_post_meta($new,'_cel_feature_home','0');
+        wp_safe_redirect(admin_url('post.php?post='.$new.'&action=edit'));exit;
     }
     // Le nom affiché sur le site vient directement des champs Prénom + Nom.
     // Le filtre intervient avant l'insertion pour éviter un titre manquant au premier enregistrement.
@@ -169,6 +204,10 @@ final class Celestin_Fields {
         if(in_array($post->post_type,['cel_livre','cel_histoire','cel_coloriage','cel_personnage'],true)){
             echo '<div class="cel-book-savebar"><span class="cel-book-save-label">'.esc_html($post->post_status==='publish'?'Contenu publié':'Contenu en préparation').'</span><button type="button" class="cel-book-preview-action">Prévisualiser</button><button type="button" class="cel-book-save-action">'.esc_html($post->post_status==='publish'?'Enregistrer les modifications':'Enregistrer le brouillon').'</button>';
             if($post->post_status!=='publish')echo '<button type="button" class="cel-book-publish-action">Publier</button>';
+            if($post->post_type==='cel_personnage'&&!in_array($post->post_status,['auto-draft','trash'],true)){
+                $type=get_post_type_object('cel_personnage');
+                if($type&&current_user_can($type->cap->create_posts)&&current_user_can('edit_post',$post->ID))echo '<a class="button" style="border:1px solid #e4c4a1;border-radius:9px;color:#77431f;background:#fff7eb;padding:6px 12px" href="'.esc_url(self::duplicate_character_url($post->ID)).'">Dupliquer la fiche enregistrée</a>';
+            }
             echo '</div>';
         }
 

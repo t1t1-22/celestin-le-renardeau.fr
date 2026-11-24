@@ -183,13 +183,14 @@ body.cel-page .cel-audio-feature .cel-audio-grid>.cel-audio-card:hover,body.cel-
 
 /* Halo lumineux discret autour du bouton lecture au repos. */
 @keyframes cel-play-glimmer {
-  0%,100% {filter:drop-shadow(0 0 0 rgba(255,233,181,0))}
-  50% {filter:drop-shadow(0 0 5px rgba(255,233,181,.85)) drop-shadow(0 0 2px rgba(255,255,255,.45))}
+  0%,100% {box-shadow:0 3px 12px #63361944,0 0 0 0 rgba(255,208,138,.15)}
+  50% {box-shadow:0 3px 12px #63361944,0 0 0 4px rgba(255,208,138,.65),0 0 11px 4px rgba(255,244,211,.65)}
 }
 @media(prefers-reduced-motion:no-preference){
- body.cel-page .cel-audio-feature .cel-audio-toggle[aria-pressed="false"] svg{animation:cel-play-glimmer 3.8s ease-in-out infinite}
- body.cel-page .cel-audio-feature .cel-audio-card:nth-child(2n) .cel-audio-toggle svg{animation-delay:.7s}
+ body.cel-page .cel-audio-feature .cel-audio-toggle[aria-pressed="false"]{animation:cel-play-glimmer 3s ease-in-out infinite!important}
+ body.cel-page .cel-audio-feature .cel-audio-card:nth-child(2n) .cel-audio-toggle[aria-pressed="false"]{animation-delay:.7s!important}
 }
+body.cel-page .cel-audio-feature .cel-audio-toggle[aria-pressed="true"]{animation:none!important}
 
 body.cel-page .cel-audio-feature .cel-section-title{font:700 clamp(29px,3vw,40px)/1.12 'Baloo 2',sans-serif!important;color:#fff!important}
 </style>

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Célestin Core
  * Description: Gestion des contenus de l'univers Célestin le renardeau.
- * Version: 0.4.10
+ * Version: 0.4.11
  * Requires PHP: 8.0
  * Text Domain: celestin-core
  */
@@ -64,7 +64,6 @@ final class Celestin_Core {
     }
     static function meta_boxes(): void {
         foreach (array_keys(self::TYPES) as $type) {
-            add_meta_box('cel_home_box', 'Page d’accueil', [__CLASS__, 'home_box'], $type, 'side', 'high');
         }
         // Champs détaillés regroupés dans le formulaire de fiche (Celestin_Fields).
     }
@@ -105,7 +104,6 @@ final class Celestin_Core {
           !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['cel_core_nonce'])), 'cel_core_save')) return;
         if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) || wp_is_post_revision($id)) return;
         if (!current_user_can('edit_post', $id)) return;
-        update_post_meta($id, '_cel_feature_home', isset($_POST['cel_feature_home']) ? '1' : '0');
         $fields = ['cel_pdf_url' => '_cel_pdf_url', 'cel_book_pdf' => '_cel_book_pdf', 'cel_story_mp3' => '_cel_story_mp3'];
         foreach ($fields as $field => $key) {
             if (isset($_POST[$field])) update_post_meta($id, $key, esc_url_raw(wp_unslash($_POST[$field])));

@@ -180,6 +180,16 @@ body.cel-page .cel-audio-feature .cel-audio-intro{margin-bottom:clamp(24px,3vw,4
 /* Ombre chaude et douce sous les cartes, même sans survol. */
 body.cel-page .cel-audio-feature .cel-audio-grid>.cel-audio-card{box-shadow:0 5px 10px rgba(99,54,25,.16),0 12px 25px rgba(99,54,25,.22)}
 body.cel-page .cel-audio-feature .cel-audio-grid>.cel-audio-card:hover,body.cel-page .cel-audio-feature .cel-audio-grid>.cel-audio-card:focus-within{box-shadow:0 0 0 3px #ffd08a,0 8px 14px rgba(99,54,25,.20),0 18px 30px rgba(99,54,25,.30)!important}
+
+/* Halo lumineux discret autour du bouton lecture au repos. */
+@keyframes cel-play-glimmer {
+  0%,100% {filter:drop-shadow(0 0 0 rgba(255,233,181,0))}
+  50% {filter:drop-shadow(0 0 5px rgba(255,233,181,.85)) drop-shadow(0 0 2px rgba(255,255,255,.45))}
+}
+@media(prefers-reduced-motion:no-preference){
+ body.cel-page .cel-audio-feature .cel-audio-toggle[aria-pressed="false"] svg{animation:cel-play-glimmer 3.8s ease-in-out infinite}
+ body.cel-page .cel-audio-feature .cel-audio-card:nth-child(2n) .cel-audio-toggle svg{animation-delay:.7s}
+}
 </style>
 
 </head>

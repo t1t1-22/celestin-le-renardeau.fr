@@ -71,7 +71,7 @@ $hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_si
     <?php endforeach; ?>
   </div><div class="cel-news-controls"><button type="button" class="cel-news-prev" aria-label="Nouveautés précédentes">‹</button><button type="button" class="cel-news-pause" aria-label="Mettre le défilement en pause">Pause</button><button type="button" class="cel-news-next" aria-label="Nouveautés suivantes">›</button></div></div>
   <?php else: ?>
-  <p class="cel-news-empty">Les prochaines nouveautés de Célestin arrivent bientôt !</p>
+  <p class="cel-news-empty">De nouvelles aventures arrivent bientôt !</p>
   <?php endif; ?>
 </section>
 <?php if($stories): ?>

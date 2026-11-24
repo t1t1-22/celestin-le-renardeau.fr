@@ -76,24 +76,33 @@ jQuery(function($){
      if(!checked.length)selected.append($('<span>',{class:'description',text:'Aucune sélection'}));
      root.find('.cel-tax-count').text('('+checked.length+' sélectionné'+(checked.length>1?'s':'')+')');
    }
-   function filter(){const q=normalize(search.val()||'');let count=0;list.children('label').each(function(){const match=normalize($(this).text()).includes(q);$(this).toggle(match);if(match)count++});root.find('.cel-tax-empty').prop('hidden',count!==0);}
-   list.on('change','input',refresh);search.on('input',filter);
-   root.find('input:not([type=checkbox])').on('keydown',e=>{if(e.key==='Enter'){e.preventDefault();if($(e.target).hasClass('cel-tax-new'))root.find('.cel-tax-add').trigger('click')}});
-   const dialog=root.find('.cel-tax-dialog')[0],opener=root.find('.cel-tax-open');
-   opener.on('click',()=>{if(!dialog)return;root.find('.cel-tax-status').text('');root.find('.cel-tax-new').val('');dialog.showModal();root.find('.cel-tax-new').trigger('focus')});
-   root.find('.cel-tax-cancel').on('click',()=>dialog.close());
-   if(dialog)dialog.addEventListener('close',()=>opener.trigger('focus'));
-   root.find('.cel-tax-add').on('click',function(){
-     const button=$(this),input=root.find('.cel-tax-new'),name=input.val().trim(),status=root.find('.cel-tax-status');
-     if(!name){status.text('Indique un nom.');return;}
-     button.prop('disabled',true);status.text('Création…');
+   const button=root.find('.cel-tax-add'),status=root.find('.cel-tax-status');
+   let busy=false;
+   function exact(name){return list.find('input').filter(function(){return normalize($(this).closest('label').find('span').text().trim())===normalize(name.trim())});}
+   function filter(){
+     const name=(search.val()||'').trim(),q=normalize(name);let count=0;
+     list.children('label').each(function(){const match=normalize($(this).text()).includes(q);$(this).toggle(match);if(match)count++});
+     root.find('.cel-tax-empty').prop('hidden',count!==0);
+     button.prop('hidden',!name||!!exact(name).length).prop('disabled',busy).text('+ Ajouter « '+name+' »');
+   }
+   list.on('change','input',refresh);
+   search.on('input',()=>{status.text('');filter()});
+   function add(){
+     const name=(search.val()||'').trim();if(!name||busy)return;
+     const existing=exact(name);
+     if(existing.length){existing.prop('checked',true);search.val('');refresh();filter();return;}
+     busy=true;button.prop('disabled',true);status.text('Création…');
      $.post(ajaxurl,{action:'cel_library_create_term',nonce:root.data('nonce'),key:root.data('key'),name}).done(r=>{
        if(!r.success){status.text(typeof r.data==='string'?r.data:'Création impossible.');return;}
        let choice=list.find('input').filter(function(){return Number(this.value)===Number(r.data.id)});
        if(!choice.length){choice=$('<input>',{type:'checkbox',name:'cel_lib['+root.data('key')+'][]',value:r.data.id});$('<label>').append(choice,' ',$('<span>').text(r.data.name)).appendTo(list);}
-       choice.prop('checked',true);input.val('');search.val('');refresh();filter();status.text('Valeur créée et sélectionnée.');if(dialog&&dialog.open)dialog.close();
-     }).fail(xhr=>status.text(xhr.responseJSON?.data||'Impossible de créer cette valeur. Réessaie.')).always(()=>button.prop('disabled',false));
-   });
+       choice.prop('checked',true);
+       if((search.val()||'').trim()===name)search.val('');
+       refresh();status.text('Valeur ajoutée et sélectionnée.');
+     }).fail(xhr=>status.text(typeof xhr.responseJSON?.data==='string'?xhr.responseJSON.data:'Impossible de créer cette valeur. Réessaie.')).always(()=>{busy=false;filter()});
+   }
+   button.on('click',add);
+   search.on('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){e.preventDefault();add()}});
    refresh();filter();
  });
 });

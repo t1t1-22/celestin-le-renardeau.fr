@@ -78,3 +78,30 @@ body.cel-page{font-family:'Nunito',sans-serif!important}
 }
 
 .cel-news-carousel{position:relative}.cel-news-track{display:flex!important;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:thin;padding:8px 4px 20px}.cel-news-track .cel-card{flex:0 0 calc((100% - 40px)/3);min-width:0;scroll-snap-align:start}.cel-news-controls{display:flex;justify-content:center;align-items:center;gap:12px;margin:6px auto}.cel-news-controls[hidden]{display:none}.cel-news-controls button{border:1px solid #e8c59e;border-radius:25px;padding:6px 15px;background:#fff6e9;color:#753d1b;font:700 17px 'Baloo 2',sans-serif;cursor:pointer}.cel-news-prev,.cel-news-next{font-size:25px!important}@media(max-width:950px){.cel-news-track .cel-card{flex-basis:calc((100% - 20px)/2)}}@media(max-width:580px){.cel-news-track .cel-card{flex-basis:86%}}
+
+/* Mini-histoires de l'accueil : cartes carrées et lecteur circulaire. */
+.cel-audio-feature{width:100%;max-width:none;margin:0;background:#f6e0d3;color:#633619}
+.cel-audio-wave{display:block;width:100%;height:clamp(24px,4vw,65px)}
+.cel-audio-inner{width:min(1050px,92%);margin:auto;padding:32px 0 38px;text-align:center}
+.cel-audio-feature .cel-section-title{font:600 clamp(24px,2.4vw,32px)/1.2 'Baloo 2',sans-serif;margin:0 0 8px;color:#633619}
+.cel-audio-intro{margin:0 0 27px;color:#80532b;font-size:16px}
+.cel-audio-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:25px}
+.cel-audio-card{flex:0 1 calc((100% - 50px)/3);min-width:0;max-width:330px}
+.cel-audio-art{position:relative;aspect-ratio:1;overflow:hidden;border-radius:18px;background:#fff6ec;box-shadow:0 6px 18px #794b2920}
+.cel-audio-art>a{display:block;width:100%;height:100%}
+.cel-audio-art img{display:block;width:100%;height:100%;object-fit:contain}
+.cel-audio-art .cel-illustration-placeholder{height:100%}
+.cel-audio-theme{position:absolute;top:12px;left:12px;padding:5px 12px;border-radius:30px;background:#fffaf2;color:#633619;font-size:13px;font-weight:700;box-shadow:0 2px 7px #63361920;pointer-events:none}
+.cel-audio-toggle{position:absolute;right:12px;bottom:12px;width:62px;height:62px;padding:0;border:0;border-radius:50%;background:#fffaf3;cursor:pointer;box-shadow:0 3px 12px #63361944}
+.cel-audio-toggle svg{width:100%;height:100%;display:block}
+.cel-audio-toggle:focus-visible{outline:3px solid #633619;outline-offset:3px}
+.cel-audio-toggle .cel-audio-stop{display:none}
+.cel-audio-toggle[aria-pressed=true] .cel-audio-play{display:none}
+.cel-audio-toggle[aria-pressed=true] .cel-audio-stop{display:block}
+.cel-audio-card h3{font:600 20px/1.25 'Baloo 2',sans-serif;margin:12px 0 0}
+.cel-audio-card h3 a{color:#633619;text-decoration:none}
+.cel-audio-card h3 a:hover{text-decoration:underline}
+.cel-audio-all{display:inline-block;margin-top:30px;padding:9px 20px;border:1px solid #b97846;border-radius:30px;color:#995b30!important;font-weight:700}
+.cel-audio-error{position:absolute;bottom:12px;left:12px;background:#fffaf3;padding:6px;border-radius:8px;font-size:12px}
+@media(max-width:760px){.cel-audio-grid{gap:16px}.cel-audio-card{flex-basis:calc((100% - 32px)/3)}.cel-audio-toggle{width:48px;height:48px;right:8px;bottom:8px}.cel-audio-theme{font-size:11px;top:8px;left:8px;padding:4px 8px}.cel-audio-card h3{font-size:17px}}
+@media(max-width:490px){.cel-audio-card{flex-basis:calc((100% - 16px)/2)}}

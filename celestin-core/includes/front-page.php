@@ -51,7 +51,7 @@ $hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_si
 <section id="cel-decouvrir" class="cel-section cel-news" aria-labelledby="cel-news-h">
   <h2 id="cel-news-h" class="cel-section-title"><span>✦</span> Les nouveautés <span>✦</span></h2>
   <?php if($news): ?>
-  <div class="cel-cards">
+  <div class="cel-news-carousel" aria-label="Carrousel des nouveautés"><div class="cel-cards cel-news-track" tabindex="0">
     <?php foreach($news as $item):
       $kind = [
         'cel_coloriage' => 'Activité',
@@ -75,7 +75,7 @@ $hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_si
         </div>
       </a>
     <?php endforeach; ?>
-  </div>
+  </div><div class="cel-news-controls"><button type="button" class="cel-news-prev" aria-label="Nouveautés précédentes">‹</button><button type="button" class="cel-news-pause" aria-label="Mettre le défilement en pause">Pause</button><button type="button" class="cel-news-next" aria-label="Nouveautés suivantes">›</button></div></div>
   <?php else: ?>
   <p class="cel-news-empty">Les prochaines nouveautés de Célestin arrivent bientôt !</p>
   <?php endif; ?>

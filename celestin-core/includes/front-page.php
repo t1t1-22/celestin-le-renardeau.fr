@@ -55,19 +55,24 @@ $hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_si
       ][$item->post_type] ?? 'Découverte';
       // Illustration de la fiche uniquement : ne pas présenter une autre illustration à sa place.
       $img = get_the_post_thumbnail_url($item->ID, 'medium_large');
-      $summary = Celestin_Fields::value($item->ID, 'resume') ?: ($item->post_excerpt ?: wp_strip_all_tags(strip_shortcodes($item->post_content)));
-      if (!$summary && $item->post_type === 'cel_personnage') $summary = Celestin_Fields::value($item->ID, 'description');
+      $preview=$item->post_type==='cel_histoire'?Celestin_Fields::value($item->ID,'resume_audio'):'';
+      $title=get_the_title($item);
     ?>
-      <a class="cel-card" href="<?php echo esc_url(get_permalink($item)); ?>">
+      <article class="cel-card cel-news-card cel-news-<?php echo esc_attr($item->post_type); ?>">
         <div class="cel-card-image">
+         <a class="cel-news-image-link" href="<?php echo esc_url(get_permalink($item)); ?>" aria-label="<?php echo esc_attr($title); ?>">
          <?php if($img): ?><img src="<?php echo esc_url($img); ?>" alt="" loading="lazy"><?php else: ?><div class="cel-card-placeholder" aria-hidden="true">✦</div><?php endif; ?>
+         </a>
          <span class="cel-card-type"><?php echo esc_html($kind); ?></span>
+         <?php if($preview): ?>
+         <audio preload="none" src="<?php echo esc_url($preview); ?>"></audio>
+         <button type="button" class="cel-audio-toggle" aria-label="<?php echo esc_attr('Écouter le résumé de '.$title); ?>" data-title="<?php echo esc_attr('le résumé de '.$title); ?>" aria-pressed="false">
+         <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="30" fill="#fffaf3"/><circle cx="32" cy="32" r="26" fill="none" stroke="#e9d3bb" stroke-width="4"/><circle class="cel-audio-ring" cx="32" cy="32" r="26" fill="none" stroke="#e98932" stroke-width="4" pathLength="100" stroke-dasharray="0 100" stroke-linecap="round" transform="rotate(-90 32 32)"/><path class="cel-audio-play" d="M25 20L44 32L25 44Z" fill="#a45b2c"/><rect class="cel-audio-stop" x="23" y="23" width="18" height="18" rx="3" fill="#a45b2c"/></svg>
+         </button><span class="cel-audio-error" role="status" hidden>Audio indisponible.</span>
+         <?php endif; ?>
         </div>
-        <div class="cel-card-body"><h3><?php echo esc_html(get_the_title($item)); ?></h3>
-          <?php if($summary): ?><p><?php echo esc_html(wp_trim_words($summary, 16)); ?></p><?php endif; ?>
-          <span class="cel-arrow" aria-hidden="true">→</span>
-        </div>
-      </a>
+        <div class="cel-card-body"><h3><a href="<?php echo esc_url(get_permalink($item)); ?>"><?php echo esc_html($title); ?></a></h3></div>
+      </article>
     <?php endforeach; ?>
   </div><div class="cel-news-controls"><button type="button" class="cel-news-prev" aria-label="Nouveautés précédentes">‹</button><button type="button" class="cel-news-pause" aria-label="Mettre le défilement en pause">Pause</button><button type="button" class="cel-news-next" aria-label="Nouveautés suivantes">›</button></div></div>
   <?php else: ?>

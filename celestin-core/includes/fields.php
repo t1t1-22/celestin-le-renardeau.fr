@@ -35,6 +35,9 @@ final class Celestin_Fields {
         add_action('wp_ajax_cel_activity_type_add',[__CLASS__,'add_activity_type']);
         add_filter('wp_insert_post_data',[__CLASS__,'automatic_character_title'],20,2);
         add_action('add_meta_boxes',[__CLASS__,'boxes'],30);
+        add_action('add_meta_boxes_cel_coloriage',static function(){
+            foreach(['cel_illustration_help','postimagediv','categorydiv','cel_theme_cel_coloriagediv'] as $box)foreach(['normal','advanced','side'] as $context)remove_meta_box($box,'cel_coloriage',$context);
+        },100);
         add_action('save_post',[__CLASS__,'save'],20,2);
         add_action('admin_enqueue_scripts',[__CLASS__,'admin_assets']);
         add_filter('enter_title_here',[__CLASS__,'title_placeholder'],10,2);
@@ -97,12 +100,38 @@ final class Celestin_Fields {
         }
         wp_enqueue_style('cel-fields',plugins_url('../assets/fields.css',__FILE__),[],'0.4.30');
         wp_enqueue_script('cel-fields',plugins_url('../assets/fields.js',__FILE__),['jquery'],'0.4.30',true);
+        if($screen->post_type==='cel_coloriage'){
+            wp_add_inline_style('cel-fields','
+.post-type-cel_coloriage #wpcontent{background:#fcf7ef}
+.post-type-cel_coloriage .wrap>h1{color:#633619;font-weight:800;font-size:27px}
+.post-type-cel_coloriage .wrap>.page-title-action{background:#e98932;border-color:#d47b29;color:white;border-radius:24px;padding:7px 16px;font-weight:700}
+.post-type-cel_coloriage #cel_structured{border:1px solid #ead9c5;border-radius:18px;box-shadow:0 6px 22px #79523112}
+.post-type-cel_coloriage #cel_structured>.postbox-header{display:none}
+.post-type-cel_coloriage #cel_structured>.inside{padding:24px;margin:0}
+.post-type-cel_coloriage .cel-form-head{display:none}
+.post-type-cel_coloriage .cel-activity-layout{display:grid;grid-template-columns:minmax(210px, .7fr) minmax(0,1.7fr);gap:24px;align-items:start}
+.post-type-cel_coloriage .cel-activity-layout .cel-section-image{margin:0;background:#fff8ed;padding:16px}
+.post-type-cel_coloriage .cel-activity-layout .cel-section-image-preview{width:100%;max-width:100%;height:auto;max-height:300px;box-sizing:border-box}
+.post-type-cel_coloriage .cel-activity-content{display:grid;gap:18px}
+.post-type-cel_coloriage .cel-activity-content .cel-field-grid{grid-template-columns:1fr}
+.post-type-cel_coloriage .cel-activity-content .cel-field{padding:14px 16px;border:1px solid #ead9c5;border-radius:12px;background:#fffdfa}
+.post-type-cel_coloriage .cel-activity-content textarea{min-height:135px}
+.post-type-cel_coloriage .cel-form-tab{padding:12px 20px}
+.post-type-cel_coloriage .cel-form-panel .button{border-color:#e4c4a1;color:#77431f;background:#fff7eb;border-radius:8px}
+.post-type-cel_coloriage #submitdiv{border:1px solid #ead9c5;border-radius:14px;overflow:hidden}
+.post-type-cel_coloriage #publish{background:#e98932;border-color:#d47b29;border-radius:20px;font-weight:700;padding:0 14px}
+.post-type-cel_coloriage #post-preview{border-color:#d7b28b;color:#75421f;border-radius:20px}
+.post-type-cel_coloriage #titlediv #title{border:1px solid #e3c9aa;border-radius:12px;padding:10px 15px;background:#fffdfa;color:#633619;font-size:23px}
+@media(max-width:1000px){.post-type-cel_coloriage .cel-activity-layout{grid-template-columns:1fr}.post-type-cel_coloriage .cel-activity-layout .cel-section-image-preview{max-width:260px}}
+');
+        }
         if($screen->post_type==='cel_personnage')wp_add_inline_style('cel-fields','#post-body-content #titlediv{display:none!important}');
     }
     static function render(WP_Post $post): void {
         wp_nonce_field('cel_fields_save','cel_fields_nonce');
         $groups=self::fields_for($post);
         if(in_array($post->post_type,['cel_livre','cel_histoire'],true))echo '<div class="cel-editor-heading"><span>Bibliothèque Célestin</span><h2>'.($post->post_type==='cel_livre'?'Fiche du livre':'Fiche de la mini-histoire audio').'</h2></div>';
+        if($post->post_type==='cel_coloriage')echo '<div class="cel-editor-heading"><span>Les petites activités de Célestin</span><h2>Fiche de l’activité</h2></div>';
         echo '<div class="cel-form-head"><p>'.($post->post_type==='cel_personnage'?'Le titre du personnage est généré automatiquement avec le prénom et le nom. ':'').'Complète les champs ci-dessous : la page du site sera construite automatiquement. Les champs vides ne seront pas affichés.</p></div>';
         echo '<div class="cel-form-tabs" role="tablist" aria-label="Sections de la fiche">';
         $i=0;
@@ -131,12 +160,18 @@ final class Celestin_Fields {
                 $title_label=$post->post_type==='cel_livre'?'Titre du livre':'Titre de la mini-histoire';
                 echo '<div class="cel-book-title-slot"><label for="cel-book-title">'.esc_html($title_label).'</label><input id="cel-book-title" name="cel_book_title" type="text" value="'.esc_attr($post->post_title).'" placeholder="'.esc_attr($title_label).'"><p class="description">Ce titre sera affiché sur le site et dans la bibliothèque.</p></div></div><div class="cel-field-grid">';
             }
-            foreach($fields as $key=>$label) self::field($post,$key,$label);
+            if($post->post_type==='cel_coloriage' && $slug==='principal'){
+                echo '</div><div class="cel-activity-layout">';
+                self::section_image($post,$slug,$title);
+                echo '<div class="cel-activity-content"><div class="cel-field-grid">';
+                foreach(['type','resume','pdf'] as $key)self::field($post,$key,$fields[$key]);
+                echo '</div></div></div><div>';
+            }else foreach($fields as $key=>$label) self::field($post,$key,$label);
             echo '</div>';
             if($post->post_type==='cel_livre' && $slug==='principal') Celestin_Library::identity($post);
             if($post->post_type==='cel_livre' && $slug==='fichier'){
                 echo '<div id="cel-pdf-preview"><h3>Aperçu des pages du livre</h3><p class="cel-pdf-status" aria-live="polite">Choisis le PDF pour afficher ses pages.</p><div class="cel-admin-reader" hidden><button type="button" class="button cel-admin-prev">←</button><div class="cel-admin-spread"><canvas></canvas><canvas></canvas></div><button type="button" class="button cel-admin-next">→</button><p class="cel-admin-counter"></p></div><div class="cel-pdf-grid"></div></div>';
-            } elseif(!in_array($post->post_type,['cel_livre','cel_histoire'],true)) self::section_image($post,$slug,$title);
+            } elseif(!in_array($post->post_type,['cel_livre','cel_histoire','cel_coloriage'],true)) self::section_image($post,$slug,$title);
           }
           echo '</section>';
           $i++;

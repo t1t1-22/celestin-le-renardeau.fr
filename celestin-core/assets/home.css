@@ -390,3 +390,12 @@ body .cel-contact-bar .cel-social-links svg{width:16px;height:16px}
 /* Même apparence pour la page active et le survol. */
 body .cel-interior-header nav.cel-nav>a.is-active,body .cel-interior-header nav.cel-nav>a:hover,body .cel-interior-header nav.cel-nav>a:focus-visible,body .cel-interior-header .cel-town-nav>a.is-active,body .cel-interior-header .cel-town-nav>a:hover,body .cel-interior-header .cel-town-nav>a:focus-visible{background:var(--cel-brand-orange)!important;color:#38200e!important;border-radius:9px;transform:none!important}
 body .cel-interior-header nav.cel-nav>a.is-active>span,body .cel-interior-header nav.cel-nav>a:hover>span,body .cel-interior-header nav.cel-nav>a:focus-visible>span{color:#38200e!important}
+
+/* Menu actif et survol : orange et blanc, chevron fin. */
+body .cel-interior-header nav.cel-nav>a.is-active,body .cel-interior-header nav.cel-nav>a:hover,body .cel-interior-header nav.cel-nav>a:focus-visible,body .cel-interior-header .cel-town-nav>a.is-active,body .cel-interior-header .cel-town-nav>a:hover,body .cel-interior-header .cel-town-nav>a:focus-visible{background:#e98932!important;color:#fff!important;border-radius:9px}
+body .cel-interior-header nav.cel-nav>a.is-active>span,body .cel-interior-header nav.cel-nav>a:hover>span,body .cel-interior-header nav.cel-nav>a:focus-visible>span{color:#fff!important}
+body .cel-town-dropdown summary{font-size:0;display:grid;place-items:center;width:26px;height:30px;padding:0;border-radius:6px}
+body .cel-town-dropdown summary::after{content:"";width:7px;height:7px;border-right:2px solid #633619;border-bottom:2px solid #633619;transform:rotate(45deg) translateY(-2px);transition:transform .2s}
+body .cel-town-dropdown[open] summary::after{transform:rotate(225deg)}
+body .cel-contact-bar .cel-social-links a{display:grid;place-items:center;width:26px;height:26px;background:#fff7ea;color:#633619;border-radius:50%}
+body .cel-contact-bar .cel-social-links a:hover{background:#633619;color:#fff}

@@ -37,6 +37,7 @@ final class Celestin_Core {
         add_filter('custom_menu_order',[__CLASS__,'custom_menu_order']);
         add_filter('menu_order',[__CLASS__,'daily_menu_order']);
         add_action('admin_head',[__CLASS__,'sidebar_style']);
+        add_action('admin_footer',[__CLASS__,'sidebar_toggle']);
         add_filter('parent_file',[__CLASS__,'universe_parent']);
         add_filter('submenu_file',[__CLASS__,'universe_submenu']);
         add_shortcode('celestin_nouveautes', [__CLASS__, 'news']);
@@ -312,6 +313,37 @@ final class Celestin_Core {
         body:not(.folded) #adminmenu li.wp-menu-separator:has(+ #menu-dashboard):after{content:"WORDPRESS";display:block;font-size:10px;font-weight:700;letter-spacing:.08em;color:#b9b3ad;padding:8px 2px}
         #adminmenu #toplevel_page_cel-universe .wp-submenu a,#adminmenu #toplevel_page_cel-classification .wp-submenu a{padding-top:8px;padding-bottom:8px}
         </style>';
+    }
+    static function sidebar_toggle(): void {
+        ?>
+        <style>
+        #adminmenu #cel-wp-section-toggle{display:block;height:auto;border-top:1px solid #ffffff20;margin:12px 10px 4px;padding:0}
+        #adminmenu #cel-wp-section-toggle button{display:flex;align-items:center;justify-content:space-between;width:100%;border:0;background:transparent;color:#b9b3ad;padding:10px 2px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.06em;cursor:pointer}
+        #adminmenu #cel-wp-section-toggle button:focus-visible{outline:2px solid #e98932}
+        #adminmenu #cel-wp-section-toggle .dashicons{transition:transform .18s}
+        #adminmenu #cel-wp-section-toggle button[aria-expanded="true"] .dashicons{transform:rotate(180deg)}
+        body:not(.folded) #adminmenu.cel-wp-collapsed>li.cel-wp-technical{display:none!important}
+        body.folded #adminmenu #cel-wp-section-toggle{display:none}
+        #adminmenu #cel-wp-section-toggle:after{content:none!important}
+        @media(max-width:782px){#adminmenu #cel-wp-section-toggle button{padding:12px 2px}}
+        </style>
+        <script>
+        (()=>{const menu=document.getElementById("adminmenu");if(!menu)return;
+        const daily=new Set(["toplevel_page_celestin-core","toplevel_page_cel-universe","toplevel_page_cel-classification","toplevel_page_cel-site-appearance","menu-media","menu-pages"]);
+        const nodes=Array.from(menu.children);const technical=nodes.filter(li=>li.tagName==="LI"&&!daily.has(li.id)&&!li.classList.contains("wp-menu-separator")&&li.id!=="collapse-menu");
+        if(!technical.length)return;
+        const first=technical[0];const prior=first.previousElementSibling;
+        const section=document.createElement("li");section.id="cel-wp-section-toggle";section.innerHTML='<button type="button" aria-expanded="false">WORDPRESS <span class="dashicons dashicons-arrow-down-alt2" aria-hidden="true"></span></button>';
+        if(prior&&prior.classList.contains("wp-menu-separator"))prior.replaceWith(section);else menu.insertBefore(section,first);
+        technical.forEach(li=>li.classList.add("cel-wp-technical"));
+        let expanded=false;try{expanded=localStorage.getItem("cel-wp-expanded")==="1"}catch(e){}
+        if(technical.some(li=>li.classList.contains("current")||li.classList.contains("wp-has-current-submenu")))expanded=true;
+        const button=section.querySelector("button");
+        function render(){menu.classList.toggle("cel-wp-collapsed",!expanded);button.setAttribute("aria-expanded",String(expanded));}
+        button.addEventListener("click",()=>{expanded=!expanded;render();try{localStorage.setItem("cel-wp-expanded",expanded?"1":"0")}catch(e){}});
+        render();})();
+        </script>
+        <?php
     }
     static function universe_parent($parent){
         if(in_array($_GET['page']??'',['celestin-design','cel-town','celestin-news'],true))return 'cel-site-appearance';

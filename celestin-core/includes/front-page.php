@@ -25,15 +25,16 @@ body.cel-page .cel-book-editorial .cel-books-layout{grid-template-columns:minmax
 body.cel-page .cel-book-editorial .cel-book-description{background:transparent;border:0;padding:0;box-shadow:none}
 body.cel-page .cel-book-editorial .cel-book-editorial-title{font:700 clamp(27px,3vw,38px)/1.15 'Baloo 2',sans-serif;margin:0 0 15px;color:#633619}
 body.cel-page .cel-book-editorial-title a{color:inherit;text-decoration:none}
-body.cel-page .cel-book-editorial .cel-book-preview{padding:24px 12px 38px 32px;perspective:1300px;display:flex;justify-content:center}
-body.cel-page .cel-book-editorial .cel-book-preview .cel-book-mockup{--book-depth:28px;position:relative;display:block;width:100%;max-width:365px;aspect-ratio:1;padding:0;border:0;border-radius:4px 9px 9px 4px;background:#f4e7d4;transform-style:preserve-3d;transform:rotateY(22deg) rotateX(3deg) rotateZ(2deg);box-shadow:none;overflow:visible;transition:transform .28s ease}
-body.cel-page .cel-book-editorial .cel-book-mockup:before{content:"";position:absolute;inset:1px;border-radius:4px 9px 9px 4px;background:#d9791f;transform:translateZ(calc(-1 * var(--book-depth)));box-shadow:-12px 22px 30px #51371938;pointer-events:none}
+body.cel-page .cel-book-editorial .cel-book-preview{padding:24px 12px 38px 32px;perspective:1300px;display:flex;justify-content:center;position:relative;isolation:isolate}
+body.cel-page .cel-book-editorial .cel-book-preview:before{content:"";position:absolute;left:50%;bottom:25px;width:78%;max-width:350px;height:30px;transform:translateX(-50%);background:radial-gradient(ellipse at center,#51371965 0%,#51371930 38%,transparent 72%);filter:blur(5px);z-index:-1;pointer-events:none}
+body.cel-page .cel-book-editorial .cel-book-preview .cel-book-mockup{--book-depth:28px;position:relative;display:block;width:100%;max-width:365px;aspect-ratio:1;padding:0;border:0;border-radius:4px 9px 9px 4px;background:#f4e7d4;transform-style:preserve-3d;transform:rotateY(9deg) rotateX(0deg) rotateZ(0deg);box-shadow:none;overflow:visible;transition:transform .55s cubic-bezier(.22,.61,.36,1)}
+body.cel-page .cel-book-editorial .cel-book-mockup:before{content:"";position:absolute;inset:1px;border-radius:4px 9px 9px 4px;background:#d9791f;transform:translateZ(calc(-1 * var(--book-depth)));box-shadow:none;pointer-events:none}
 body.cel-page .cel-book-editorial .cel-book-mockup:after{content:"";position:absolute;left:0;top:0;bottom:0;width:var(--book-depth);transform-origin:left center;transform:rotateY(90deg);background:linear-gradient(90deg,#b85e13 0%,#e98932 18%,#f3a24e 45%,#cf741f 100%);border-radius:3px 0 0 3px;pointer-events:none}
 body.cel-page .cel-book-editorial .cel-book-mockup .cel-book-face{position:absolute;inset:0;display:block;overflow:hidden;border-radius:inherit;background:#f4e7d4;transform:translateZ(.5px);box-shadow:0 0 0 1px #88674630}
 body.cel-page .cel-book-editorial .cel-book-mockup .cel-book-face:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#33200d36 0%,#fff2 1.2%,#34220f16 2.2%,transparent 4%);pointer-events:none}
 body.cel-page .cel-book-editorial .cel-book-mockup img{display:block;width:100%;height:100%;max-width:none;object-fit:contain;border-radius:inherit;box-shadow:none}
 body.cel-page .cel-book-editorial .cel-book-mockup .cel-book-pages{position:absolute;bottom:0;left:3px;right:3px;height:var(--book-depth);transform-origin:center bottom;transform:rotateX(-90deg);background:repeating-linear-gradient(0deg,#e4d5bd 0 1px,#fffaf1 1px 3px);pointer-events:none}
-body.cel-page .cel-book-editorial .cel-book-preview .cel-book-mockup:hover{transform:rotateY(16deg) rotateX(3deg) rotateZ(1deg) translateY(-3px)}
+body.cel-page .cel-book-editorial .cel-book-preview .cel-book-mockup:hover{transform:rotateY(32deg) rotateX(0deg) rotateZ(0deg)}
 body.cel-page .cel-book-editorial .cel-feature-tags{margin-bottom:17px} body.cel-page .cel-book-editorial .cel-book-library-link{display:block;margin-top:12px;font-size:14px;color:#633619;text-decoration:underline}
 body.cel-page .cel-book-editorial .cel-book-more summary{list-style:none;cursor:pointer;color:#633619;font-size:15px;line-height:1.65}
 body.cel-page .cel-book-editorial .cel-book-more summary::-webkit-details-marker{display:none}
@@ -44,7 +45,7 @@ body.cel-page .cel-book-editorial .cel-book-listen{display:flex;flex-wrap:wrap;a
 body.cel-page .cel-book-editorial .cel-book-listen audio{width:100%;max-width:350px;height:42px}
 body.cel-page .cel-book-editorial .cel-home-book-all{margin-top:18px} body.cel-page .cel-book-editorial .cel-book-listen .cel-audio-toggle{position:relative;inset:auto;transform:none;width:48px;height:48px;flex:0 0 48px;padding:0;border:0;background:transparent;box-shadow:none} body.cel-page .cel-book-editorial .cel-book-listen .cel-audio-toggle svg{width:48px;height:48px;display:block} body.cel-page .cel-book-editorial .cel-book-listen .cel-audio-error[hidden]{display:none}
 @media(max-width:760px){body.cel-page .cel-book-editorial .cel-books-layout{grid-template-columns:1fr;gap:12px;padding:15px 8px}body.cel-page .cel-book-editorial .cel-book-preview .cel-book-mockup{max-width:240px}body.cel-page .cel-book-editorial .cel-feature-tags{justify-content:flex-start}}
-@media(prefers-reduced-motion:reduce){body.cel-page .cel-book-editorial .cel-book-preview .cel-book-mockup:hover{transform:rotateY(22deg) rotateX(3deg) rotateZ(2deg)}}
+@media(prefers-reduced-motion:reduce){body.cel-page .cel-book-editorial .cel-book-preview .cel-book-mockup:hover{transform:rotateY(9deg) rotateX(0deg) rotateZ(0deg)}}
 </style>
 
 </head>

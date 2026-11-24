@@ -18,11 +18,11 @@ final class Celestin_Public {
     }
     static function assets(): void {
         if(!is_singular(self::TYPES) && !is_post_type_archive(self::TYPES))return;
-        wp_enqueue_style('celestin-home',plugins_url('../assets/home.css',__FILE__),[],'0.4.2');
-        wp_enqueue_style('cel-content',plugins_url('../assets/content.css',__FILE__),['celestin-home'],'0.4.2');
+        wp_enqueue_style('celestin-home',plugins_url('../assets/home.css',__FILE__),[],'0.4.3');
+        wp_enqueue_style('cel-content',plugins_url('../assets/content.css',__FILE__),['celestin-home'],'0.4.3');
         if(is_singular('cel_livre')){
             wp_enqueue_script('cel-pdfjs','https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',[],'3.11.174',true);
-            wp_enqueue_script('cel-reader',plugins_url('../assets/reader.js',__FILE__),['cel-pdfjs'],'0.4.2',true);
+            wp_enqueue_script('cel-reader',plugins_url('../assets/reader.js',__FILE__),['cel-pdfjs'],'0.4.3',true);
         }
         if(is_singular('cel_histoire'))wp_enqueue_script('cel-story',plugins_url('../assets/story.js',__FILE__),[],'0.3.0',true);
     }
@@ -103,7 +103,7 @@ final class Celestin_Public {
         echo '<div class="cel-book-intro"><div class="cel-book-cover">'.self::illustration($id).'</div><div class="cel-book-intro-copy">';
         if($month)echo '<span class="cel-book-ribbon">'.esc_html($month).'</span>';
         echo '<h1>'.esc_html(get_the_title($id)).'</h1>';
-        if($resume)echo '<p class="cel-book-resume">'.nl2br(esc_html($resume)).'</p>';
+        if($resume)echo '<div class="cel-book-resume-wrap"><div id="cel-book-resume" class="cel-book-resume">'.wpautop(esc_html($resume)).'</div><button type="button" class="cel-resume-toggle" aria-controls="cel-book-resume" aria-expanded="false" hidden>Lire plus ↓</button></div>';
         if($demo)echo '<p class="cel-demo-notice">Livre de démonstration — contenu provisoire.</p>';
         echo '<div class="cel-book-meta"><span data-cel-page-total>Pages du livre</span>';
         foreach(['Âge'=>$age,'Thème'=>$season,'Collection'=>$collection] as $label=>$value)if($value)echo '<span><strong>'.esc_html($label).'</strong> '.esc_html($value).'</span>';

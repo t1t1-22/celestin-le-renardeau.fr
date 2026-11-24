@@ -18,10 +18,11 @@ final class Celestin_Public {
     }
     static function assets(): void {
         if(!is_singular(self::TYPES) && !is_post_type_archive(self::TYPES))return;
-        wp_enqueue_style('cel-content',plugins_url('../assets/content.css',__FILE__),[],'0.3.0');
+        wp_enqueue_style('celestin-home',plugins_url('../assets/home.css',__FILE__),[],'0.4.0');
+        wp_enqueue_style('cel-content',plugins_url('../assets/content.css',__FILE__),['celestin-home'],'0.4.0');
         if(is_singular('cel_livre')){
             wp_enqueue_script('cel-pdfjs','https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',[],'3.11.174',true);
-            wp_enqueue_script('cel-reader',plugins_url('../assets/reader.js',__FILE__),['cel-pdfjs'],'0.3.0',true);
+            wp_enqueue_script('cel-reader',plugins_url('../assets/reader.js',__FILE__),['cel-pdfjs'],'0.4.0',true);
         }
         if(is_singular('cel_histoire'))wp_enqueue_script('cel-story',plugins_url('../assets/story.js',__FILE__),[],'0.3.0',true);
     }
@@ -92,21 +93,34 @@ final class Celestin_Public {
     }
     static function book(int $id): void {
         $pdf=Celestin_Fields::value($id,'pdf');
-        echo '<div class="cel-detail-two"><div class="cel-cover">'.self::illustration($id).'</div><div class="cel-summary">';
-        echo '<h2>À propos de ce livre</h2><p>'.nl2br(esc_html(Celestin_Fields::value($id,'resume'))).'</p>';
-        echo self::facts($id,['collection'=>'Collection','mois'=>'Mois','saison'=>'Saison']);
-        $back=Celestin_Fields::value($id,'couverture_arriere');
-        if($back) echo '<p><a class="cel-action-link" href="'.esc_url($back).'" target="_blank" rel="noopener">Voir la quatrième de couverture ↗</a></p>';
+        $resume=Celestin_Fields::value($id,'resume');
+        $month=Celestin_Fields::value($id,'mois');
+        $collection=Celestin_Fields::value($id,'collection');
+        $season=Celestin_Fields::value($id,'saison');
+        $age=Celestin_Fields::value($id,'age_lecture');
+        $highlights=Celestin_Fields::value($id,'points_livre');
+        $demo=get_post_meta($id,'_cel_demo_may',true)==='1';
+        echo '<div class="cel-book-intro"><div class="cel-book-cover">'.self::illustration($id).'</div><div class="cel-book-intro-copy">';
+        if($month)echo '<span class="cel-book-ribbon">'.esc_html($month).'</span>';
+        echo '<h1>'.esc_html(get_the_title($id)).'</h1>';
+        if($resume)echo '<p class="cel-book-resume">'.nl2br(esc_html($resume)).'</p>';
+        if($demo)echo '<p class="cel-demo-notice">Livre de démonstration — contenu provisoire.</p>';
+        echo '<div class="cel-book-meta"><span data-cel-page-total>Pages du livre</span>';
+        foreach(['Âge'=>$age,'Thème'=>$season,'Collection'=>$collection] as $label=>$value)if($value)echo '<span><strong>'.esc_html($label).'</strong> '.esc_html($value).'</span>';
         echo '</div></div>';
+        if($highlights){echo '<aside class="cel-book-note"><h2>Dans ce livre…</h2><ul>';
+        foreach(preg_split('/\R/u',$highlights,-1,PREG_SPLIT_NO_EMPTY) as $line)echo '<li>'.esc_html($line).'</li>';
+        echo '</ul></aside>';}
+        echo '</div>';
         if($pdf){
-            echo '<section class="cel-detail-section"><h2>Feuilleter le livre</h2><p>Tourne les pages comme dans un vrai livre. Les pages conservent leur format carré.</p>';
-            echo '<div class="cel-book-reader" data-pdf="'.esc_url($pdf).'"><div class="cel-book-stage" aria-live="polite"><div class="cel-book-sheet cel-left-sheet"><canvas aria-label="Page de gauche"></canvas></div><div class="cel-book-sheet cel-right-sheet"><canvas aria-label="Page de droite"></canvas></div></div>';
-            echo '<div class="cel-reader-controls"><button type="button" class="cel-reader-prev">← Page précédente</button><span class="cel-reader-counter">Chargement du livre…</span><button type="button" class="cel-reader-next">Page suivante →</button></div>';
-            echo '<p class="cel-reader-error" hidden></p><p><a class="cel-reader-fallback" href="'.esc_url($pdf).'" target="_blank" rel="noopener">Ouvrir le PDF si la visionneuse ne fonctionne pas ↗</a></p></div></section>';
-        } else echo '<p class="cel-empty-info">Le livre sera bientôt disponible à la lecture.</p>';
+            echo '<section class="cel-reader-section" aria-label="Visionneuse du livre"><div class="cel-book-reader" data-pdf="'.esc_url($pdf).'"><div class="cel-reader-layout"><div class="cel-reader-thumbs" aria-label="Miniatures des pages"></div><div class="cel-reader-center"><div class="cel-reader-viewport"><div class="cel-reader-spread"><canvas class="cel-reader-left" aria-label="Page de gauche"></canvas><canvas class="cel-reader-right" aria-label="Page de droite"></canvas><canvas class="cel-reader-flip" aria-hidden="true"></canvas></div></div></div></div>';
+            echo '<div class="cel-reader-controls"><button type="button" class="cel-reader-prev" aria-label="Page précédente">❮</button><span class="cel-reader-counter">Chargement…</span><input class="cel-reader-progress" type="range" min="1" max="1" value="1" aria-label="Aller à une page"><button type="button" class="cel-reader-next" aria-label="Page suivante">❯</button><button type="button" class="cel-reader-zoom-out" aria-label="Dézoomer">−</button><button type="button" class="cel-reader-zoom-in" aria-label="Zoomer">+</button><button type="button" class="cel-reader-full" aria-label="Plein écran">⛶</button></div><p class="cel-reader-error" hidden></p><a class="cel-reader-fallback" href="'.esc_url($pdf).'" target="_blank" rel="noopener">Ouvrir le PDF</a></div></section>';
+        }else echo '<p class="cel-empty-info">Ce livre sera bientôt disponible à la lecture.</p>';
+        $back=Celestin_Fields::value($id,'couverture_arriere');
+        if($back)echo '<p><a class="cel-action-link" href="'.esc_url($back).'" target="_blank" rel="noopener">Voir la quatrième de couverture</a></p>';
         echo self::related($id,'cel_coloriage','Les activités de ce livre');
-        echo self::related($id,'cel_histoire','Les mini-histoires associées');
         echo self::related($id,'cel_personnage','Les personnages de ce livre');
+        echo self::related($id,'cel_histoire','Mini-histoires associées');
     }
     static function story(int $id): void {
         $audio=Celestin_Fields::value($id,'audio');

@@ -11,7 +11,7 @@ $links=['Personnages'=>['url'=>Celestin_Home::url('cel_personnage')],'Mes petite
    else echo '<span class="cel-script">Célestin<small>le renardeau</small></span>';
  ?></a></div>
  <div><h3>Explorer</h3><a href="<?php echo esc_url(home_url('/')); ?>">Accueil</a><?php foreach($links as $label=>$v): ?><a href="<?php echo esc_url($v['url']); ?>"><?php echo esc_html($label); ?></a><?php endforeach; ?></div>
- <div><h3>À propos</h3><p>L’univers de Célestin et toutes ses petites aventures.</p></div>
+ <div><h3>À propos</h3><p>L’univers de Célestin et toutes ses petites aventures.</p><?php $origin_url=$options['origin_link']??'';if(!$origin_url){foreach(['origine','origines','les-origines-de-celestin','origine-de-celestin'] as $slug){$origin_page=get_page_by_path($slug);if($origin_page&&$origin_page->post_status==='publish'){$origin_url=get_permalink($origin_page);break;}}}if($origin_url): ?><a href="<?php echo esc_url($origin_url); ?>">Les origines de Célestin →</a><?php endif; ?></div>
  <div><h3>La newsletter de Fleuriville</h3><p>Retrouve les nouvelles histoires, les livres et les activités !</p><?php if($options['newsletter']): ?><a class="cel-button" href="<?php echo esc_url($options['newsletter']); ?>">S’inscrire →</a><?php else: ?><p class="cel-footer-note">Bientôt disponible</p><?php endif; ?></div>
  </div>
  <div class="cel-legal">© <?php echo esc_html(date_i18n('Y')); ?> Célestin le renardeau · Tous droits réservés</div>

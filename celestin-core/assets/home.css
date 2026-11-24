@@ -536,3 +536,6 @@ body.cel-page .cel-feature-slider .cel-feature-layout{width:100%;box-sizing:bord
 body.cel-page .cel-feature-slider .cel-feature-pagination{z-index:5}
 @keyframes cel-feature-fade{from{opacity:0}to{opacity:1}}
 @media(prefers-reduced-motion:reduce){body.cel-page .cel-feature-slider>.cel-feature-slide:not([hidden]){animation:none}}
+
+/* Boutons de découverte plus compacts sur l'accueil. */
+body.cel-page .cel-feature-copy .cel-feature-link,body.cel-page .cel-books .cel-home-book-all,body.cel-page .cel-audio-cta .cel-audio-all,body.cel-page .cel-home-activity .cel-button{font-size:14px!important;line-height:1.35!important;padding:8px 15px!important;min-height:0!important;width:fit-content!important;max-width:100%;border-radius:22px!important;white-space:normal}

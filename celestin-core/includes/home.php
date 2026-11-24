@@ -19,6 +19,7 @@ final class Celestin_Home {
             'logo'=>0, 'footer_logo'=>0, 'hero'=>0, 'footer'=>0, 'story'=>0, 'book'=>0,
             'character'=>0, 'city'=>0, 'activity'=>0,
             'headline'=>'Pars à l’aventure à Fleuriville',
+            'hero_intro'=>'Bienvenue dans l’univers de Célestin', 'hero_description'=>'Des histoires à lire, des aventures à écouter et plein de petites activités à découvrir.', 'hero_button'=>'Découvrir l’univers', 'hero_link'=>'#cel-decouvrir',
             'welcome'=>'Un petit coin de nature plein de charme où Célestin vit de grandes et de petites aventures avec Octet, son fidèle compagnon.',
             'newsletter'=>''
         ];
@@ -98,7 +99,11 @@ final class Celestin_Home {
         echo '<section id="cel-panel-accueil" class="cel-design-panel" role="tabpanel" aria-labelledby="cel-tab-accueil"' . ($active !== 'accueil' ? ' hidden' : '') . '>';
         echo '<h2>Page d’accueil</h2><p>Personnalise la grande illustration d’ouverture et son titre.</p>';
         self::image_setting('hero', 'Illustration principale de l’accueil (sans texte)', $o);
+        self::text_setting('hero_intro', 'Accroche', $o);
         self::text_setting('headline', 'Grand titre de l’accueil', $o);
+        self::text_setting('hero_description', 'Description', $o, true);
+        self::text_setting('hero_button', 'Texte du bouton', $o);
+        self::text_setting('hero_link', 'Lien du bouton', $o);
         echo '</section>';
 
         echo '<section id="cel-panel-rubriques" class="cel-design-panel" role="tabpanel" aria-labelledby="cel-tab-rubriques"' . ($active !== 'rubriques' ? ' hidden' : '') . '>';
@@ -132,7 +137,8 @@ final class Celestin_Home {
         $raw=isset($_POST['design'])&&is_array($_POST['design'])?wp_unslash($_POST['design']):[];
         $out=self::defaults();
         foreach(['logo','footer_logo','hero','footer','story','book','character','city','activity'] as $key) $out[$key]=absint($raw[$key]??0);
-        foreach(['headline','welcome'] as $key) $out[$key]=sanitize_textarea_field($raw[$key]??$out[$key]);
+        foreach(['headline','welcome','hero_intro','hero_description','hero_button'] as $key) $out[$key]=sanitize_textarea_field($raw[$key]??$out[$key]);
+        $out['hero_link']=esc_url_raw($raw['hero_link']??'#cel-decouvrir');
         $out['newsletter']=esc_url_raw($raw['newsletter']??'');
         update_option(self::OPTION,$out);
         $allowed_tabs = ['identite', 'accueil', 'rubriques', 'fleuriville', 'newsletter'];
@@ -143,8 +149,8 @@ final class Celestin_Home {
     }
     static function assets(): void {
         if (!is_front_page()) return;
-        wp_enqueue_style('celestin-home', plugins_url('../assets/home.css',__FILE__), [], '0.3.1');
-        wp_enqueue_script('celestin-home', plugins_url('../assets/home.js',__FILE__), [], '0.3.1', true);
+        wp_enqueue_style('celestin-home', plugins_url('../assets/home.css',__FILE__), [], '0.4.0');
+        wp_enqueue_script('celestin-home', plugins_url('../assets/home.js',__FILE__), [], '0.4.0', true);
     }
     static function template(string $template): string {
         if (is_front_page() && !is_admin() && !is_feed() && !is_embed() && !is_preview()) return __DIR__.'/front-page.php';

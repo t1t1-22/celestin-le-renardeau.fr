@@ -31,22 +31,9 @@ $links=[
 $hero_below=($options['hero_text_location']??'overlay')==='below';
 $hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_size'])).'px;--cel-hero-text-size:'.max(12,min(32,(int)$options['hero_text_size'])).'px;--cel-hero-x:'.max(0,min(100,(int)$options['hero_x'])).'%;--cel-hero-y:'.max(0,min(100,(int)$options['hero_y'])).'%;--cel-hero-width:'.max(240,min(1100,(int)$options['hero_width'])).'px;';
 ?>
-<section class="cel-hero <?php echo $hero_below?'cel-hero-below':'cel-hero-overlay'; ?>" aria-labelledby="cel-hero-title" style="<?php echo esc_attr($hero_style); ?>">
- <div class="cel-hero-picture">
- <?php if(!empty($options['hero'])) echo wp_get_attachment_image((int)$options['hero'],'full',false,['class'=>'cel-hero-art','alt'=>'L’univers illustré de Célestin et de Fleuriville','fetchpriority'=>'high','loading'=>'eager']); ?>
- </div>
- <div class="cel-hero-copy">
- <?php if($options['hero_intro']!==''): ?><p class="cel-eyebrow"><?php echo esc_html($options['hero_intro']); ?></p><?php endif; ?>
- <h1 id="cel-hero-title"><?php echo nl2br(esc_html($options['headline'])); ?></h1>
- <?php if($options['hero_description']!==''): ?><p class="cel-hero-description"><?php echo nl2br(esc_html($options['hero_description'])); ?></p><?php endif; ?>
- <?php if($options['hero_button']): ?><a class="cel-button cel-primary" href="<?php echo esc_url($options['hero_link']?:'#cel-decouvrir'); ?>"><?php echo esc_html($options['hero_button']); ?> <span aria-hidden="true">→</span></a><?php endif; ?>
- </div>
-</section>
-<div class="cel-news-band"><section id="cel-decouvrir" class="cel-section cel-news<?php echo $news ? ' cel-news-has-items' : ''; ?>" aria-labelledby="cel-news-h">
-  <h2 id="cel-news-h" class="screen-reader-text">Les nouveautés</h2>
-  <?php if($news): ?>
-  <div class="cel-news-carousel" aria-label="Carrousel des nouveautés"><div class="cel-cards cel-news-track" tabindex="0">
-    <?php foreach($news as $item):
+<?php if($news): ?>
+<section id="cel-decouvrir" class="cel-feature-slider" aria-label="Les nouveautés" aria-roledescription="carrousel">
+    <?php foreach($news as $idx=>$item):
       $kind = [
         'cel_coloriage' => 'Activité',
         'cel_personnage' => 'Personnage',
@@ -58,7 +45,16 @@ $hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_si
       $preview=$item->post_type==='cel_histoire'?(Celestin_Fields::value($item->ID,'resume_audio')?:Celestin_Fields::value($item->ID,'audio')):'';
       $title=get_the_title($item);
     ?>
-      <article class="cel-card cel-news-card cel-news-<?php echo esc_attr($item->post_type); ?>">
+
+<?php
+$summary=Celestin_Fields::value($item->ID,'resume');
+if(!$summary && $item->post_type==='cel_personnage')$summary=Celestin_Fields::value($item->ID,'description');
+$summary=$summary?:$item->post_excerpt;
+$cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir ce livre','cel_coloriage'=>'Découvrir cette activité','cel_personnage'=>'Rencontrer ce personnage'][$item->post_type]??'Découvrir';
+?>
+<div class="cel-feature-slide" <?php if($idx!==0)echo 'hidden'; ?> data-slide="<?php echo esc_attr($idx); ?>">
+ <div class="cel-feature-layout">
+       <article class="cel-card cel-news-card cel-news-<?php echo esc_attr($item->post_type); ?>">
         <div class="cel-card-image">
          <a class="cel-news-image-link" href="<?php echo esc_url(get_permalink($item)); ?>" aria-label="<?php echo esc_attr($title); ?>">
          <?php if($img): ?><img src="<?php echo esc_url($img); ?>" alt="" loading="lazy"><?php else: ?><div class="cel-card-placeholder" aria-hidden="true">✦</div><?php endif; ?>
@@ -73,12 +69,29 @@ $hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_si
         </div>
         <div class="cel-card-body"><span class="cel-news-kind"><?php echo esc_html($kind); ?></span><h3><a href="<?php echo esc_url(get_permalink($item)); ?>"><?php echo esc_html($title); ?></a></h3></div>
       </article>
-    <?php endforeach; ?>
-  </div><div class="cel-news-controls"><button type="button" class="cel-news-prev" aria-label="Nouveautés précédentes">‹</button><button type="button" class="cel-news-pause" aria-label="Mettre le défilement en pause">Pause</button><button type="button" class="cel-news-next" aria-label="Nouveautés suivantes">›</button></div></div>
-  <?php else: ?>
-  <p class="cel-news-empty">De nouvelles aventures arrivent bientôt !</p>
-  <?php endif; ?>
-</section></div>
+ <div class="cel-feature-copy"><p class="cel-feature-kicker"><?php echo esc_html($kind); ?> · Nouveauté</p><h2><?php echo esc_html($title); ?></h2>
+ <?php if($summary): ?><p class="cel-feature-summary"><?php echo esc_html(wp_trim_words(wp_strip_all_tags($summary),65,'…')); ?></p><?php endif; ?>
+ <a class="cel-feature-link" href="<?php echo esc_url(get_permalink($item)); ?>"><?php echo esc_html($cta); ?> →</a></div>
+ </div>
+</div>
+<?php endforeach; ?>
+<?php if(count($news)>1): ?><div class="cel-feature-pagination" aria-label="Choisir une nouveauté"><?php foreach($news as $idx=>$item): ?><button type="button" data-slide="<?php echo esc_attr($idx); ?>" aria-label="<?php echo esc_attr(get_the_title($item)); ?>" aria-current="<?php echo $idx===0?'true':'false'; ?>"></button><?php endforeach; ?><button type="button" class="cel-feature-pause" aria-label="Mettre le défilement en pause">Ⅱ</button></div><?php endif; ?>
+</section>
+<?php else: ?>
+<section class="cel-hero <?php echo $hero_below?'cel-hero-below':'cel-hero-overlay'; ?>" aria-labelledby="cel-hero-title" style="<?php echo esc_attr($hero_style); ?>">
+ <div class="cel-hero-picture">
+ <?php if(!empty($options['hero'])) echo wp_get_attachment_image((int)$options['hero'],'full',false,['class'=>'cel-hero-art','alt'=>'L’univers illustré de Célestin et de Fleuriville','fetchpriority'=>'high','loading'=>'eager']); ?>
+ </div>
+ <div class="cel-hero-copy">
+ <?php if($options['hero_intro']!==''): ?><p class="cel-eyebrow"><?php echo esc_html($options['hero_intro']); ?></p><?php endif; ?>
+ <h1 id="cel-hero-title"><?php echo nl2br(esc_html($options['headline'])); ?></h1>
+ <?php if($options['hero_description']!==''): ?><p class="cel-hero-description"><?php echo nl2br(esc_html($options['hero_description'])); ?></p><?php endif; ?>
+ <?php if($options['hero_button']): ?><a class="cel-button cel-primary" href="<?php echo esc_url($options['hero_link']?:'#cel-decouvrir'); ?>"><?php echo esc_html($options['hero_button']); ?> <span aria-hidden="true">→</span></a><?php endif; ?>
+ </div>
+</section>
+
+<?php endif; ?>
+
 <?php if($stories): ?>
 <section class="cel-story-section cel-audio-feature" aria-labelledby="cel-story-title"><div aria-hidden="true" class="cel-fox-divider" style="position:absolute;bottom:calc(100% - 2px);left:50%;transform:translateX(-50%);width:min(52vw,800px);aspect-ratio:4/1;z-index:20;pointer-events:none;background:#e98932;"></div>
 

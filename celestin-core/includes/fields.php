@@ -427,7 +427,7 @@ final class Celestin_Fields {
 
     static function relations(WP_Post $post): void {
         $types=[
-            'cel_personnage'=>['cel_personnage'=>'Famille, amis et connaissances','cel_lieu'=>'Lieux associés','cel_livre'=>'Livres associés','cel_histoire'=>'Mini-histoires associées'],
+            'cel_personnage'=>['cel_lieu'=>'Lieux associés','cel_livre'=>'Livres associés','cel_histoire'=>'Mini-histoires associées'],
             'cel_livre'=>['cel_coloriage'=>'Activités associées','cel_histoire'=>'Mini-histoires associées','cel_personnage'=>'Personnages du livre','cel_lieu'=>'Lieux du livre'],
             'cel_histoire'=>['cel_livre'=>'Livres associés','cel_personnage'=>'Personnages associés','cel_lieu'=>'Lieux associés'],
             'cel_coloriage'=>['cel_livre'=>'Livres associés','cel_personnage'=>'Personnages associés'],
@@ -563,6 +563,10 @@ final class Celestin_Fields {
             $list=isset($r[$type])&&is_array($r[$type])?$r[$type]:[];
             $ids=array_slice(array_unique(array_filter(array_map('absint',$list))),0,100);
             $out[$type]=array_values(array_filter($ids,fn($related)=>$related!==$id && get_post_type($related)===$type));
+        }
+        if($post->post_type==='cel_personnage'){
+            $previous=get_post_meta($id,'_cel_relations',true);
+            $out['cel_personnage']=is_array($previous)?($previous['cel_personnage']??[]):[];
         }
         update_post_meta($id,'_cel_relations',$out);
     }

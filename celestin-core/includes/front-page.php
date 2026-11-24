@@ -41,7 +41,7 @@ $hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_si
  <?php if($options['hero_description']!==''): ?><p class="cel-hero-description"><?php echo nl2br(esc_html($options['hero_description'])); ?></p><?php endif; ?>
  <?php if($options['hero_button']): ?><a class="cel-button cel-primary" href="<?php echo esc_url($options['hero_link']?:'#cel-decouvrir'); ?>"><?php echo esc_html($options['hero_button']); ?> <span aria-hidden="true">→</span></a><?php endif; ?>
  </div>
- <svg class="cel-hero-wave" viewBox="0 0 1440 65" preserveAspectRatio="none" aria-hidden="true"><path d="M0 20C300 80 500 0 780 30S1200 70 1440 15V65H0Z" fill="#fcf7ef"/></svg>
+ <svg class="cel-hero-wave cel-news-fox-ears" viewBox="0 0 1440 250" preserveAspectRatio="none" aria-hidden="true"><path fill="#e98932" d="M0 250H1440V244H1225C1170 244 1135 235 1100 213C1060 187 1027 152 1007 119C1035 55 1029 9 1012 4C993 -2 915 39 824 121Q781 111 746 85Q731 74 737 87L746 100Q708 76 689 84Q681 89 708 109Q670 94 656 100Q646 104 670 120L642 130C575 54 480 -1 455 4C432 9 423 57 444 119C427 151 394 189 353 213C318 235 280 244 215 244H0Z"/></svg>
 </section>
 <div class="cel-news-band"><section id="cel-decouvrir" class="cel-section cel-news<?php echo $news ? ' cel-news-has-items' : ''; ?>" aria-labelledby="cel-news-h">
   <h2 id="cel-news-h" class="screen-reader-text">Les nouveautés</h2>
@@ -82,7 +82,7 @@ $hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_si
 </section></div>
 <?php if($stories): ?>
 <section class="cel-story-section cel-audio-feature" aria-labelledby="cel-story-title">
- <svg class="cel-audio-wave cel-audio-fox-ears" viewBox="0 0 1440 250" preserveAspectRatio="xMidYMax meet" aria-hidden="true"><path fill="#e98932" d="M0 250H1440V244H1225C1170 244 1135 235 1100 213C1060 187 1027 152 1007 119C1035 55 1029 9 1012 4C993 -2 915 39 824 121Q781 111 746 85Q731 74 737 87L746 100Q708 76 689 84Q681 89 708 109Q670 94 656 100Q646 104 670 120L642 130C575 54 480 -1 455 4C432 9 423 57 444 119C427 151 394 189 353 213C318 235 280 244 215 244H0Z"/></svg>
+ <svg class="cel-audio-wave" viewBox="0 0 1440 70" preserveAspectRatio="none" aria-hidden="true"><path d="M0 0H1440V25C1100 85 850 0 540 36S120 66 0 24Z" fill="#fcf7ef"/></svg>
  <div class="cel-audio-inner">
  <h2 id="cel-story-title" class="cel-section-title">Les mini-histoires du moment</h2>
  <p class="cel-audio-intro">Installe-toi confortablement et laisse-toi raconter une histoire.</p>

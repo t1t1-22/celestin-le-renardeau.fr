@@ -34,6 +34,9 @@ final class Celestin_Core {
         add_action('save_post', [__CLASS__, 'save'], 10, 2);
         add_action('admin_menu', [__CLASS__, 'menu']);
         add_action('admin_menu', [__CLASS__, 'organize_menu'], 99);
+        add_filter('custom_menu_order',[__CLASS__,'custom_menu_order']);
+        add_filter('menu_order',[__CLASS__,'daily_menu_order']);
+        add_action('admin_head',[__CLASS__,'sidebar_style']);
         add_filter('parent_file',[__CLASS__,'universe_parent']);
         add_filter('submenu_file',[__CLASS__,'universe_submenu']);
         add_shortcode('celestin_nouveautes', [__CLASS__, 'news']);
@@ -245,7 +248,7 @@ final class Celestin_Core {
         }
     }
     static function menu(): void {
-        add_menu_page('Célestin Core', 'Célestin Core', 'manage_options',
+        add_menu_page('Célestin Core', 'Tableau de bord Célestin', 'manage_options',
           'celestin-core', [__CLASS__, 'dashboard'], 'dashicons-admin-home', 2);
     }
     static function organize_menu(): void {
@@ -262,6 +265,28 @@ final class Celestin_Core {
             if(!$object)continue;
             add_submenu_page('cel-classification',Celestin_Library::LABELS[$key],Celestin_Library::LABELS[$key],$object->cap->manage_terms,'edit-tags.php?taxonomy='.$taxonomy.'&post_type=cel_livre');
         }
+    }
+    static function custom_menu_order($enabled){return true;}
+    static function daily_menu_order($order){
+        if(!is_array($order))return $order;
+        $daily=['celestin-core','cel-universe','cel-classification','upload.php','edit.php?post_type=page'];
+        $first=array_values(array_intersect($daily,$order));
+        $rest=array_values(array_diff($order,$first));
+        $rest=array_values(array_filter($rest,static fn($slug)=>$slug!=='separator1'));
+        if(in_array('separator1',$order,true))$first[]='separator1';
+        return array_merge($first,$rest);
+    }
+    static function sidebar_style(): void {
+        echo '<style>
+        #adminmenu #toplevel_page_celestin-core,#adminmenu #toplevel_page_cel-universe,#adminmenu #toplevel_page_cel-classification{margin:4px 6px;border-radius:7px}
+        #adminmenu #toplevel_page_celestin-core .wp-menu-image:before,#adminmenu #toplevel_page_cel-universe .wp-menu-image:before,#adminmenu #toplevel_page_cel-classification .wp-menu-image:before{color:#e98932}
+        #adminmenu #toplevel_page_celestin-core.wp-has-current-submenu>a,#adminmenu #toplevel_page_cel-universe.wp-has-current-submenu>a,#adminmenu #toplevel_page_cel-classification.wp-has-current-submenu>a{background:#a85722;color:white;border-radius:7px 7px 0 0}
+        #adminmenu #toplevel_page_celestin-core.wp-has-current-submenu .wp-menu-image:before,#adminmenu #toplevel_page_cel-universe.wp-has-current-submenu .wp-menu-image:before,#adminmenu #toplevel_page_cel-classification.wp-has-current-submenu .wp-menu-image:before{color:white}
+        #adminmenu li.wp-menu-separator{height:14px;border-top:1px solid #ffffff20;margin:12px 10px 0}
+        body:not(.folded) #adminmenu li.wp-menu-separator:has(+ #menu-dashboard){height:28px}
+        body:not(.folded) #adminmenu li.wp-menu-separator:has(+ #menu-dashboard):after{content:"WORDPRESS";display:block;font-size:10px;font-weight:700;letter-spacing:.08em;color:#b9b3ad;padding:8px 2px}
+        #adminmenu #toplevel_page_cel-universe .wp-submenu a,#adminmenu #toplevel_page_cel-classification .wp-submenu a{padding-top:8px;padding-bottom:8px}
+        </style>';
     }
     static function universe_parent($parent){
         $screen=get_current_screen();

@@ -56,8 +56,19 @@ $story_tags=[];
 if($item->post_type==='cel_histoire'){
  $themes=wp_get_object_terms($item->ID,Celestin_Library::TAX['categorie'],['fields'=>'names']);
  $kicker=(!is_wp_error($themes)&&$themes)?implode(' · ',$themes):'Mini-histoire audio';
- foreach(Celestin_Library::TAX as $key=>$tax){if($key==='categorie')continue;$terms=wp_get_object_terms($item->ID,$tax,['fields'=>'names']);if(!is_wp_error($terms))$story_tags=array_merge($story_tags,$terms);}
- $story_tags=array_unique($story_tags);
+ $labels=['collection'=>'Collection','saison'=>'Saison','mois'=>'Parution','age_lecture'=>'Âge','evenement'=>'Événement'];
+ foreach($labels as $key=>$label){
+  $terms=wp_get_object_terms($item->ID,Celestin_Library::TAX[$key],['fields'=>'names']);
+  if(is_wp_error($terms)||!$terms)continue;
+  if($key==='age_lecture'){
+   $ranges=[];$other=[];
+   foreach($terms as $term){if(preg_match('/^(\\d+)\\s*[-–]\\s*(\\d+)(?:\\s*ans)?$/u',trim($term),$m))$ranges[]=[(int)$m[1],(int)$m[2]];else $other[]=$term;}
+   usort($ranges,fn($a,$b)=>$a[0]<=>$b[0]);$merged=[];
+   foreach($ranges as $range){$last=count($merged)-1;if($last>=0&&$range[0]<=$merged[$last][1])$merged[$last][1]=max($merged[$last][1],$range[1]);else $merged[]=$range;}
+   $terms=array_merge(array_map(fn($range)=>$range[0].'–'.$range[1].' ans',$merged),$other);
+  }
+  $story_tags[]=$label.' : '.implode(', ',$terms);
+ }
  if(!$summary)$summary=Celestin_Fields::value($item->ID,'texte');
 }
 $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir ce livre','cel_coloriage'=>'Découvrir cette activité','cel_personnage'=>'Rencontrer ce personnage'][$item->post_type]??'Découvrir';

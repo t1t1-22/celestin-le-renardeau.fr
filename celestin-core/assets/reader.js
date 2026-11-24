@@ -6,8 +6,8 @@ document.querySelectorAll('.cel-book-reader').forEach(reader=>{
  if(!spread||!left||!right||!prev||!next||!range||!counter||!thumbs||!error)return;
  let pdf,page=1,busy=false,zoom=1,resizeTimer;
  const single=()=>matchMedia('(max-width: 720px)').matches;
- const cover=()=>page===1||(!single()&&page===pdf.numPages&&page%2===0);
- const normal=n=>single()||n===1?n: n-n%2;
+ const cover=()=>page===1||page===pdf.numPages||page===pdf.numPages-1&&page%2===0;
+ const normal=n=>single()||n===1||n===pdf.numPages?n:n-n%2;
  function fail(){counter.textContent='Lecture indisponible';error.hidden=false;error.textContent='Impossible de charger le PDF. Tu peux l’ouvrir avec le lien ci-dessous.'}
  async function draw(canvas,n,pixels){
    if(!n||n>pdf.numPages){canvas.width=canvas.height=1;return}
@@ -28,7 +28,7 @@ document.querySelectorAll('.cel-book-reader').forEach(reader=>{
    spread.classList.toggle('single',one);
    try{
      await Promise.all([draw(left,one?null:page,1100),draw(right,end,1100)]);
-     counter.textContent='Page'+(end!==page?'s '+page+' – '+end:' '+page)+' sur '+pdf.numPages;
+     counter.textContent=page===1?'Première de couverture':page===pdf.numPages?'Quatrième de couverture':'Page'+(end!==page?'s '+page+' – '+end:' '+page)+' sur '+pdf.numPages;
      range.value=page;thumbs.querySelectorAll('button').forEach(b=>b.classList.toggle('active',Number(b.dataset.page)>=page&&Number(b.dataset.page)<=end));
      if(flip.classList.contains('visible')){
        const anim=flip.animate([{transform:'rotateY(0deg)'},{transform:direction>0?'rotateY(-180deg)':'rotateY(180deg)'}],{duration:520,easing:'ease-in-out'});
@@ -38,7 +38,7 @@ document.querySelectorAll('.cel-book-reader').forEach(reader=>{
    }catch(e){fail()}
    busy=false;prev.disabled=page<=1;next.disabled=end>=pdf.numPages;range.disabled=false;
  }
- function turn(d){if(!pdf||busy)return;const n=single()?page+d:d>0?(page===1?2:page+2):(page<=2?1:page-2);show(n,d)}
+ function turn(d){if(!pdf||busy)return;const n=single()?page+d:d>0?(page===1?2:page+2):(page===pdf.numPages?Math.max(1,normal(page-1)):page<=2?1:page-2);show(n,d)}
  prev.addEventListener('click',()=>turn(-1));next.addEventListener('click',()=>turn(1));range.addEventListener('change',()=>show(Number(range.value)));
  function changeZoom(d){zoom=Math.min(2,Math.max(1,zoom+d));spread.style.width=(zoom*100)+'%';}
  controlsRoot.querySelector('.cel-reader-zoom-in').onclick=()=>changeZoom(.25);

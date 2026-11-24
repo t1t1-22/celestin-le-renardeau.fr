@@ -170,6 +170,12 @@ body.cel-page .cel-audio-feature>.cel-audio-wave:last-child{display:block!import
 body.cel-page .cel-audio-feature>.cel-audio-wave:last-child path{fill:#fcf7ef}
 body.cel-page .cel-audio-feature .cel-audio-card:hover,body.cel-page .cel-audio-feature .cel-audio-card:focus-within{border-color:#ffd08a!important;box-shadow:0 0 0 3px #ffd08a,0 9px 17px rgba(99,54,25,.21)!important}
 body.cel-page .cel-audio-feature .cel-audio-card:hover .cel-audio-art,body.cel-page .cel-audio-feature .cel-audio-card:focus-within .cel-audio-art{box-shadow:none!important}
+
+/* Remonter le titre et libérer davantage d’espace au-dessus des cartes. */
+body.cel-page .cel-audio-feature{padding-top:clamp(24px,3.5vw,50px)!important}
+body.cel-page .cel-audio-feature .cel-audio-inner{padding-top:8px;padding-bottom:24px}
+body.cel-page .cel-audio-feature .cel-section-title{margin-top:0;margin-bottom:7px}
+body.cel-page .cel-audio-feature .cel-audio-intro{margin-bottom:clamp(24px,3vw,42px)}
 </style>
 
 </head>

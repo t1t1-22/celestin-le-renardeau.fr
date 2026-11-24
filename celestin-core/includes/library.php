@@ -50,7 +50,7 @@ final class Celestin_Library {
   foreach(['cel_news_box','cel_home_box','cel_illustration_help','postimagediv','postexcerpt','slugdiv','commentstatusdiv','commentsdiv','trackbacksdiv','authordiv','cel_collectiondiv','tagsdiv-cel_book_tags'] as $box)foreach(['side','normal','advanced'] as $where)remove_meta_box($box,'cel_livre',$where);
  }
  static function clean_story(){
-  foreach(['cel_home_box','cel_theme_cel_histoirediv'] as $box)foreach(['side','normal','advanced'] as $where)remove_meta_box($box,'cel_histoire',$where);
+  foreach(['cel_home_box','cel_theme_cel_histoirediv','tagsdiv-cel_tags_cel_histoire','cel_illustration_help','postimagediv','postexcerpt','slugdiv','commentstatusdiv','commentsdiv','trackbacksdiv','authordiv'] as $box)foreach(['side','normal','advanced'] as $where)remove_meta_box($box,'cel_histoire',$where);
  }
  static function create_term(){
   check_ajax_referer('cel_library_term','nonce');

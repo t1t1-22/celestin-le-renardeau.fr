@@ -60,8 +60,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   }catch(e){/* La palette de secours reste disponible si l'image ne peut pas être lue. */}};
   if(img.complete&&img.naturalWidth)extract();else img.addEventListener('load',extract,{once:true});
  }
- slides.forEach(palette);
- function show(n){if(n===current)return;const old=slides[current];old.querySelectorAll('audio').forEach(a=>{a.pause();try{a.currentTime=0}catch(e){}});current=(n+slides.length)%slides.length;slides.forEach((s,i)=>s.hidden=i!==current);dots.forEach((d,i)=>d.setAttribute('aria-current',String(i===current)));}
+ slides.forEach((s,i)=>{palette(s);s.inert=i!==0;s.setAttribute('aria-hidden',String(i!==0))});
+ function show(n){if(n===current)return;const old=slides[current];old.querySelectorAll('audio').forEach(a=>{a.pause();try{a.currentTime=0}catch(e){}});current=(n+slides.length)%slides.length;slides.forEach((s,i)=>{s.hidden=i!==current;s.inert=i!==current;s.setAttribute('aria-hidden',String(i!==current))});dots.forEach((d,i)=>d.setAttribute('aria-current',String(i===current)));}
  dots.forEach((b,i)=>b.onclick=()=>show(i));
  function sync(){if(pause){pause.textContent=stopped?'▷':'Ⅱ';pause.setAttribute('aria-label',stopped?'Reprendre le défilement':'Mettre le défilement en pause')}}
  if(pause)pause.onclick=()=>{stopped=!stopped;sync()};sync();

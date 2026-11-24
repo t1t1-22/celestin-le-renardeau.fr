@@ -320,3 +320,10 @@ body.cel-page .cel-audio-feature .cel-audio-card:focus-within{border-color:#e989
 body.cel-page .cel-audio-feature .cel-audio-card:focus-within .cel-audio-art{box-shadow:none}
 @media(max-width:480px){body.cel-page .cel-audio-feature .cel-audio-card{padding:4px}}
 @media(prefers-reduced-motion:reduce){body.cel-page .cel-audio-feature .cel-audio-card{transition:none}}
+
+/* Accès à la rubrique audio à droite des cartes, sans modifier leur gabarit. */
+body.cel-page .cel-audio-feature .cel-audio-grid{align-items:stretch;flex-wrap:wrap}
+body.cel-page .cel-audio-feature .cel-audio-cta{display:flex;align-items:center;justify-content:center;flex:0 0 calc((100% - 88px)/5);max-width:245px;min-width:0;box-sizing:border-box}
+body.cel-page .cel-audio-feature .cel-audio-cta .cel-audio-all{margin:0;white-space:normal;line-height:1.35;text-align:center}
+@media(max-width:1050px){body.cel-page .cel-audio-feature .cel-audio-cta{flex-basis:calc((100% - 66px)/4)}}
+@media(max-width:720px){body.cel-page .cel-audio-feature .cel-audio-cta{flex-basis:100%;max-width:none;padding-top:5px}}

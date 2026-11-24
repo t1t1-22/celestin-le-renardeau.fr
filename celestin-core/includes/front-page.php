@@ -42,8 +42,9 @@ $hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_si
  <?php if($options['hero_button']): ?><a class="cel-button cel-primary" href="<?php echo esc_url($options['hero_link']?:'#cel-decouvrir'); ?>"><?php echo esc_html($options['hero_button']); ?> <span aria-hidden="true">→</span></a><?php endif; ?>
  </div>
  
+<svg class="cel-hero-wave cel-news-transition" viewBox="0 0 1440 200" preserveAspectRatio="none" aria-hidden="true"><path style="fill:#e98932!important" d="M0 200V194C220 194 355 190 450 160C429 114 425 48 444 16Q451 4 466 10C531 31 590 87 638 139L664 131Q643 114 652 108Q670 101 700 118Q677 95 690 91Q708 86 738 105Q722 82 736 84C761 89 781 115 818 131C870 76 935 27 982 10Q997 4 1004 16C1023 48 1019 114 998 160C1093 190 1220 194 1440 194V200Z"/></svg>
 </section>
-<div class="cel-news-band"><svg class="cel-news-transition" viewBox="0 0 1440 200" preserveAspectRatio="none" aria-hidden="true" style="display:block;width:100%;height:clamp(100px,13.889vw,200px);background:transparent"><path style="fill:#e98932!important" d="M0 200V194C220 194 355 190 450 160C429 114 425 48 444 16Q451 4 466 10C531 31 590 87 638 139L664 131Q643 114 652 108Q670 101 700 118Q677 95 690 91Q708 86 738 105Q722 82 736 84C761 89 781 115 818 131C870 76 935 27 982 10Q997 4 1004 16C1023 48 1019 114 998 160C1093 190 1220 194 1440 194V200Z"/></svg><section id="cel-decouvrir" class="cel-section cel-news<?php echo $news ? ' cel-news-has-items' : ''; ?>" aria-labelledby="cel-news-h">
+<div class="cel-news-band"><section id="cel-decouvrir" class="cel-section cel-news<?php echo $news ? ' cel-news-has-items' : ''; ?>" aria-labelledby="cel-news-h">
   <h2 id="cel-news-h" class="screen-reader-text">Les nouveautés</h2>
   <?php if($news): ?>
   <div class="cel-news-carousel" aria-label="Carrousel des nouveautés"><div class="cel-cards cel-news-track" tabindex="0">

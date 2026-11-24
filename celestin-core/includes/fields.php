@@ -46,7 +46,7 @@ final class Celestin_Fields {
     // Le nom affiché sur le site vient directement des champs Prénom + Nom.
     // Le filtre intervient avant l'insertion pour éviter un titre manquant au premier enregistrement.
     static function automatic_character_title(array $data,array $postarr): array {
-        if(in_array($data['post_type']??'',['cel_livre','cel_histoire'],true)){
+        if(in_array($data['post_type']??'',['cel_livre','cel_histoire','cel_coloriage'],true)){
             if(isset($_POST['cel_fields_nonce'],$_POST['cel_book_title']) && is_string($_POST['cel_fields_nonce']) && is_string($_POST['cel_book_title']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['cel_fields_nonce'])),'cel_fields_save')){
                 $data['post_title']=wp_slash(sanitize_text_field(wp_unslash($_POST['cel_book_title'])));
             }
@@ -99,7 +99,7 @@ final class Celestin_Fields {
             wp_enqueue_script('cel-pdf-preview',plugins_url('../assets/pdf-preview.js',__FILE__),['jquery','cel-admin-pdfjs'],'0.4.30',true);
         }
         wp_enqueue_style('cel-fields',plugins_url('../assets/fields.css',__FILE__),[],'0.4.30');
-        wp_enqueue_script('cel-fields',plugins_url('../assets/fields.js',__FILE__),['jquery'],'0.4.30',true);
+        wp_enqueue_script('cel-fields',plugins_url('../assets/fields.js',__FILE__),['jquery'],'0.4.31',true);
         if($screen->post_type==='cel_coloriage'){
             wp_add_inline_style('cel-fields','
 .post-type-cel_coloriage #wpcontent{background:#fcf7ef}
@@ -109,6 +109,17 @@ final class Celestin_Fields {
 .post-type-cel_coloriage #cel_structured>.postbox-header{display:none}
 .post-type-cel_coloriage #cel_structured>.inside{padding:24px;margin:0}
 .post-type-cel_coloriage .cel-form-head{display:none}
+.post-type-cel_coloriage .cel-activity-title{margin:0 0 22px}
+.post-type-cel_coloriage.cel-book-custom-editor #post-body.columns-2{margin-right:0}
+.post-type-cel_coloriage.cel-book-custom-editor #postbox-container-1{display:none}
+.post-type-cel_coloriage.cel-book-custom-editor #postbox-container-2{width:100%;float:none}
+.post-type-cel_coloriage.cel-book-custom-editor #cel_structured{max-width:1500px;margin:0 auto 25px}
+.post-type-cel_coloriage .cel-book-savebar{margin-bottom:10px}
+.post-type-cel_coloriage .cel-editor-heading{padding-bottom:8px}
+.post-type-cel_coloriage .cel-form-panel[data-panel=principal]>h3{display:none}
+.post-type-cel_coloriage .cel-form-panel[data-panel=principal]>.cel-field-grid:empty{display:none}
+.post-type-cel_coloriage .cel-activity-layout{margin-top:10px}
+
 .post-type-cel_coloriage .cel-activity-layout{display:grid;grid-template-columns:minmax(210px, .7fr) minmax(0,1.7fr);gap:24px;align-items:start}
 .post-type-cel_coloriage .cel-activity-layout .cel-section-image{margin:0;background:#fff8ed;padding:16px}
 .post-type-cel_coloriage .cel-activity-layout .cel-section-image-preview{width:100%;max-width:100%;height:auto;max-height:300px;box-sizing:border-box}
@@ -133,6 +144,7 @@ final class Celestin_Fields {
         $groups=self::fields_for($post);
         if(in_array($post->post_type,['cel_livre','cel_histoire'],true))echo '<div class="cel-editor-heading"><span>Bibliothèque Célestin</span><h2>'.($post->post_type==='cel_livre'?'Fiche du livre':'Fiche de la mini-histoire audio').'</h2></div>';
         if($post->post_type==='cel_coloriage')echo '<div class="cel-editor-heading"><span>Les petites activités de Célestin</span><h2>Fiche de l’activité</h2></div>';
+        if($post->post_type==='cel_coloriage')echo '<div class="cel-book-title-slot cel-activity-title"><label for="cel-book-title">Titre de l’activité</label><input id="cel-book-title" name="cel_book_title" type="text" value="'.esc_attr($post->post_title).'" placeholder="Nom de l’activité"></div>';
         echo '<div class="cel-form-head"><p>'.($post->post_type==='cel_personnage'?'Le titre du personnage est généré automatiquement avec le prénom et le nom. ':'').'Complète les champs ci-dessous : la page du site sera construite automatiquement. Les champs vides ne seront pas affichés.</p></div>';
         echo '<div class="cel-form-tabs" role="tablist" aria-label="Sections de la fiche">';
         $i=0;
@@ -144,7 +156,7 @@ final class Celestin_Fields {
         if($post->post_type==='cel_personnage') echo '<button type="button" role="tab" data-tab="extras" class="cel-form-tab" aria-selected="false">Attributs personnalisés</button>';
         echo '<button type="button" role="tab" data-tab="relations" class="cel-form-tab" aria-selected="false">'.($post->post_type==='cel_livre'?'Contenus associés':'Associations').'</button>';
         echo '</div>';
-        if(in_array($post->post_type,['cel_livre','cel_histoire'],true)){
+        if(in_array($post->post_type,['cel_livre','cel_histoire','cel_coloriage'],true)){
             echo '<div class="cel-book-savebar"><span class="cel-book-save-label">'.esc_html($post->post_status==='publish'?'Contenu publié':'Contenu en préparation').'</span><button type="button" class="cel-book-preview-action">Prévisualiser</button><button type="button" class="cel-book-save-action">'.esc_html($post->post_status==='publish'?'Enregistrer les modifications':'Enregistrer le brouillon').'</button>';
             if($post->post_status!=='publish')echo '<button type="button" class="cel-book-publish-action">Publier</button>';
             echo '</div>';

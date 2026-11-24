@@ -292,6 +292,12 @@ body.cel-page .cel-origin-button:hover{background:#633619;color:#fff}
 body.cel-page .cel-footer.cel-footer-fox{margin-top:0!important}
 body.cel-page .cel-footer-fox>.cel-fox-divider{left:auto!important;right:4%!important;transform:none!important;z-index:2!important}
 @media(max-width:720px){body.cel-page .cel-origin-copy{width:100%;max-width:none}body.cel-page .cel-origin-inner{padding:35px 0 calc(15vw + 28px)}body.cel-page .cel-origin-section{margin-top:35px}body.cel-page .cel-origin-section:before{background:#f2e4d0e8}}
+
+body.cel-page .cel-play-tag{background:#e98932;color:#fff;border:1px solid #fff3df;box-shadow:0 2px 7px #63361935;font-size:12px;font-weight:800;padding:5px 10px;top:7px;left:7px}
+body.cel-page .cel-play-caption{align-items:center;padding:9px 3px 5px}
+.cel-play-text{min-width:0;flex:1}
+body.cel-page .cel-play-caption h3{font-size:16px;line-height:1.2;font-weight:700}
+body.cel-page .cel-play-detail{font:500 12px/1.4 Nunito,sans-serif;color:#a76129;margin:4px 0 0}
 </style>
 
 </head>
@@ -505,13 +511,17 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
    <div class="cel-play-tabs" role="group" aria-label="Type d’activité"><button type="button" data-play-filter="all" aria-pressed="true">Tout</button><button type="button" data-play-filter="coloriage" aria-pressed="false">Coloriages</button><button type="button" data-play-filter="jeu" aria-pressed="false">Jeux</button></div>
    <?php if($activities): ?>
    <div class="cel-play-grid<?php echo count($activities)===1?' cel-play-single':''; ?>">
-   <?php foreach($activities as $act): $kind=Celestin_Fields::value($act->ID,'type'); ?>
+   <?php foreach($activities as $act): $kind=Celestin_Fields::value($act->ID,'type');
+    $themes=wp_get_object_terms($act->ID,Celestin_Library::TAX['categorie'],['fields'=>'names']);
+    $events=wp_get_object_terms($act->ID,Celestin_Library::TAX['evenement'],['fields'=>'names']);
+    if(is_wp_error($themes)||!$themes)$themes=wp_get_object_terms($act->ID,'cel_theme_cel_coloriage',['fields'=>'names']);
+    $details=array_unique(array_merge(is_array($themes)?$themes:[],is_array($events)?$events:[])); ?>
     <a class="cel-play-card" data-play-type="<?php echo esc_attr(stripos($kind,'coloriage')!==false?'coloriage':'jeu'); ?>" href="<?php echo esc_url(get_permalink($act)); ?>">
       <div class="cel-play-paper">
         <?php echo Celestin_Public::illustration($act->ID,'medium_large'); ?>
         <?php if($kind): ?><span class="cel-play-tag"><?php echo esc_html($kind); ?></span><?php endif; ?>
       </div>
-      <div class="cel-play-caption"><h3><?php echo esc_html($act->post_title); ?></h3><span class="cel-play-arrow" aria-hidden="true">→</span></div>
+      <div class="cel-play-caption"><div class="cel-play-text"><h3><?php echo esc_html($act->post_title); ?></h3><?php if($details): ?><p class="cel-play-detail"><?php echo esc_html(implode(' · ',$details)); ?></p><?php endif; ?></div><span class="cel-play-arrow" aria-hidden="true">→</span></div>
     </a>
    <?php endforeach; ?>
    </div>

@@ -91,7 +91,7 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
 <?php endif; endforeach; ?>
 </div>
 <?php endif; ?>
-        <?php if($item->post_type==='cel_histoire'): ?><div class="cel-feature-audio-info"><?php if($preview): ?><div class="cel-feature-duration"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="cel-time-total">--:--</span></div><?php elseif($item->post_type==='cel_histoire'): ?><span>Audio bientôt disponible</span><?php endif; ?></div><?php endif; ?>
+        <?php if($item->post_type==='cel_histoire'): ?><div class="cel-feature-audio-info"><?php if($preview): ?><div class="cel-feature-duration"><svg width="16" height="16" style="width:16px!important;height:16px!important;max-width:16px!important;max-height:16px!important;flex:0 0 16px!important;display:inline-block!important" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="cel-time-total">--:--</span></div><?php elseif($item->post_type==='cel_histoire'): ?><span>Audio bientôt disponible</span><?php endif; ?></div><?php endif; ?>
  <a class="cel-feature-link" href="<?php echo esc_url(get_permalink($item)); ?>"><?php echo esc_html($cta); ?> →</a></div>
  </div>
 </div>

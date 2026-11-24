@@ -15,8 +15,8 @@ final class Celestin_Fields {
         'univers' => ['Dans l’univers de Célestin'=>['description'=>'Description humoristique','anecdote'=>'Une petite anecdote','audio'=>'Présentation audio (MP3)']]
       ],
       'cel_livre' => [
-        'principal' => ['Informations du livre'=>['resume'=>'Résumé','collection'=>'Collection / édition','mois'=>'Mois de parution','saison'=>'Saison','age_lecture'=>'Âge conseillé','points_livre'=>'Dans ce livre… (un élément par ligne)','couverture_arriere'=>'Quatrième de couverture (URL image)']],
-        'fichier' => ['Lecture'=>['pdf'=>'PDF complet du livre carré']]
+        'principal' => ['Identité du livre'=>['resume'=>'Résumé','numero'=>'Numéro du livre (facultatif)','nombre_pages'=>'Nombre de pages','points_livre'=>'Dans ce livre… (un élément par ligne)','couverture_arriere'=>'Quatrième de couverture (URL image)']],
+        'fichier' => ['Les pages'=>['pdf'=>'PDF complet du livre carré']]
       ],
       'cel_histoire' => [
         'principal'=>['Mini-histoire (environ 5 minutes)'=>['resume'=>'Résumé','texte'=>'Texte intégral','audio'=>'Narration MP3','synchronisation'=>'Repères de synchronisation (facultatif)']]
@@ -81,10 +81,10 @@ final class Celestin_Fields {
         wp_enqueue_media();
         if($screen->post_type==='cel_livre'){
             wp_enqueue_script('cel-admin-pdfjs','https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',[],'3.11.174',true);
-            wp_enqueue_script('cel-pdf-preview',plugins_url('../assets/pdf-preview.js',__FILE__),['jquery','cel-admin-pdfjs'],'0.4.2',true);
+            wp_enqueue_script('cel-pdf-preview',plugins_url('../assets/pdf-preview.js',__FILE__),['jquery','cel-admin-pdfjs'],'0.4.4',true);
         }
-        wp_enqueue_style('cel-fields',plugins_url('../assets/fields.css',__FILE__),[],'0.4.2');
-        wp_enqueue_script('cel-fields',plugins_url('../assets/fields.js',__FILE__),['jquery'],'0.4.2',true);
+        wp_enqueue_style('cel-fields',plugins_url('../assets/fields.css',__FILE__),[],'0.4.4');
+        wp_enqueue_script('cel-fields',plugins_url('../assets/fields.js',__FILE__),['jquery'],'0.4.4',true);
         if($screen->post_type==='cel_personnage')wp_add_inline_style('cel-fields','#post-body-content #titlediv{display:none!important}');
     }
     static function render(WP_Post $post): void {
@@ -98,7 +98,7 @@ final class Celestin_Fields {
           $i++;
         }
         if($post->post_type==='cel_personnage') echo '<button type="button" role="tab" data-tab="extras" class="cel-form-tab" aria-selected="false">Attributs personnalisés</button>';
-        echo '<button type="button" role="tab" data-tab="relations" class="cel-form-tab" aria-selected="false">Associations</button>';
+        echo '<button type="button" role="tab" data-tab="relations" class="cel-form-tab" aria-selected="false">'.($post->post_type==='cel_livre'?'Contenus associés':'Associations').'</button>';
         echo '</div>';
 
         $i=0;
@@ -108,6 +108,7 @@ final class Celestin_Fields {
             echo '<h3>'.esc_html($title).'</h3><div class="cel-field-grid">';
             foreach($fields as $key=>$label) self::field($post,$key,$label);
             echo '</div>';
+            if($post->post_type==='cel_livre' && $slug==='principal') Celestin_Library::identity($post);
             if($post->post_type==='cel_livre' && $slug==='fichier'){
                 echo '<div id="cel-pdf-preview"><h3>Aperçu des pages du livre</h3><p class="cel-pdf-status" aria-live="polite">Choisis le PDF pour afficher ses pages.</p><div class="cel-pdf-grid"></div></div>';
             } else self::section_image($post,$slug,$title);
@@ -181,6 +182,23 @@ final class Celestin_Fields {
         echo '<section class="cel-form-panel" data-panel="relations" hidden><h3>Relier cette fiche à d’autres contenus</h3><p>Sélectionne les fiches correspondantes. Les liens seront visibles sur le site, sans recopier les informations.</p><div class="cel-relations-grid">';
         foreach(($types[$post->post_type]??[]) as $type=>$label) {
            $available=get_posts(['post_type'=>$type,'post_status'=>['publish','draft','future','private'],'posts_per_page'=>-1,'orderby'=>'title','order'=>'ASC','exclude'=>[$post->ID]]);
+           if($post->post_type==='cel_livre'){
+              $groups=[];
+              foreach($available as $item){
+                $group='Autres';
+                if($type==='cel_coloriage')$group=trim((string)get_post_meta($item->ID,'_cel_f_type',true))?:'Non classés';
+                if($type==='cel_histoire'){$terms=wp_get_object_terms($item->ID,'cel_theme_cel_histoire',['fields'=>'names']);$group=!is_wp_error($terms)&&$terms?implode(' / ',$terms):'Sans thème';}
+                $groups[$group][]=$item;
+              }
+              ksort($groups,SORT_NATURAL|SORT_FLAG_CASE);
+              echo '<div class="cel-relation-field cel-library-related"><h3>'.esc_html($label).'</h3>';
+              if(!$groups)echo '<p>Aucun contenu disponible.</p>';
+              foreach($groups as $group=>$items){echo '<h4>'.esc_html($group).'</h4><div class="cel-lib-related-grid">';
+                foreach($items as $item){echo '<label><input type="checkbox" name="cel_relation['.esc_attr($type).'][]" value="'.(int)$item->ID.'"'.checked(in_array($item->ID,array_map('intval',$relations[$type]??[]),true),true,false).'>'.get_the_post_thumbnail($item->ID,'thumbnail').'<span>'.esc_html($item->post_title).'</span></label>';}
+                echo '</div>';
+              }
+              echo '</div>';continue;
+           }
            echo '<div class="cel-relation-field"><label>'.esc_html($label).'</label><select multiple size="6" name="cel_relation['.esc_attr($type).'][]" aria-label="'.esc_attr($label).'">';
            foreach($available as $item) echo '<option value="'.absint($item->ID).'"'.selected(in_array($item->ID,array_map('intval',$relations[$type]??[]),true),true,false).'>'.esc_html($item->post_title?:'Sans titre').'</option>';
            echo '</select><p class="description">Maintiens Cmd (Mac) ou Ctrl pour sélectionner plusieurs éléments.</p></div>';
@@ -240,6 +258,7 @@ final class Celestin_Fields {
         update_post_meta($id,'_cel_relations',$out);
     }
     static function value(int $id,string $key): string {
+        if(get_post_type($id)==='cel_livre' && isset(Celestin_Library::TAX[$key]))return Celestin_Library::display($id,$key);
         $value=(string)get_post_meta($id,'_cel_f_'.$key,true);
         if(!$value && $key==='audio' && get_post_type($id)==='cel_histoire')$value=(string)get_post_meta($id,'_cel_story_mp3',true);
         if(!$value && $key==='pdf' && get_post_type($id)==='cel_livre')$value=(string)get_post_meta($id,'_cel_book_pdf',true);

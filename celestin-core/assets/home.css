@@ -55,3 +55,24 @@ body.cel-page{font-family:'Nunito',sans-serif!important}
 .cel-nav-search input{width:115px;padding:6px 9px;font:600 13px Nunito,sans-serif;border:1px solid #e5cdb4;background:white;border-radius:20px}
 .cel-nav-search button{background:none;border:0;padding:4px;cursor:pointer}
 @media(max-width:720px){.cel-hero{min-height:420px}.cel-hero-copy{margin:0;padding:45px 15px;background:#fff8efbb;align-self:center;height:auto;border-radius:20px}.cel-nav-illustrated{border-radius:22px;margin:-15px auto 22px;gap:4px}.cel-nav-illustrated a{font-size:14px;padding:8px}.cel-nav-illustrated svg{width:23px;height:23px}.cel-nav-search input{width:130px}}
+
+/* Placement proportionnel du bloc : 0% aligne son bord gauche/haut,
+   100% son bord droit/bas, sans faire sortir le texte du slide. */
+.cel-hero{display:block;position:relative;min-height:0;overflow:hidden}
+.cel-hero-picture{position:relative;width:100%;height:clamp(380px,34vw,650px);background:linear-gradient(155deg,#c8edfc,#e4edbd)}
+.cel-hero-picture .cel-hero-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cel-hero-copy{box-sizing:border-box;width:min(var(--cel-hero-width,680px),calc(100% - 32px));max-width:none;margin:0;padding:20px 16px;height:auto;text-align:center}
+.cel-hero-overlay .cel-hero-copy{position:absolute;left:var(--cel-hero-x,50%);top:var(--cel-hero-y,50%);transform:translate(calc(-1 * var(--cel-hero-x,50%)),calc(-1 * var(--cel-hero-y,50%)));background:none}
+.cel-hero-copy h1{font-size:clamp(24px,5vw,var(--cel-hero-title-size,64px));line-height:1.08}
+.cel-hero-copy .cel-hero-description{font-size:var(--cel-hero-text-size,18px);max-width:none}
+.cel-hero-copy .cel-eyebrow{font-size:13px}
+.cel-hero-below .cel-hero-copy{position:relative;left:auto;top:auto;transform:none;margin:0 auto;padding:28px 16px 38px;text-shadow:none;background:none}
+.cel-hero-below{background:#fff8ed}
+.cel-hero-below + .cel-nav{margin-top:10px}
+@media(max-width:720px){
+ .cel-hero-picture{height:420px}
+ .cel-hero-copy{width:min(var(--cel-hero-width,680px),calc(100% - 24px));padding:12px}
+ .cel-hero-copy h1{font-size:clamp(24px,7vw,var(--cel-hero-title-size,64px))}
+ .cel-hero-copy .cel-hero-description{font-size:clamp(12px,4vw,var(--cel-hero-text-size,18px))}
+ .cel-hero-overlay .cel-hero-copy{background:#fff8efb8;border-radius:16px}
+}

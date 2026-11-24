@@ -412,3 +412,12 @@ body.cel-page .cel-audio-feature .cel-audio-fox-ears{display:block;width:100%;he
 
 /* Découpe nette : tracé de silhouette, sans liseré ni dégradé. */
 body.cel-page .cel-audio-feature .cel-audio-fox-ears{height:clamp(100px,17.36vw,250px);background:#fcf7ef;overflow:hidden;margin-bottom:-1px}
+
+/* Essai : silhouette orange superposée au bas du slide et bande nouveautés. */
+body.cel-page .cel-hero .cel-news-fox-ears{height:clamp(95px,12vw,190px);width:100%;bottom:-1px;overflow:visible;pointer-events:none}
+body.cel-page .cel-site .cel-news-band{background:#e98932!important;background-image:none!important;padding:12px 0 20px;display:flow-root}
+body.cel-page .cel-news-band .cel-news.cel-news-has-items{margin-top:0}
+body.cel-page .cel-news-band .cel-news-card{background:#fffdfa}
+body.cel-page .cel-audio-feature{background:#fcf7ef!important}
+body.cel-page .cel-audio-feature .cel-section-title,body.cel-page .cel-audio-feature .cel-audio-intro{color:#633619!important}
+body.cel-page .cel-audio-feature .cel-audio-wave{display:none}

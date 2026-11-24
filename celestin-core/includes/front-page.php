@@ -251,6 +251,19 @@ body.cel-page .cel-identity-deck .cel-identity-controls button:hover{background:
 .cel-play-arrow{font-size:20px;color:#a76129}
 .cel-play-all{display:block;text-align:center;color:#a76129;font-weight:700;font-size:14px;margin:14px 0 4px;text-decoration:none}
 @media(hover:hover) and (prefers-reduced-motion:no-preference){.cel-play-card:hover{transform:translateY(-4px) rotate(-1deg);box-shadow:0 9px 20px #63361928}}
+
+/* Une double rubrique éditoriale légère, sans grands encadrés. */
+body.cel-page .cel-two-columns{width:min(1200px,92%);grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(30px,5vw,75px);margin:65px auto 55px;align-items:start}
+body.cel-page .cel-two-columns>.cel-info-panel{background:transparent;box-shadow:none;border:0;border-radius:0;padding:0;min-width:0}
+body.cel-page .cel-two-columns .cel-section-title.small{font:700 clamp(25px,2.6vw,35px)/1.15 'Baloo 2',sans-serif;color:#633619;margin:0 0 12px}
+body.cel-page .cel-two-columns .cel-character-intro{margin:0 0 20px;max-width:48ch;min-height:3em}
+body.cel-page .cel-two-columns .cel-identity-deck{padding:6px 8px 0}
+body.cel-page .cel-two-columns .cel-identity-stack{margin:0 8px 15px}
+body.cel-page .cel-two-columns .cel-play-grid{padding:6px 0 0;gap:15px}
+body.cel-page .cel-two-columns .cel-play-grid.cel-play-single{grid-template-columns:minmax(0,250px);justify-content:start}
+body.cel-page .cel-two-columns .cel-play-all{text-align:left;margin-top:18px}
+@media(min-width:1001px){body.cel-page .cel-two-columns>.cel-play-panel{position:relative}body.cel-page .cel-two-columns>.cel-play-panel:before{content:'';position:absolute;left:calc(clamp(30px,5vw,75px) / -2);top:10px;bottom:0;border-left:1px solid #e8d5bd}}
+@media(max-width:1000px){body.cel-page .cel-two-columns{grid-template-columns:1fr;gap:42px;max-width:640px;margin:40px auto}body.cel-page .cel-two-columns .cel-character-intro{min-height:0}body.cel-page .cel-two-columns .cel-play-grid.cel-play-single{justify-content:center}body.cel-page .cel-two-columns .cel-play-all{text-align:center}}
 </style>
 
 </head>

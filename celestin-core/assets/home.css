@@ -583,3 +583,10 @@ body.cel-page .cel-feature-character-facts{display:flex;flex-wrap:wrap;gap:10px 
 body.cel-page .cel-feature-character-facts>div{display:flex;align-items:center;gap:7px}
 body.cel-page .cel-feature-character-facts svg{width:19px;height:19px;flex:none;color:#a8531d}
 @media(max-width:720px){body.cel-page .cel-feature-character-facts{justify-content:center}}
+
+body.cel-page .cel-feature-copy h2{font-size:clamp(25px,2.2vw,34px)!important;line-height:1.22!important;margin:8px 0 12px!important}
+body.cel-page .cel-feature-tags{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 15px}
+body.cel-page .cel-feature-tags span{background:#ffffffaa;border:1px solid #63361924;color:#633619;padding:3px 9px;border-radius:20px;font-size:12px;line-height:1.4}
+body.cel-page .cel-feature-duration{display:flex;gap:7px;align-items:center;font-size:14px;color:#633619;font-variant-numeric:tabular-nums}
+body.cel-page .cel-feature-duration svg{width:18px;height:18px}
+@media(max-width:720px){body.cel-page .cel-feature-tags,body.cel-page .cel-feature-duration{justify-content:center}}

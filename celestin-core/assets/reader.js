@@ -75,3 +75,20 @@ document.querySelectorAll('.cel-book-reader').forEach(reader=>{
  }).catch(fail);
 });
 });
+document.addEventListener('DOMContentLoaded',()=>{
+ const intro=document.querySelector('.cel-book-intro'),cover=intro?.querySelector('.cel-book-cover'),copy=intro?.querySelector('.cel-book-intro-copy'),summary=intro?.querySelector('.cel-book-resume'),toggle=intro?.querySelector('.cel-resume-toggle');
+ if(!cover||!copy||!summary||!toggle)return;
+ let expanded=false;
+ function layout(){
+   summary.style.maxHeight='none';summary.classList.remove('is-collapsed');toggle.hidden=false;
+   const other=copy.getBoundingClientRect().height-summary.getBoundingClientRect().height;
+   const limit=matchMedia('(max-width:720px)').matches?160:Math.max(48,Math.floor(cover.getBoundingClientRect().height-other));
+   const overflow=summary.scrollHeight>limit+3;
+   toggle.hidden=!overflow;
+   if(overflow&&!expanded){summary.style.maxHeight=limit+'px';summary.classList.add('is-collapsed')}
+   toggle.textContent=expanded?'Lire moins ↑':'Lire plus ↓';toggle.setAttribute('aria-expanded',String(expanded));
+ }
+ toggle.addEventListener('click',()=>{expanded=!expanded;layout()});
+ window.addEventListener('resize',layout);document.fonts?.ready.then(layout);layout();
+ if(window.ResizeObserver)new ResizeObserver(layout).observe(cover);
+});

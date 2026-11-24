@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 document.addEventListener('DOMContentLoaded',()=>{
  const format=t=>Number.isFinite(t)?Math.floor(t/60)+':'+String(Math.floor(t%60)).padStart(2,'0'):'--:--';
  document.querySelectorAll('.cel-feature-audio-progress').forEach(root=>{
- const audio=root.closest('.cel-news-card').querySelector('audio'),range=root.querySelector('input'),current=root.querySelector('.cel-time-current'),total=root.querySelector('.cel-time-total');if(!audio)return;
+ const audio=root.closest('.cel-feature-layout').querySelector('audio'),range=root.querySelector('input'),current=root.querySelector('.cel-time-current'),total=root.querySelector('.cel-time-total');if(!audio)return;
  const update=()=>{const valid=Number.isFinite(audio.duration)&&audio.duration>0;range.disabled=!valid;range.value=valid?Math.round(audio.currentTime/audio.duration*1000):0;range.style.setProperty('--cel-progress',range.value/10+'%');current.textContent=format(audio.currentTime);total.textContent=format(audio.duration)};
  ['loadedmetadata','durationchange','timeupdate','seeked','ended','emptied'].forEach(e=>audio.addEventListener(e,update));
  range.addEventListener('input',()=>{if(Number.isFinite(audio.duration)&&audio.duration>0)audio.currentTime=audio.duration*Number(range.value)/1000;update()});update();

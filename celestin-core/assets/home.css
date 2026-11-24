@@ -149,3 +149,19 @@ html{scroll-padding-top:110px}
 .cel-hero-picture .cel-hero-art{position:relative;inset:auto;display:block;width:100%;height:auto;max-width:100%;max-height:none;object-fit:contain}
 .cel-hero-picture:not(:has(.cel-hero-art)){min-height:240px}
 @media(max-width:720px){.cel-hero-picture{height:auto}.cel-hero-overlay .cel-hero-copy{position:relative;left:auto;top:auto;transform:none;margin:0 auto;padding:18px 12px;background:none;text-shadow:none}.cel-hero-overlay{background:#fff8ed}}
+
+/* Header unifié : neutraliser entièrement l'ancien menu flottant. */
+body .cel-interior-header{position:sticky;top:0;z-index:1000;width:100%;box-sizing:border-box;background:#fcf7ef;box-shadow:none!important;border:0!important;padding:14px clamp(24px,4vw,80px)!important}
+body .cel-interior-header .cel-interior-header-inner{width:100%;max-width:1440px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:28px}
+body .cel-interior-header .cel-logo{position:static!important;align-self:center;margin:0!important;padding:0!important;flex:0 0 auto}
+body .cel-interior-header .cel-logo img{width:145px;max-height:62px;display:block;object-fit:contain}
+body .cel-interior-header nav.cel-nav.cel-nav-illustrated{position:static!important;transform:none!important;display:flex;align-items:center;justify-content:center;flex:1 1 auto;width:auto!important;max-width:none!important;margin:0!important;padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0!important;gap:5px}
+body .cel-interior-header nav.cel-nav a{border:0;box-shadow:none;font-size:15px;line-height:1.2;padding:8px 9px}
+body .cel-interior-header nav.cel-nav a.is-active{box-shadow:none}
+body .cel-interior-header .cel-nav-search{margin:0}
+body .cel-interior-header .cel-nav-search button{box-shadow:none!important;background:transparent!important}
+body .cel-interior-header .cel-social-links{margin:0}
+body.admin-bar .cel-interior-header{top:32px}
+@media(max-width:1250px){body .cel-interior-header .cel-interior-header-inner{gap:12px;flex-wrap:wrap}body .cel-interior-header nav.cel-nav.cel-nav-illustrated{flex-basis:100%;order:3}body .cel-interior-header .cel-social-links{margin-left:auto}}
+@media(max-width:782px){body.admin-bar .cel-interior-header{top:46px}}
+@media(max-width:600px){body .cel-interior-header{padding:10px 16px!important}body .cel-interior-header .cel-logo img{width:120px}body .cel-interior-header nav.cel-nav.cel-nav-illustrated{justify-content:flex-start;flex-wrap:nowrap;overflow-x:auto}body .cel-interior-header nav.cel-nav a{font-size:13px}body.admin-bar .cel-interior-header{top:0}}

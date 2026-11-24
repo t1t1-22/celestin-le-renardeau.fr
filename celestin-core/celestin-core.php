@@ -252,6 +252,12 @@ final class Celestin_Core {
           'celestin-core', [__CLASS__, 'dashboard'], 'dashicons-admin-home', 2);
     }
     static function organize_menu(): void {
+        add_menu_page('Apparence du site','Apparence du site','manage_options','cel-site-appearance',[__CLASS__,'appearance_dashboard'],'dashicons-art',5);
+        add_submenu_page('cel-site-appearance','Apparence','Apparence','manage_options','celestin-design',['Celestin_Home','settings']);
+        add_submenu_page('cel-site-appearance','Fleuriville','Fleuriville','manage_options','cel-town',['Celestin_Town','settings']);
+        add_submenu_page('cel-site-appearance','Nouveautés','Nouveautés','manage_options','celestin-news',['Celestin_News','screen']);
+        foreach(['celestin-design','cel-town','celestin-news'] as $slug)remove_submenu_page('celestin-core',$slug);
+
         add_menu_page('L’univers de Célestin','L’univers de Célestin','edit_posts','cel-universe',[__CLASS__,'universe_dashboard'],'dashicons-book-alt',3);
         foreach(['cel_livre','cel_histoire','cel_coloriage','cel_personnage','cel_lieu'] as $type){
             $object=get_post_type_object($type);
@@ -266,10 +272,18 @@ final class Celestin_Core {
             add_submenu_page('cel-classification',Celestin_Library::LABELS[$key],Celestin_Library::LABELS[$key],$object->cap->manage_terms,'edit-tags.php?taxonomy='.$taxonomy.'&post_type=cel_livre');
         }
     }
+    static function appearance_dashboard(): void {
+        if(!current_user_can('manage_options'))return;
+        echo '<div class="wrap"><h1 style="color:#633619;font-weight:800">Apparence du site</h1><p>Personnalise la présentation du site et les contenus mis en avant.</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px;max-width:1000px;margin-top:24px">';
+        foreach(['celestin-design'=>['Apparence','Identité, accueil et rubriques'],'cel-town'=>['Fleuriville','Présentation et carte de la ville'],'celestin-news'=>['Nouveautés','Contenus du carrousel d’accueil']] as $slug=>$item){
+            echo '<section style="background:#fffdfa;border:1px solid #ead5bb;border-radius:16px;padding:22px;color:#633619"><h2>'.esc_html($item[0]).'</h2><p>'.esc_html($item[1]).'</p><a class="button" href="'.esc_url(admin_url('admin.php?page='.$slug)).'">Gérer</a></section>';
+        }
+        echo '</div></div>';
+    }
     static function custom_menu_order($enabled){return true;}
     static function daily_menu_order($order){
         if(!is_array($order))return $order;
-        $daily=['celestin-core','cel-universe','cel-classification','upload.php','edit.php?post_type=page'];
+        $daily=['celestin-core','cel-universe','cel-classification','cel-site-appearance','upload.php','edit.php?post_type=page'];
         $first=array_values(array_intersect($daily,$order));
         $rest=array_values(array_diff($order,$first));
         $rest=array_values(array_filter($rest,static fn($slug)=>$slug!=='separator1'));
@@ -278,6 +292,10 @@ final class Celestin_Core {
     }
     static function sidebar_style(): void {
         echo '<style>
+        #adminmenu #toplevel_page_cel-site-appearance{margin:4px 6px;border-radius:7px}
+        #adminmenu #toplevel_page_cel-site-appearance .wp-menu-image:before{color:#e98932}
+        #adminmenu #toplevel_page_cel-site-appearance.wp-has-current-submenu>a{background:#a85722;color:white}
+        #adminmenu #toplevel_page_cel-site-appearance .wp-submenu a{padding-top:8px;padding-bottom:8px}
         #adminmenu #toplevel_page_celestin-core,#adminmenu #toplevel_page_cel-universe,#adminmenu #toplevel_page_cel-classification{margin:4px 6px;border-radius:7px}
         #adminmenu #toplevel_page_celestin-core .wp-menu-image:before,#adminmenu #toplevel_page_cel-universe .wp-menu-image:before,#adminmenu #toplevel_page_cel-classification .wp-menu-image:before{color:#e98932}
         #adminmenu #toplevel_page_celestin-core.wp-has-current-submenu>a,#adminmenu #toplevel_page_cel-universe.wp-has-current-submenu>a,#adminmenu #toplevel_page_cel-classification.wp-has-current-submenu>a{background:#a85722;color:white;border-radius:7px 7px 0 0}
@@ -289,6 +307,7 @@ final class Celestin_Core {
         </style>';
     }
     static function universe_parent($parent){
+        if(in_array($_GET['page']??'',['celestin-design','cel-town','celestin-news'],true))return 'cel-site-appearance';
         $screen=get_current_screen();
         if(!$screen)return $parent;
         if(in_array($screen->taxonomy??'',array_values(Celestin_Library::TAX),true))return 'cel-classification';
@@ -296,6 +315,7 @@ final class Celestin_Core {
         return $parent;
     }
     static function universe_submenu($submenu){
+        if(in_array($_GET['page']??'',['celestin-design','cel-town','celestin-news'],true))return sanitize_key($_GET['page']);
         $screen=get_current_screen();
         if(!$screen)return $submenu;
         if(in_array($screen->taxonomy??'',array_values(Celestin_Library::TAX),true))return 'edit-tags.php?taxonomy='.$screen->taxonomy.'&post_type=cel_livre';

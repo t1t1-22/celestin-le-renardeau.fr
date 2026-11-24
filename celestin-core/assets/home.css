@@ -557,3 +557,8 @@ body.cel-page .cel-feature-copy .cel-feature-audio-progress{padding:0}
 body.cel-page .cel-feature-copy .cel-feature-audio-progress input{display:block;width:100%;height:12px;accent-color:#e98932}
 @media(max-width:720px){body.cel-page .cel-feature-copy .cel-feature-audio-info{margin-inline:auto}}
 @media(prefers-reduced-motion:reduce){body.cel-page .cel-feature-layout .cel-news-cel_coloriage .cel-card-image::before,body.cel-page .cel-feature-layout .cel-news-cel_coloriage .cel-card-image::after,body.cel-page .cel-feature-layout .cel-news-cel_coloriage .cel-news-image-link{transition:none}}
+
+/* Le ruban doit toujours passer devant l'illustration et le cadre. */
+body.cel-page .cel-feature-slider .cel-feature-layout article.cel-news-card{position:relative!important;overflow:visible!important;isolation:isolate!important}
+body.cel-page .cel-feature-slider .cel-feature-layout article.cel-news-card>.cel-card-image{position:relative!important;z-index:0!important;isolation:isolate!important}
+body.cel-page .cel-feature-slider .cel-feature-layout article.cel-news-card>.cel-news-badge{position:absolute!important;z-index:999!important;top:15px!important;left:-12px!important;right:auto!important;bottom:auto!important;border-radius:3px 6px 6px 0!important;transform:none!important;opacity:1!important;background:#e98932!important;box-shadow:1px 3px 5px #542b1933!important}

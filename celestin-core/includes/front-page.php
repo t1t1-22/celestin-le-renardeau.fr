@@ -434,7 +434,7 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
  <section class="cel-info-panel" aria-labelledby="cel-character-title">
    <h2 id="cel-character-title" class="cel-section-title small">Rencontre nos personnages</h2><p class="cel-character-intro">Fais connaissance avec les habitants de Fleuriville, découvre leurs petites habitudes, leurs secrets et les liens qui les unissent.</p>
    <?php
-   $characters=Celestin_Home::featured('cel_personnage',8);
+   $characters=get_posts(['post_type'=>'cel_personnage','post_status'=>'publish','posts_per_page'=>-1,'orderby'=>'ID','order'=>'ASC']);shuffle($characters);
    if($characters): ?>
    <div class="cel-identity-deck" data-cel-deck>
     <div class="cel-identity-stack" aria-live="polite">
@@ -487,6 +487,10 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
 <script>
 document.querySelectorAll('[data-cel-deck]').forEach(deck=>{
  const stack=deck.querySelector('.cel-identity-stack'), counter=deck.querySelector('[data-deck-count]');
+ const shuffled=Array.from(stack.children);
+ // Mélange également côté navigateur pour les pages servies depuis un cache.
+ for(let i=shuffled.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];}
+ shuffled.forEach(card=>stack.append(card));
  const original=Array.from(stack.children);let busy=false;
  function refresh(){Array.from(stack.children).forEach((card,i)=>{card.inert=i!==0;if(i)card.setAttribute('aria-hidden','true');else card.removeAttribute('aria-hidden')});if(counter)counter.textContent=(original.indexOf(stack.firstElementChild)+1)+' / '+original.length;}
  async function turn(direction){

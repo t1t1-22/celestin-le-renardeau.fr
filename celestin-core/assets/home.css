@@ -207,3 +207,25 @@ body.admin-bar .cel-interior-header{top:32px}
 
 /* Centrer les nouveautés si elles tiennent dans le carrousel, sans masquer le début en cas de débordement. */
 .cel-news-track{justify-content:safe center}
+
+/* Découvertes : format carré, visuels entiers et titres seuls. */
+.cel-news-track{justify-content:safe center;gap:16px;align-items:stretch}
+.cel-news-track .cel-news-card{padding:6px;border-radius:15px;max-width:215px;min-width:0;display:flex;flex-direction:column}
+.cel-news-track .cel-news-card .cel-card-image{aspect-ratio:1;position:relative;height:auto;border-radius:10px;overflow:hidden;background:#f5e6cf}
+.cel-news-image-link{display:block;width:100%;height:100%}
+.cel-news-track .cel-news-card .cel-card-image img{width:100%;height:100%;object-fit:contain;display:block}
+.cel-news-track .cel-news-cel_personnage .cel-card-image{background:#e6edda}
+.cel-news-track .cel-news-cel_personnage .cel-news-image-link{padding:8px}
+.cel-news-track .cel-news-cel_livre .cel-card-image{background:#f5e6c9}
+.cel-news-track .cel-news-cel_livre .cel-news-image-link{padding:5px}
+.cel-news-track .cel-news-cel_histoire .cel-card-image{background:#f6e0d3}
+.cel-news-track .cel-news-cel_coloriage .cel-card-image{background:#e5edda}
+.cel-news-track .cel-news-card .cel-card-type{top:7px;left:7px;right:auto;background:#fffaf3;color:#633619;font:700 11px/1.2 Nunito,sans-serif;max-width:calc(100% - 14px);pointer-events:none}
+.cel-news-track .cel-news-card .cel-card-body{min-height:56px;padding:10px 5px 6px;display:flex;align-items:center;justify-content:center;text-align:center;flex:1}
+.cel-news-track .cel-news-card .cel-card-body h3{font:600 17px/1.22 'Baloo 2',sans-serif;margin:0}
+.cel-news-card h3 a{color:#633619;text-decoration:none}
+.cel-news-card h3 a:hover{text-decoration:underline}
+.cel-news-card .cel-audio-toggle{width:43px;height:43px;right:7px;bottom:7px}
+.cel-news-card .cel-audio-error[hidden]{display:none}
+.cel-news-track .cel-news-card:hover{transform:translateY(-2px)}
+@media(max-width:480px){.cel-news-track .cel-news-card{padding:4px}.cel-news-track .cel-news-card .cel-card-body h3{font-size:15px}}

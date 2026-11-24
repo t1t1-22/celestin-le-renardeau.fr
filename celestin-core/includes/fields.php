@@ -15,7 +15,7 @@ final class Celestin_Fields {
         'univers' => ['Dans l’univers de Célestin'=>['description'=>'Description humoristique','anecdote'=>'Une petite anecdote','audio'=>'Présentation audio (MP3)']]
       ],
       'cel_livre' => [
-        'principal' => ['Identité du livre'=>['resume'=>'Résumé','numero'=>'Numéro du livre (facultatif)','nombre_pages'=>'Nombre de pages','points_livre'=>'Dans ce livre… (un élément par ligne)','couverture_arriere'=>'Quatrième de couverture (URL image)']],
+        'principal' => ['Identité du livre'=>['resume'=>'Résumé','numero'=>'Numéro du livre (facultatif)','nombre_pages'=>'Nombre de pages','points_livre'=>'Dans ce livre… (un élément par ligne)']],
         'fichier' => ['Les pages'=>['pdf'=>'PDF complet du livre carré']]
       ],
       'cel_histoire' => [

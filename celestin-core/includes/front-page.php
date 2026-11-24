@@ -42,8 +42,8 @@ $hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_si
  <?php if($options['hero_button']): ?><a class="cel-button cel-primary" href="<?php echo esc_url($options['hero_link']?:'#cel-decouvrir'); ?>"><?php echo esc_html($options['hero_button']); ?> <span aria-hidden="true">→</span></a><?php endif; ?>
  </div>
 </section>
-<section id="cel-decouvrir" class="cel-section cel-news" aria-labelledby="cel-news-h">
-  <h2 id="cel-news-h" class="cel-section-title"><span>✦</span> Les nouveautés <span>✦</span></h2>
+<section id="cel-decouvrir" class="cel-section cel-news<?php echo $news ? ' cel-news-has-items' : ''; ?>" aria-labelledby="cel-news-h">
+  <h2 id="cel-news-h" class="screen-reader-text">Les nouveautés</h2>
   <?php if($news): ?>
   <div class="cel-news-carousel" aria-label="Carrousel des nouveautés"><div class="cel-cards cel-news-track" tabindex="0">
     <?php foreach($news as $item):

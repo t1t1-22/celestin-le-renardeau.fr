@@ -229,3 +229,14 @@ body.admin-bar .cel-interior-header{top:32px}
 .cel-news-card .cel-audio-error[hidden]{display:none}
 .cel-news-track .cel-news-card:hover{transform:translateY(-2px)}
 @media(max-width:480px){.cel-news-track .cel-news-card{padding:4px}.cel-news-track .cel-news-card .cel-card-body h3{font-size:15px}}
+
+/* Transition illustrée sous le slide et identification explicite des nouveautés. */
+.cel-hero-wave{display:block;position:absolute;bottom:-1px;left:0;width:100%;height:clamp(28px,4vw,65px);pointer-events:none;z-index:2}
+body.cel-page,body.cel-page .cel-site{background:#fcf7ef!important}
+.cel-news-track .cel-news-card .cel-news-badge{background:#e98932;color:#fff;font-size:11px}
+.cel-news-track .cel-news-card .cel-card-body{flex-direction:column;gap:4px;min-height:70px}
+.cel-news-kind{font:600 12px/1.2 Nunito,sans-serif;color:#a77140}
+.cel-news-track{justify-content:safe center!important}
+.cel-hero-below .cel-hero-copy,.cel-hero-overlay .cel-hero-copy{z-index:3}
+.cel-hero-below{padding-bottom:35px}
+@media(max-width:720px){.cel-hero-overlay{padding-bottom:24px}}

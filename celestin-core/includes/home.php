@@ -65,6 +65,65 @@ final class Celestin_Home {
         else echo '<input type="text" name="design[' . esc_attr($key) . ']" id="cel_' . esc_attr($key) . '" value="' . esc_attr($options[$key] ?? '') . '">';
         echo '</div>';
     }
+    const EVENT_OPTION='celestin_home_events';
+    static function event_settings(): void {
+        $cfg=get_option(self::EVENT_OPTION,[]);
+        $active=absint($cfg['active']??0);
+        $terms=get_terms(['taxonomy'=>Celestin_Library::TAX['evenement'],'hide_empty'=>false]);
+        if(is_wp_error($terms))$terms=[];
+        echo '<h2>Temps forts de l’année</h2><p>Les sélections habituelles restent indépendantes. Choisis un événement actif ou reviens à l’accueil standard. Les dates sont facultatives ; hors période, le site retrouve automatiquement ses contenus habituels.</p>';
+        echo '<p><label><strong>Accueil actif</strong> <select name="cel_event[active]"><option value="0">Accueil standard</option>';
+        foreach($terms as $term)echo '<option value="'.$term->term_id.'"'.selected($active,$term->term_id,false).'>'.esc_html($term->name).'</option>';
+        echo '</select></label></p>';
+        $types=['news'=>'Slider des nouveautés','cel_livre'=>'Livre mis en avant','cel_histoire'=>'Mini-histoires audio','cel_coloriage'=>'Activités'];
+        $posts=get_posts(['post_type'=>['cel_livre','cel_histoire','cel_coloriage'],'post_status'=>'publish','posts_per_page'=>-1,'orderby'=>'title','order'=>'ASC']);
+        foreach($terms as $term){
+            $id=$term->term_id;$p=$cfg['profiles'][$id]??[];$prefix='cel_event[profiles]['.$id.']';
+            echo '<details style="border:1px solid #ead5bb;background:#fffaf3;padding:15px;margin:10px 0;border-radius:10px"'.($active===$id?' open':'').'><summary><strong>'.esc_html($term->name).'</strong></summary>';
+            echo '<p><label>Début <input type="date" name="'.$prefix.'[start]" value="'.esc_attr($p['start']??'').'"></label> <label>Fin <input type="date" name="'.$prefix.'[end]" value="'.esc_attr($p['end']??'').'"></label></p>';
+            echo '<p><label>Mode <select name="'.$prefix.'[mode]"><option value="auto"'.selected($p['mode']??'auto','auto',false).'>Automatique selon l’événement associé</option><option value="manual"'.selected($p['mode']??'auto','manual',false).'>Sélection manuelle</option></select></label></p>';
+            foreach($types as $key=>$label){
+                echo '<p><label><input type="checkbox" name="'.$prefix.'[sections]['.$key.']" value="1"'.checked(!isset($p['sections'])||!empty($p['sections'][$key]),true,false).'> '.esc_html($label).'</label></p>';
+                echo '<details><summary>Choix manuel : '.esc_html($label).'</summary><div style="max-height:180px;overflow:auto">';
+                foreach($posts as $post){
+                    if($key!=='news'&&$post->post_type!==$key)continue;
+                    if(!has_term($id,Celestin_Library::TAX['evenement'],$post))continue;
+                    echo '<label style="display:block"><input type="checkbox" name="'.$prefix.'[manual]['.$key.'][]" value="'.$post->ID.'"'.checked(in_array($post->ID,array_map('absint',(array)($p['manual'][$key]??[])),true),true,false).'> '.esc_html($post->post_title).'</label>';
+                }
+                echo '</div></details>';
+            }
+            echo '<p>Si aucun contenu ne correspond, la rubrique conserve sa sélection standard.</p></details>';
+        }
+    }
+    static function save_events(array $raw): void {
+        $tax=Celestin_Library::TAX['evenement'];$active=absint($raw['active']??0);
+        if($active&&!term_exists($active,$tax))$active=0;
+        $out=['active'=>$active,'profiles'=>[]];
+        foreach((array)($raw['profiles']??[]) as $id=>$p){
+            $id=absint($id);if(!$id||!term_exists($id,$tax)||!is_array($p))continue;
+            $v=['mode'=>($p['mode']??'')==='manual'?'manual':'auto','sections'=>[],'manual'=>[]];
+            foreach(['start','end'] as $k){$d=(string)($p[$k]??'');$v[$k]=preg_match('/^\d{4}-\d{2}-\d{2}$/D',$d)?$d:'';}
+            foreach(['news','cel_livre','cel_histoire','cel_coloriage'] as $key){
+                $v['sections'][$key]=!empty($p['sections'][$key]);
+                $v['manual'][$key]=array_values(array_unique(array_filter(array_map('absint',(array)($p['manual'][$key]??[])))));
+            }
+            $out['profiles'][$id]=$v;
+        }
+        update_option(self::EVENT_OPTION,$out,false);
+    }
+    static function event_posts(string $key,int $limit): array {
+        if(is_admin()||!is_front_page())return [];
+        $cfg=get_option(self::EVENT_OPTION,[]);$id=absint($cfg['active']??0);if(!$id)return [];
+        $p=$cfg['profiles'][$id]??[];if(empty($p['sections'][$key]))return [];
+        $today=wp_date('Y-m-d');
+        if((!empty($p['start'])&&$today<$p['start'])||(!empty($p['end'])&&$today>$p['end']))return [];
+        $args=['post_type'=>$key==='news'?['cel_livre','cel_histoire','cel_coloriage']:$key,'post_status'=>'publish','posts_per_page'=>$limit,'orderby'=>'date','order'=>'DESC','tax_query'=>[['taxonomy'=>Celestin_Library::TAX['evenement'],'field'=>'term_id','terms'=>[$id]]]];
+        if(($p['mode']??'auto')==='manual'){
+            $ids=array_filter(array_map('absint',(array)($p['manual'][$key]??[])));if(!$ids)return [];
+            $args['post__in']=$ids;$args['orderby']='post__in';
+        }
+        return get_posts($args);
+    }
     static function featured_settings(): void {
         echo '<h2 style="margin-top:32px">Contenus mis en avant</h2><p>Choisis les contenus publiés, jusqu’à trois mini-histoires et quatre activités dans leur ordre d’affichage. Tous les personnages publiés sont affichés automatiquement dans un ordre aléatoire. Les nouveautés sont gérées dans leur propre onglet.</p><div class="cel-feature-settings">';
         foreach(Celestin_Core::TYPES as $type=>$config){
@@ -99,6 +158,7 @@ final class Celestin_Home {
             'accueil' => ['Page d’accueil', 'dashicons-admin-home'],
             'rubriques' => ['Contenus mis en avant', 'dashicons-screenoptions'],
             'nouveautes' => ['Nouveautés', 'dashicons-megaphone'],
+            'evenements' => ['Temps forts', 'dashicons-calendar-alt'],
             'fleuriville' => ['Origines & pied de page', 'dashicons-location-alt'],
             'newsletter' => ['Newsletter', 'dashicons-email-alt']
         ];
@@ -156,6 +216,9 @@ final class Celestin_Home {
         Celestin_News::selection();
         echo '</section>';
 
+        echo '<section id="cel-panel-evenements" class="cel-design-panel" role="tabpanel" aria-labelledby="cel-tab-evenements"' . ($active !== 'evenements' ? ' hidden' : '') . '>';
+        self::event_settings();
+        echo '</section>';
         echo '<section id="cel-panel-fleuriville" class="cel-design-panel" role="tabpanel" aria-labelledby="cel-tab-fleuriville"' . ($active !== 'fleuriville' ? ' hidden' : '') . '>';
         echo '<h2>Les origines de Célestin</h2><p>Configure la section juste avant le pied de page. Le texte reste à gauche des oreilles.</p>';
         self::image_setting('city', 'Carte illustrée de Fleuriville', $o);
@@ -206,8 +269,9 @@ final class Celestin_Home {
             }
         }
         update_option(self::OPTION,$out);
+        if(isset($_POST['cel_event'])&&is_array($_POST['cel_event']))self::save_events(wp_unslash($_POST['cel_event']));
         if(isset($_POST['cel_news_present']))Celestin_News::save_selection((array)($_POST['cel_news_ids']??[]));
-        $allowed_tabs = ['identite', 'reseaux', 'accueil', 'rubriques', 'nouveautes', 'fleuriville', 'newsletter'];
+        $allowed_tabs = ['identite', 'reseaux', 'accueil', 'rubriques', 'nouveautes', 'evenements', 'fleuriville', 'newsletter'];
         $active = isset($_POST['cel_active_tab']) ? sanitize_key(wp_unslash($_POST['cel_active_tab'])) : 'identite';
         if (!in_array($active, $allowed_tabs, true)) $active = 'identite';
         wp_safe_redirect(add_query_arg(['saved' => '1', 'tab' => $active], admin_url('admin.php?page=celestin-design')));
@@ -226,6 +290,9 @@ final class Celestin_Home {
     // « Afficher cette fiche sur la page d’accueil ».
     static function featured(string $type, int $limit=8): array {
         if (!in_array($type, array_keys(Celestin_Core::TYPES), true)) return [];
+        if(in_array($type,['cel_livre','cel_histoire','cel_coloriage'],true)){
+            $event=self::event_posts($type,$type==='cel_livre'?1:($type==='cel_histoire'?min(3,max(1,$limit)):min(4,max(1,$limit))));if($event)return $event;
+        }
         $saved=self::options()['featured']??[];
         if(is_array($saved)&&array_key_exists($type,$saved)){
             $ids=array_unique(array_map('absint',(array)$saved[$type]));$result=[];
@@ -253,6 +320,7 @@ final class Celestin_Home {
     // Accueil : uniquement les fiches explicitement cochées dans leur administration.
     // Les quatre types de contenus sont mélangés et triés par date de publication.
     static function cards(): array {
+        $event=self::event_posts('news',8);if($event)return $event;
         $posts=get_posts([
             'post_type' => ['cel_coloriage', 'cel_personnage', 'cel_livre', 'cel_histoire'],
             'post_status' => 'publish',

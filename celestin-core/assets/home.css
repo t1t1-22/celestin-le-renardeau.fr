@@ -345,3 +345,9 @@ body .cel-interior-header nav.cel-nav>a:hover span,body .cel-interior-header nav
 @media(prefers-reduced-motion:reduce){body .cel-interior-header nav.cel-nav>a{transition:none}body .cel-interior-header nav.cel-nav>a:hover,body .cel-interior-header nav.cel-nav>a:focus-visible{transform:none}}
 
 body.cel-page .cel-books .cel-books-layout{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:34px;align-items:center}body.cel-page .cel-books .cel-book-description{background:#fffdfa;border:1px solid #f0dbc4;border-radius:18px;padding:24px;color:#633619}body.cel-page .cel-books .cel-book-description h3{font-size:25px;color:#633619}body.cel-page .cel-books .cel-book-description h3 a{color:inherit;text-decoration:none}body.cel-page .cel-books .cel-home-book-summary p{font-size:14px;line-height:1.65;margin:0 0 9px}body.cel-page .cel-books .cel-home-book-all{display:inline-block;margin-top:6px}body.cel-page .cel-books .cel-book-preview>a>img{max-width:340px;width:100%;height:auto;border-radius:10px} @media(max-width:760px){body.cel-page .cel-books .cel-books-layout{grid-template-columns:1fr;gap:18px}body.cel-page .cel-books .cel-book-description{padding:18px}}
+
+/* Page active : contraste lisible même sans survol. */
+body .cel-interior-header nav.cel-nav>a.is-active,body .cel-interior-header nav.cel-nav>a.is-active>span{color:#633619!important}
+body .cel-interior-header nav.cel-nav>a.is-active{background:#f6e1c9!important}
+body .cel-interior-header nav.cel-nav>a.is-active:hover,body .cel-interior-header nav.cel-nav>a.is-active:focus-visible{background:#a8531d!important;color:#fff!important}
+body .cel-interior-header nav.cel-nav>a.is-active:hover>span,body .cel-interior-header nav.cel-nav>a.is-active:focus-visible>span{color:#fff!important}

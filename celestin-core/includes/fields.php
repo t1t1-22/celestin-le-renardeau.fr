@@ -19,7 +19,8 @@ final class Celestin_Fields {
         'fichier' => ['Les pages'=>['pdf'=>'PDF complet du livre carré']]
       ],
       'cel_histoire' => [
-        'principal'=>['Mini-histoire (environ 5 minutes)'=>['resume'=>'Résumé','texte'=>'Texte intégral','audio'=>'Narration MP3','synchronisation'=>'Repères de synchronisation (facultatif)']]
+        'principal'=>['Identité de la mini-histoire'=>['resume'=>'Résumé']],
+        'audio'=>['Audio et texte'=>['audio'=>'Narration MP3','texte'=>'Texte intégral','synchronisation'=>'Repères de synchronisation (facultatif)']]
       ],
       'cel_coloriage' => [
         'principal'=>['Activité'=>['resume'=>'Présentation','type'=>'Type d’activité (coloriage, jeu, découpage…)','pdf'=>'Fichier PDF à imprimer']]
@@ -41,7 +42,7 @@ final class Celestin_Fields {
     // Le nom affiché sur le site vient directement des champs Prénom + Nom.
     // Le filtre intervient avant l'insertion pour éviter un titre manquant au premier enregistrement.
     static function automatic_character_title(array $data,array $postarr): array {
-        if(($data['post_type']??'')==='cel_livre'){
+        if(in_array($data['post_type']??'',['cel_livre','cel_histoire'],true)){
             if(isset($_POST['cel_fields_nonce'],$_POST['cel_book_title']) && is_string($_POST['cel_fields_nonce']) && is_string($_POST['cel_book_title']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['cel_fields_nonce'])),'cel_fields_save')){
                 $data['post_title']=wp_slash(sanitize_text_field(wp_unslash($_POST['cel_book_title'])));
             }
@@ -87,16 +88,16 @@ final class Celestin_Fields {
         wp_enqueue_media();
         if($screen->post_type==='cel_livre'){
             wp_enqueue_script('cel-admin-pdfjs','https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',[],'3.11.174',true);
-            wp_enqueue_script('cel-pdf-preview',plugins_url('../assets/pdf-preview.js',__FILE__),['jquery','cel-admin-pdfjs'],'0.4.13',true);
+            wp_enqueue_script('cel-pdf-preview',plugins_url('../assets/pdf-preview.js',__FILE__),['jquery','cel-admin-pdfjs'],'0.4.14',true);
         }
-        wp_enqueue_style('cel-fields',plugins_url('../assets/fields.css',__FILE__),[],'0.4.13');
-        wp_enqueue_script('cel-fields',plugins_url('../assets/fields.js',__FILE__),['jquery'],'0.4.13',true);
+        wp_enqueue_style('cel-fields',plugins_url('../assets/fields.css',__FILE__),[],'0.4.14');
+        wp_enqueue_script('cel-fields',plugins_url('../assets/fields.js',__FILE__),['jquery'],'0.4.14',true);
         if($screen->post_type==='cel_personnage')wp_add_inline_style('cel-fields','#post-body-content #titlediv{display:none!important}');
     }
     static function render(WP_Post $post): void {
         wp_nonce_field('cel_fields_save','cel_fields_nonce');
         $groups=self::fields_for($post);
-        if($post->post_type==='cel_livre')echo '<div class="cel-editor-heading"><span>Bibliothèque Célestin</span><h2>Fiche du livre</h2></div>';
+        if(in_array($post->post_type,['cel_livre','cel_histoire'],true))echo '<div class="cel-editor-heading"><span>Bibliothèque Célestin</span><h2>'.($post->post_type==='cel_livre'?'Fiche du livre':'Fiche de la mini-histoire audio').'</h2></div>';
         echo '<div class="cel-form-head"><p>'.($post->post_type==='cel_personnage'?'Le titre du personnage est généré automatiquement avec le prénom et le nom. ':'').'Complète les champs ci-dessous : la page du site sera construite automatiquement. Les champs vides ne seront pas affichés.</p></div>';
         echo '<div class="cel-form-tabs" role="tablist" aria-label="Sections de la fiche">';
         $i=0;
@@ -108,9 +109,9 @@ final class Celestin_Fields {
         if($post->post_type==='cel_personnage') echo '<button type="button" role="tab" data-tab="extras" class="cel-form-tab" aria-selected="false">Attributs personnalisés</button>';
         echo '<button type="button" role="tab" data-tab="relations" class="cel-form-tab" aria-selected="false">'.($post->post_type==='cel_livre'?'Contenus associés':'Associations').'</button>';
         echo '</div>';
-        if($post->post_type==='cel_livre'){
-            echo '<div class="cel-book-savebar"><span class="cel-book-save-label">'.esc_html($post->post_status==='publish'?'Livre publié':'Livre en préparation').'</span><button type="button" class="cel-book-preview-action">Prévisualiser</button><button type="button" class="cel-book-save-action">'.esc_html($post->post_status==='publish'?'Enregistrer les modifications':'Enregistrer le brouillon').'</button>';
-            if($post->post_status!=='publish')echo '<button type="button" class="cel-book-publish-action">Publier le livre</button>';
+        if(in_array($post->post_type,['cel_livre','cel_histoire'],true)){
+            echo '<div class="cel-book-savebar"><span class="cel-book-save-label">'.esc_html($post->post_status==='publish'?'Contenu publié':'Contenu en préparation').'</span><button type="button" class="cel-book-preview-action">Prévisualiser</button><button type="button" class="cel-book-save-action">'.esc_html($post->post_status==='publish'?'Enregistrer les modifications':'Enregistrer le brouillon').'</button>';
+            if($post->post_status!=='publish')echo '<button type="button" class="cel-book-publish-action">Publier</button>';
             echo '</div>';
         }
 
@@ -119,17 +120,18 @@ final class Celestin_Fields {
           echo '<section class="cel-form-panel" data-panel="'.esc_attr($slug).'"'.($i?' hidden':'').'>';
           foreach($group as $title=>$fields) {
             echo '<h3>'.esc_html($title).'</h3><div class="cel-field-grid">';
-            if($post->post_type==='cel_livre' && $slug==='principal'){
+            if(in_array($post->post_type,['cel_livre','cel_histoire'],true) && $slug==='principal'){
                 echo '</div><div class="cel-book-identity-header">';
                 self::section_image($post,$slug,$title);
-                echo '<div class="cel-book-title-slot"><label for="cel-book-title">Titre du livre</label><input id="cel-book-title" name="cel_book_title" type="text" value="'.esc_attr($post->post_title).'" placeholder="Titre du livre"><p class="description">Ce titre sera affiché sur le site et dans la bibliothèque.</p></div></div><div class="cel-field-grid">';
+                $title_label=$post->post_type==='cel_livre'?'Titre du livre':'Titre de la mini-histoire';
+                echo '<div class="cel-book-title-slot"><label for="cel-book-title">'.esc_html($title_label).'</label><input id="cel-book-title" name="cel_book_title" type="text" value="'.esc_attr($post->post_title).'" placeholder="'.esc_attr($title_label).'"><p class="description">Ce titre sera affiché sur le site et dans la bibliothèque.</p></div></div><div class="cel-field-grid">';
             }
             foreach($fields as $key=>$label) self::field($post,$key,$label);
             echo '</div>';
             if($post->post_type==='cel_livre' && $slug==='principal') Celestin_Library::identity($post);
             if($post->post_type==='cel_livre' && $slug==='fichier'){
                 echo '<div id="cel-pdf-preview"><h3>Aperçu des pages du livre</h3><p class="cel-pdf-status" aria-live="polite">Choisis le PDF pour afficher ses pages.</p><div class="cel-admin-reader" hidden><button type="button" class="button cel-admin-prev">←</button><div class="cel-admin-spread"><canvas></canvas><canvas></canvas></div><button type="button" class="button cel-admin-next">→</button><p class="cel-admin-counter"></p></div><div class="cel-pdf-grid"></div></div>';
-            } elseif($post->post_type!=='cel_livre') self::section_image($post,$slug,$title);
+            } elseif(!in_array($post->post_type,['cel_livre','cel_histoire'],true)) self::section_image($post,$slug,$title);
           }
           echo '</section>';
           $i++;
@@ -145,7 +147,7 @@ final class Celestin_Fields {
         $id=absint(get_post_meta($post->ID,'_cel_section_image_'.$section,true));
         if(!$id && $section===$primary)$id=(int)get_post_thumbnail_id($post);
         $url=$id?wp_get_attachment_image_url($id,'medium'):'';
-        echo '<div class="cel-section-image"><h4>'.esc_html($section===$primary?($post->post_type==='cel_livre'?'Première de couverture':'Illustration principale / photo du personnage'):'Illustration de cette rubrique').'</h4>';
+        echo '<div class="cel-section-image"><h4>'.esc_html($section===$primary?($post->post_type==='cel_livre'?'Première de couverture':'Illustration principale'):'Illustration de cette rubrique').'</h4>';
         echo '<p class="description">'.($section===$primary?'Cette image sera aussi utilisée comme vignette sur le site et dans les nouveautés.':'Illustration facultative propre à « '.esc_html($title).' ».').'</p>';
         echo '<input type="hidden" name="cel_section_images['.esc_attr($section).']" value="'.esc_attr((string)$id).'" class="cel-section-image-id">';
         echo '<img class="cel-section-image-preview" src="'.esc_url($url?:'').'" alt="Aperçu de l’illustration" style="display:'.($url?'block':'none').'">';
@@ -159,7 +161,7 @@ final class Celestin_Fields {
         if(!$value && $key==='audio' && $post->post_type==='cel_histoire') $value=(string)get_post_meta($post->ID,'_cel_story_mp3',true);
         $long=in_array($key,['points_livre','description','anecdote','resume','texte','histoire','synchronisation','qualites','defauts','aime','deteste','peurs','reves'],true);
         $media=in_array($key,['audio','pdf','couverture_arriere'],true);
-        echo '<div class="cel-field'.($long?' cel-field-wide':'').'"><label for="cel_f_'.esc_attr($key).'">'.esc_html($label).'</label>';
+        echo '<div class="cel-field'.(($long||$key==='audio')?' cel-field-wide':'').'"><label for="cel_f_'.esc_attr($key).'">'.esc_html($label).'</label>';
         if($long) {
             echo '<textarea id="cel_f_'.esc_attr($key).'" name="cel_f['.esc_attr($key).']" rows="'.($key==='texte'?12:($key==='synchronisation'?5:4)).'">'.esc_textarea($value).'</textarea>';
             if($key==='synchronisation') echo '<p class="description">Facultatif : une ligne par phrase, sous la forme <code>0.0|Première phrase</code> puis <code>4.5|Deuxième phrase</code>. À ajuster en écoutant le MP3.</p>';
@@ -167,6 +169,9 @@ final class Celestin_Fields {
             echo '<div class="cel-input-row"><input id="cel_f_'.esc_attr($key).'" name="cel_f['.esc_attr($key).']" type="'.($media?'url':($key==='nombre_pages'?'number':'text')).'" value="'.esc_attr($value).'" '.($media?'class="cel-media-value" placeholder="Choisir un fichier dans la médiathèque"':'').'>';
             if($media) echo '<button type="button" class="button cel-pick-media" data-media-type="'.($key==='pdf'?'application/pdf':($key==='audio'?'audio':'image')).'">Choisir un fichier</button>';
             echo '</div>';
+        }
+        if($key==='audio' && $post->post_type==='cel_histoire'){
+            echo '<div class="cel-admin-audio"><strong>Écouter et vérifier la narration</strong><audio controls preload="metadata" src="'.esc_url($value).'"'.($value?'':' hidden').'></audio><p class="cel-audio-preview-status" role="status">'.($value?'Chargement des informations audio…':'Choisis un MP3 pour afficher le lecteur.').'</p><button type="button" class="button cel-audio-remove"'.($value?'':' hidden').'>Retirer le fichier audio</button></div>';
         }
         echo '</div>';
     }
@@ -201,7 +206,7 @@ final class Celestin_Fields {
         echo '<section class="cel-form-panel" data-panel="relations" hidden><h3>Relier cette fiche à d’autres contenus</h3><p>Sélectionne les fiches correspondantes. Les liens seront visibles sur le site, sans recopier les informations.</p><div class="cel-relations-grid">';
         foreach(($types[$post->post_type]??[]) as $type=>$label) {
            $available=get_posts(['post_type'=>$type,'post_status'=>['publish','draft','future','private'],'posts_per_page'=>-1,'orderby'=>'title','order'=>'ASC','exclude'=>[$post->ID]]);
-           if($post->post_type==='cel_livre'){
+           if(in_array($post->post_type,['cel_livre','cel_histoire'],true)){
               $groups=[];
               foreach($available as $item){
                 $group='Autres';

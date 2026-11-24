@@ -88,3 +88,13 @@ body.cel-book-custom-editor #wpcontent{background:#fcf7ef}
 .post-type-cel_histoire #cel_f_texte{min-height:320px;font-size:15px;line-height:1.75}
 .post-type-cel_histoire .cel-field textarea{background:#fffdfa}
 .post-type-cel_histoire .cel-form-panel[data-panel=audio] .cel-field-grid{gap:24px}
+
+.cel-tax-open{margin-top:10px!important;color:#9a501f!important;border-color:#e4c4a1!important;background:#fff7eb!important;border-radius:8px!important}
+.cel-tax-dialog{box-sizing:border-box;width:min(450px,calc(100vw - 32px));max-width:none;padding:24px;border:1px solid #e5c7a7;border-radius:18px;background:#fffdfa;color:#633619;box-shadow:0 16px 60px #38221444}
+.cel-tax-dialog::backdrop{background:#38221466}
+.cel-tax-dialog h3{font-size:21px;margin:0 0 12px}
+.cel-tax-dialog p{line-height:1.5}
+.cel-tax-dialog label{margin-top:18px}
+.cel-tax-dialog input{display:block;margin-top:7px}
+.cel-tax-dialog-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.cel-tax-dialog .cel-tax-add{background:#d97927!important;color:white!important;border-color:#c56a20!important;border-radius:8px}

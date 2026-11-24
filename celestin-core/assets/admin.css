@@ -21,3 +21,5 @@
 .cel-design-actions{position:sticky;bottom:0;display:flex;align-items:center;flex-wrap:wrap;gap:18px;padding:15px 22px;background:#fff;border:1px solid #d0d7de;border-radius:0 0 12px 12px;box-shadow:0 -4px 12px #00000008;z-index:2}
 .cel-design-actions span{color:#646970;font-size:12px}
 @media(max-width:780px){.cel-design-panel{padding:20px 16px}.cel-design-tabs{gap:2px}.cel-design-tab{font-size:12px;padding:10px 9px;gap:5px}.cel-design-tab .dashicons{font-size:17px;width:17px;height:17px}}
+
+.cel-feature-settings{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:20px 0}.cel-feature-setting{display:flex;flex-direction:column;gap:12px;background:#fff9ef;border:1px solid #ead5bb;border-radius:14px;padding:16px}.cel-feature-setting select{width:100%;max-width:100%;border-color:#d9b998;border-radius:8px}.cel-feature-thumb{width:90px;height:90px;object-fit:contain;border-radius:8px;background:white}

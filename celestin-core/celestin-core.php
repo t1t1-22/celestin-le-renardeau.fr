@@ -258,7 +258,7 @@ final class Celestin_Core {
         add_submenu_page('cel-site-appearance','Nouveautés','Nouveautés','manage_options','celestin-news',['Celestin_News','screen']);
         foreach(['celestin-design','cel-town','celestin-news'] as $slug)remove_submenu_page('celestin-core',$slug);
 
-        add_menu_page('L’univers de Célestin','L’univers de Célestin','edit_posts','cel-universe',[__CLASS__,'universe_dashboard'],'dashicons-book-alt',3);
+        add_menu_page('L’univers de Célestin','Les contenus','edit_posts','cel-universe',[__CLASS__,'universe_dashboard'],'dashicons-book-alt',3);
         foreach(['cel_livre','cel_histoire','cel_coloriage','cel_personnage','cel_lieu'] as $type){
             $object=get_post_type_object($type);
             if(!$object)continue;
@@ -292,6 +292,13 @@ final class Celestin_Core {
     }
     static function sidebar_style(): void {
         echo '<style>
+        body:not(.folded) #adminmenu #toplevel_page_celestin-core:before{content:"L’UNIVERS DE CÉLESTIN";display:block;color:#e9a66a;font-size:10px;font-weight:700;letter-spacing:.045em;padding:12px 7px 8px;white-space:normal}
+        body:not(.folded) #adminmenu #toplevel_page_cel-universe .wp-submenu,body:not(.folded) #adminmenu #toplevel_page_cel-classification .wp-submenu,body:not(.folded) #adminmenu #toplevel_page_cel-site-appearance .wp-submenu{position:static!important;display:block!important;visibility:visible!important;left:auto!important;top:auto!important;width:auto!important;min-width:0!important;box-shadow:none!important;padding:3px 0 8px;background:#ffffff08}
+        body:not(.folded) #adminmenu :is(#toplevel_page_cel-universe,#toplevel_page_cel-classification,#toplevel_page_cel-site-appearance) .wp-submenu .wp-submenu-head,body:not(.folded) #adminmenu :is(#toplevel_page_cel-universe,#toplevel_page_cel-classification,#toplevel_page_cel-site-appearance) .wp-submenu li.wp-first-item{display:none}
+        body:not(.folded) #adminmenu :is(#toplevel_page_cel-universe,#toplevel_page_cel-classification,#toplevel_page_cel-site-appearance)>a .wp-menu-name{font-size:12px;font-weight:700;color:#f3c49b}
+        body:not(.folded) #adminmenu :is(#toplevel_page_cel-universe,#toplevel_page_cel-classification,#toplevel_page_cel-site-appearance) .wp-submenu a{padding:6px 8px 6px 26px;font-size:12px;line-height:1.4;color:#ddd5cc}
+        body:not(.folded) #adminmenu :is(#toplevel_page_cel-universe,#toplevel_page_cel-classification,#toplevel_page_cel-site-appearance) .wp-submenu li.current a{color:white;background:#a85722;border-radius:5px}
+        @media(max-width:782px){body:not(.folded) #adminmenu :is(#toplevel_page_cel-universe,#toplevel_page_cel-classification,#toplevel_page_cel-site-appearance) .wp-submenu{position:absolute!important;width:190px!important;left:100%!important;display:none!important}body:not(.folded) #adminmenu :is(#toplevel_page_cel-universe,#toplevel_page_cel-classification,#toplevel_page_cel-site-appearance):is(:hover,.wp-has-current-submenu,.opensub) .wp-submenu{display:block!important}}
         #adminmenu #toplevel_page_cel-site-appearance{margin:4px 6px;border-radius:7px}
         #adminmenu #toplevel_page_cel-site-appearance .wp-menu-image:before{color:#e98932}
         #adminmenu #toplevel_page_cel-site-appearance.wp-has-current-submenu>a{background:#a85722;color:white}

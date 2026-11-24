@@ -435,33 +435,68 @@ final class Celestin_Fields {
         ];
         $relations=get_post_meta($post->ID,'_cel_relations',true);
         if(!is_array($relations))$relations=[];
-        echo '<section class="cel-form-panel" data-panel="relations" hidden><h3>Relier cette fiche à d’autres contenus</h3><p>Sélectionne les fiches correspondantes. Les liens seront visibles sur le site, sans recopier les informations.</p><div class="cel-relations-grid">';
-        foreach(($types[$post->post_type]??[]) as $type=>$label) {
-           $available=get_posts(['post_type'=>$type,'post_status'=>['publish','draft','future','private'],'posts_per_page'=>-1,'orderby'=>'title','order'=>'ASC','exclude'=>[$post->ID]]);
-           if(in_array($post->post_type,['cel_livre','cel_histoire'],true)){
-              $groups=[];
-              foreach($available as $item){
-                $group='Autres';
-                if($type==='cel_coloriage')$group=trim((string)get_post_meta($item->ID,'_cel_f_type',true))?:'Non classés';
-                if($type==='cel_histoire'){$terms=wp_get_object_terms($item->ID,Celestin_Library::TAX['categorie'],['fields'=>'names']);$group=!is_wp_error($terms)&&$terms?implode(' / ',$terms):'Sans thème';}
-                $groups[$group][]=$item;
-              }
-              ksort($groups,SORT_NATURAL|SORT_FLAG_CASE);
-              echo '<div class="cel-relation-field cel-library-related"><h3>'.esc_html($label).'</h3>';
-              if(!$groups)echo '<p>Aucun contenu disponible.</p>';
-              foreach($groups as $group=>$items){echo '<h4>'.esc_html($group).'</h4><div class="cel-lib-related-grid">';
-                foreach($items as $item){echo '<label><input type="checkbox" name="cel_relation['.esc_attr($type).'][]" value="'.(int)$item->ID.'"'.checked(in_array($item->ID,array_map('intval',$relations[$type]??[]),true),true,false).'>'.get_the_post_thumbnail($item->ID,'thumbnail').'<span>'.esc_html($item->post_title).'</span></label>';}
-                echo '</div>';
-              }
-              echo '</div>';continue;
-           }
-           echo '<div class="cel-relation-field"><label>'.esc_html($label).'</label><select multiple size="6" name="cel_relation['.esc_attr($type).'][]" aria-label="'.esc_attr($label).'">';
-           foreach($available as $item) echo '<option value="'.absint($item->ID).'"'.selected(in_array($item->ID,array_map('intval',$relations[$type]??[]),true),true,false).'>'.esc_html($item->post_title?:'Sans titre').'</option>';
-           echo '</select><p class="description">Maintiens Cmd (Mac) ou Ctrl pour sélectionner plusieurs éléments.</p></div>';
-        }
-        echo '</div></section>';
+        $allowed=$types[$post->post_type]??[];
+        $labels=['cel_personnage'=>'Personnages','cel_lieu'=>'Lieux','cel_livre'=>'Livres','cel_histoire'=>'Mini-histoires','cel_coloriage'=>'Activités'];
+        echo '<section class="cel-form-panel" data-panel="relations" hidden><h3>Contenus associés</h3><p>Choisis les contenus liés à cette fiche. Aucun ordre à définir.</p>';
+        if($post->post_type==='cel_personnage')echo '<p>Les liens familiaux et amicaux précis se gèrent dans l’onglet « Famille et relations ».</p>';
+        ?>
+        <style>
+        .cel-assoc-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start;margin-top:18px}
+        .cel-assoc-box{background:#fff8ef;border:1px solid #ead5bb;border-radius:15px;padding:14px;min-width:0}
+        .cel-assoc-box h3{margin:0 0 10px;color:#633619}
+        .cel-assoc-list{max-height:600px;overflow:auto}
+        .cel-assoc-choice,.cel-assoc-selected{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #ead5bb;border-radius:10px;padding:8px;margin:7px 0;min-width:0}
+        .cel-assoc-choice{cursor:pointer}.cel-assoc-choice:has(input:checked){border-color:#e98932;background:#fff3e3}
+        .cel-assoc-choice img,.cel-assoc-selected img,.cel-assoc-thumb{width:52px!important;height:52px!important;flex:none;object-fit:contain;border-radius:6px;background:#f4e3cc}
+        .cel-assoc-copy{flex:1;min-width:0;overflow-wrap:anywhere;line-height:1.35}.cel-assoc-copy small{display:block;color:#94603c}
+        .cel-assoc-filters{display:flex;flex-wrap:wrap;gap:5px;margin:9px 0}.cel-assoc-filter,.cel-assoc-remove{border:1px solid #e4c4a1;color:#77431f;background:#fff7eb;border-radius:7px;padding:5px 9px;cursor:pointer}
+        .cel-assoc-filter.active{background:#e98932;color:#fff;border-color:#e98932}.cel-assoc-search{width:100%;border:1px solid #e4c4a1;border-radius:8px}
+        .cel-assoc-layout [hidden]{display:none!important}.cel-assoc-choice input{accent-color:#e98932;flex:none}
+        @media(max-width:1050px){.cel-assoc-layout{grid-template-columns:1fr}}
+        </style>
+        <div class="cel-assoc-layout">
+          <div class="cel-assoc-box"><h3>Contenus associés <span class="cel-assoc-count"></span></h3><p class="cel-assoc-empty">Aucun contenu sélectionné.</p><div class="cel-assoc-list cel-assoc-selection"></div></div>
+          <div class="cel-assoc-box"><h3>Tous les contenus</h3><input type="search" class="cel-assoc-search" placeholder="Rechercher un contenu…" aria-label="Rechercher un contenu">
+          <div class="cel-assoc-filters"><button type="button" class="cel-assoc-filter active" data-type="">Tous</button>
+          <?php foreach($allowed as $type=>$label): ?><button type="button" class="cel-assoc-filter" data-type="<?php echo esc_attr($type); ?>"><?php echo esc_html($labels[$type]); ?></button><?php endforeach; ?>
+          </div><div class="cel-assoc-list cel-assoc-library">
+          <?php foreach($allowed as $type=>$label):
+            $available=get_posts(['post_type'=>$type,'post_status'=>['publish','draft','future','private'],'posts_per_page'=>-1,'orderby'=>'title','order'=>'ASC','exclude'=>[$post->ID]]);
+            foreach($available as $item):
+                if(!current_user_can('read_post',$item->ID))continue;
+                $selected=in_array($item->ID,array_map('intval',$relations[$type]??[]),true);
+          ?>
+          <label class="cel-assoc-choice" data-type="<?php echo esc_attr($type); ?>">
+          <?php echo has_post_thumbnail($item)?get_the_post_thumbnail($item,'thumbnail'):'<span class="cel-assoc-thumb"></span>'; ?>
+          <span class="cel-assoc-copy"><strong><?php echo esc_html($item->post_title?:'Sans titre'); ?></strong><small><?php echo esc_html($labels[$type]); ?></small></span>
+          <input type="checkbox" name="cel_relation[<?php echo esc_attr($type); ?>][]" value="<?php echo (int)$item->ID; ?>" <?php checked($selected); ?> aria-label="<?php echo esc_attr('Associer '.$item->post_title); ?>">
+          </label>
+          <?php endforeach; endforeach; ?>
+          <p class="cel-assoc-noresult" hidden>Aucun contenu correspondant.</p></div></div>
+        </div>
+        <script>
+        (function(){
+          const root=document.currentScript.previousElementSibling;if(!root||!root.classList.contains('cel-assoc-layout'))return;
+          const choices=Array.from(root.querySelectorAll('.cel-assoc-choice')),selection=root.querySelector('.cel-assoc-selection'),search=root.querySelector('.cel-assoc-search');let type='';
+          function refresh(){
+            selection.replaceChildren();let count=0;
+            choices.forEach(choice=>{const input=choice.querySelector('input');if(!input.checked)return;count++;
+              const row=document.createElement('div');row.className='cel-assoc-selected';
+              const thumb=choice.querySelector('img,.cel-assoc-thumb');if(thumb)row.append(thumb.cloneNode(true));row.append(choice.querySelector('.cel-assoc-copy').cloneNode(true));
+              const remove=document.createElement('button');remove.type='button';remove.className='cel-assoc-remove';remove.textContent='×';remove.setAttribute('aria-label','Retirer '+choice.querySelector('strong').textContent);remove.onclick=()=>{input.checked=false;refresh()};row.append(remove);selection.append(row);
+            });root.querySelector('.cel-assoc-count').textContent='('+count+')';root.querySelector('.cel-assoc-empty').hidden=count!==0;
+          }
+          const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+          function filter(){const q=norm(search.value.trim());let count=0;choices.forEach(choice=>{choice.hidden=!!((type&&choice.dataset.type!==type)||!norm(choice.textContent).includes(q));if(!choice.hidden)count++});root.querySelector('.cel-assoc-noresult').hidden=count!==0}
+          choices.forEach(choice=>choice.querySelector('input').addEventListener('change',refresh));search.addEventListener('input',filter);
+          root.querySelectorAll('.cel-assoc-filter').forEach(btn=>btn.addEventListener('click',()=>{type=btn.dataset.type;root.querySelectorAll('.cel-assoc-filter').forEach(b=>b.classList.toggle('active',b===btn));filter()}));
+          search.addEventListener('keydown',e=>{if(e.key==='Enter')e.preventDefault()});refresh();filter();
+        })();
+        </script>
+        </section>
+        <?php
     }
-    static function save(int $id,WP_Post $post): void {
+        static function save(int $id,WP_Post $post): void {
         if(!in_array($post->post_type,self::TYPES,true)) return;
         if(!isset($_POST['cel_fields_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['cel_fields_nonce'])),'cel_fields_save')) return;
         if((defined('DOING_AUTOSAVE')&&DOING_AUTOSAVE)||wp_is_post_revision($id)||!current_user_can('edit_post',$id))return;

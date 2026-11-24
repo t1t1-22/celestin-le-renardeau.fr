@@ -57,3 +57,25 @@ body.cel-content-page{font-family:Nunito,sans-serif!important}
 .cel-turn-leaf .cel-turn-front{box-shadow:inset -12px 0 18px #54381924}
 
 .cel-library-filters{display:flex;flex-wrap:wrap;align-items:end;gap:12px;background:#fff2df;border-radius:20px;padding:20px;margin:0 0 25px}.cel-library-filters label{font-weight:700;display:flex;flex-direction:column;gap:5px}.cel-library-filters select{border:1px solid #e8cdb0;border-radius:9px;background:white;padding:9px}.cel-library-filters button{background:#e98930;color:white;border:0;padding:11px 20px;border-radius:22px}
+
+/* En-tête commun compact des pages intérieures. */
+.cel-interior-header{background:#fffdf8;border-bottom:1px solid #ead9c5;padding:12px 24px}
+.cel-interior-header-inner{max-width:1440px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.cel-interior-header .cel-logo{flex:0 0 auto;display:block}
+.cel-interior-header .cel-logo img{display:block;width:150px;max-height:65px;object-fit:contain}
+.cel-interior-header .cel-script{font-size:26px}
+.cel-interior-header .cel-script small{font-size:13px}
+.cel-interior-header .cel-nav-illustrated{flex:1;margin:0;width:auto;max-width:none;padding:0;border:0;border-radius:0;box-shadow:none;background:transparent;gap:3px}
+.cel-interior-header .cel-nav-illustrated a{font:600 15px/1.2 'Baloo 2',sans-serif;padding:7px 9px;gap:6px}
+.cel-interior-header .cel-nav-illustrated svg{width:22px;height:22px}
+.cel-interior-header .cel-nav-search input{width:90px}
+.cel-social-links{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.cel-social-links a{display:grid;place-items:center;width:30px;height:30px;color:#633619;border-radius:50%;background:#f7ecdd}
+.cel-social-links a:hover{color:#fff;background:#d97c30}
+.cel-social-links svg{width:19px;height:19px}
+body.cel-content-page .cel-content-container{width:min(1200px,94%);margin-inline:auto}
+body.cel-content-page .cel-content-container h1{font-size:clamp(26px,3vw,36px);font-weight:600;line-height:1.2}
+body.cel-content-page .cel-content-container h2{font-size:clamp(20px,2.2vw,27px);font-weight:600}
+body.cel-content-page .cel-archive-description h2{font-size:20px}
+@media(max-width:1180px){.cel-interior-header-inner{flex-wrap:wrap;gap:10px}.cel-interior-header .cel-nav-illustrated{order:3;flex-basis:100%}.cel-social-links{margin-left:auto}}
+@media(max-width:600px){.cel-interior-header{padding:10px 12px}.cel-interior-header .cel-logo img{width:125px}.cel-interior-header .cel-nav-illustrated a{font-size:13px;padding:6px}.cel-interior-header .cel-nav-illustrated svg{width:19px;height:19px}}

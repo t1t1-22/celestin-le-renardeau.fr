@@ -539,3 +539,21 @@ body.cel-page .cel-feature-slider .cel-feature-pagination{z-index:5}
 
 /* Boutons de découverte plus compacts sur l'accueil. */
 body.cel-page .cel-feature-copy .cel-feature-link,body.cel-page .cel-books .cel-home-book-all,body.cel-page .cel-audio-cta .cel-audio-all,body.cel-page .cel-home-activity .cel-button{font-size:14px!important;line-height:1.35!important;padding:8px 15px!important;min-height:0!important;width:fit-content!important;max-width:100%;border-radius:22px!important;white-space:normal}
+
+/* Badge en ruban débordant et pile de feuilles pour les coloriages. */
+body.cel-page .cel-feature-layout .cel-news-card{position:relative!important;overflow:visible!important;isolation:isolate}
+body.cel-page .cel-feature-layout .cel-news-card>.cel-news-badge{position:absolute!important;top:17px!important;left:-12px!important;right:auto!important;z-index:10!important;display:inline-block!important;background:#d96f20!important;color:white!important;border-radius:3px 6px 6px 0!important;padding:7px 12px!important;font-size:12px!important;line-height:1.35!important;font-weight:700!important;box-shadow:1px 3px 6px #542b1933;max-width:calc(100% + 8px);white-space:normal}
+body.cel-page .cel-feature-layout .cel-news-card>.cel-news-badge::after{content:"";position:absolute;top:100%;left:0;width:10px;height:8px;background:#984613;clip-path:polygon(0 0,100% 0,100% 100%);z-index:-1}
+body.cel-page .cel-feature-layout .cel-news-cel_coloriage .cel-card-image{display:grid!important;place-items:center;overflow:visible!important;background:transparent!important;isolation:isolate;padding:14px;box-sizing:border-box}
+body.cel-page .cel-feature-layout .cel-news-cel_coloriage .cel-card-image::before,body.cel-page .cel-feature-layout .cel-news-cel_coloriage .cel-card-image::after{content:"";position:absolute;inset:15% 12% 12% 12%;background:#fff;border:1px solid #d8d0c6;border-radius:2px;box-shadow:1px 3px 7px #39200e25;z-index:-1;pointer-events:none;transition:transform .25s}
+body.cel-page .cel-feature-layout .cel-news-cel_coloriage .cel-card-image::before{transform:translate(-8px,5px) rotate(-11deg)}
+body.cel-page .cel-feature-layout .cel-news-cel_coloriage .cel-card-image::after{transform:translate(8px,5px) rotate(9deg)}
+body.cel-page .cel-feature-layout .cel-news-cel_coloriage .cel-news-image-link{width:85%!important;height:85%!important;position:relative;background:#fff;border:1px solid #d8d0c6;box-shadow:1px 3px 8px #39200e25;transform:rotate(-2deg);z-index:1;transition:transform .25s}
+body.cel-page .cel-feature-layout .cel-news-cel_coloriage:hover .cel-card-image::before{transform:translate(-12px,5px) rotate(-15deg)}
+body.cel-page .cel-feature-layout .cel-news-cel_coloriage:hover .cel-card-image::after{transform:translate(12px,5px) rotate(13deg)}
+body.cel-page .cel-feature-layout .cel-news-cel_coloriage:hover .cel-news-image-link{transform:rotate(1deg)}
+body.cel-page .cel-feature-copy .cel-feature-audio-info{max-width:340px;margin:0 0 16px}
+body.cel-page .cel-feature-copy .cel-feature-audio-progress{padding:0}
+body.cel-page .cel-feature-copy .cel-feature-audio-progress input{display:block;width:100%;height:12px;accent-color:#e98932}
+@media(max-width:720px){body.cel-page .cel-feature-copy .cel-feature-audio-info{margin-inline:auto}}
+@media(prefers-reduced-motion:reduce){body.cel-page .cel-feature-layout .cel-news-cel_coloriage .cel-card-image::before,body.cel-page .cel-feature-layout .cel-news-cel_coloriage .cel-card-image::after,body.cel-page .cel-feature-layout .cel-news-cel_coloriage .cel-news-image-link{transition:none}}

@@ -89,7 +89,7 @@ $hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_si
  <div class="cel-audio-grid">
  <?php foreach($stories as $story):
  $title=get_the_title($story);$mp3=Celestin_Fields::value($story->ID,'audio')?:get_post_meta($story->ID,'_cel_story_mp3',true);
- $terms=get_the_terms($story->ID,'cel_theme_cel_histoire');$theme=($terms&&!is_wp_error($terms))?$terms[0]->name:'';
+ $terms=get_the_terms($story->ID,Celestin_Library::TAX['categorie']);$theme=($terms&&!is_wp_error($terms))?$terms[0]->name:'';
  ?>
  <article class="cel-audio-card">
  <div class="cel-audio-art">

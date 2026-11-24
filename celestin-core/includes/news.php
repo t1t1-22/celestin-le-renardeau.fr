@@ -15,6 +15,7 @@ final class Celestin_News {
   echo '<div class="cel-news-admin"><style>.cel-news-admin{color:#633619}.cel-news-admin h1{font-weight:800;color:#633619;font-size:28px}.cel-news-admin .cel-news-columns{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:24px;align-items:start}.cel-news-admin .cel-news-group{background:#fff8ef;border:1px solid #ead5bb;border-radius:14px;padding:14px;min-width:0}.cel-news-admin .cel-news-group h2{font-size:17px;color:#633619;margin:0 0 15px}.cel-news-admin .cel-news-items{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,135px),1fr));gap:10px}.cel-news-admin label:has(input:checked){border-color:#e98932!important;box-shadow:0 0 0 1px #e98932}.cel-news-admin input[type=checkbox]:checked:before{filter:sepia(1) saturate(5)}.cel-news-admin .button-primary{background:#e98932;border-color:#d47b29;border-radius:20px;padding:4px 18px;font-weight:700}@media(max-width:1100px){.cel-news-admin .cel-news-columns{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){.cel-news-admin .cel-news-columns{grid-template-columns:1fr}}</style><h1>Les nouveautés</h1><p>Choisis les contenus publiés à afficher dans le carrousel de la page d’accueil. Les fiches restent accessibles normalement, même si tu les décoches.</p>';
   if(isset($_GET['saved']))echo '<div class="notice notice-success is-dismissible"><p>Sélection enregistrée.</p></div>';
 
+  echo '<div class="cel-news-order"><h2>Ordre du carrousel</h2><p>Fais glisser les nouveautés ou utilise les flèches. La première carte sera affichée en premier.</p><input type="hidden" name="cel_news_order" id="cel-news-order-value"><div id="cel-news-order-list"></div><p id="cel-news-order-empty">Sélectionne des contenus ci-dessous.</p></div>';
   echo '<div class="cel-news-columns">';
   foreach(self::TYPES as $type=>$label){
    $items=get_posts(['post_type'=>$type,'post_status'=>'publish','posts_per_page'=>-1,'orderby'=>'date','order'=>'DESC']);
@@ -29,6 +30,39 @@ final class Celestin_News {
   }
   echo '</div>';
   echo '</div>';
+  $order=array_map('absint',(array)get_option('cel_news_order',[]));
+  echo '<style>.cel-news-order{background:#fff8ef;border:1px solid #ead5bb;border-radius:14px;padding:16px;margin-top:20px}.cel-news-order-row{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #ead5bb;border-radius:10px;padding:8px 12px;margin:7px 0;cursor:grab}.cel-news-order-row img{width:52px;height:52px;object-fit:contain;border-radius:6px}.cel-news-order-row strong{flex:1}.cel-news-order-row button{border-color:#e4c4a1;color:#77431f;background:#fff7eb;border-radius:8px}.cel-news-order-row.dragging{opacity:.45}</style>';
+  echo '<script type="application/json" id="cel-news-order-data">'.wp_json_encode($order).'</script>';
+  ?>
+  <script>
+  document.addEventListener('DOMContentLoaded',function(){
+    const root=document.querySelector('.cel-news-admin');if(!root)return;
+    const list=root.querySelector('#cel-news-order-list'),hidden=root.querySelector('#cel-news-order-value'),empty=root.querySelector('#cel-news-order-empty');
+    const inputs=Array.from(root.querySelectorAll('input[name="cel_news_ids[]"]'));
+    let order=JSON.parse(root.querySelector('#cel-news-order-data').textContent).map(String),drag=null;
+    function sync(){hidden.value=order.join(',');empty.hidden=order.length>0;}
+    function render(){
+      const active=inputs.filter(x=>x.checked).map(x=>x.value);
+      order=order.filter(id=>active.includes(id));active.forEach(id=>{if(!order.includes(id))order.push(id)});
+      list.replaceChildren();
+      order.forEach((id,index)=>{
+        const input=inputs.find(x=>x.value===id),label=input.closest('label'),row=document.createElement('div');row.className='cel-news-order-row';row.draggable=true;row.dataset.id=id;
+        const grip=document.createElement('span');grip.textContent='☰ '+(index+1);row.append(grip);
+        const image=label.querySelector('img');if(image)row.append(image.cloneNode(true));
+        const title=document.createElement('strong');title.textContent=input.parentElement.textContent.trim();row.append(title);
+        [-1,1].forEach(step=>{const button=document.createElement('button');button.type='button';button.className='button';button.textContent=step<0?'↑':'↓';button.setAttribute('aria-label',step<0?'Monter '+title.textContent:'Descendre '+title.textContent);button.disabled=index+step<0||index+step>=order.length;button.onclick=()=>{[order[index],order[index+step]]=[order[index+step],order[index]];render()};row.append(button)});
+        row.ondragstart=e=>{drag=id;row.classList.add('dragging');e.dataTransfer.setData('text/plain',id);e.dataTransfer.effectAllowed='move'};
+        row.ondragend=()=>{drag=null;row.classList.remove('dragging')};
+        row.ondragover=e=>{e.preventDefault();e.dataTransfer.dropEffect='move'};
+        row.ondrop=e=>{e.preventDefault();if(!drag||drag===id)return;const from=order.indexOf(drag),to=order.indexOf(id);if(from<0||to<0)return;order.splice(from,1);order.splice(to,0,drag);drag=null;render()};
+        list.append(row);
+      });sync();
+    }
+    inputs.forEach(input=>input.addEventListener('change',render));render();
+  });
+  </script>
+  <?php
+
  }
  static function save(){
   if(!current_user_can('manage_options'))wp_die('Accès refusé');
@@ -37,7 +71,12 @@ final class Celestin_News {
   wp_safe_redirect(admin_url('admin.php?page=celestin-design&tab=nouveautes&saved=1'));exit;
  }
  static function save_selection(array $selected): void {
-  $ids=array_map('absint',$selected);
+  $ids=array_values(array_unique(array_filter(array_map('absint',$selected))));
+  if(isset($_POST['cel_news_order'])&&is_string($_POST['cel_news_order'])){
+   $order=array_values(array_unique(array_filter(array_map('absint',explode(',',wp_unslash($_POST['cel_news_order']))))));
+   $order=array_values(array_intersect($order,$ids));
+   update_option('cel_news_order',array_values(array_unique(array_merge($order,$ids))),false);
+  }
   foreach(get_posts(['post_type'=>array_keys(self::TYPES),'post_status'=>'publish','posts_per_page'=>-1,'fields'=>'ids']) as $id){
    if(current_user_can('edit_post',$id))update_post_meta($id,'_cel_en_nouveaute',in_array($id,$ids,true)?'1':'0');
   }

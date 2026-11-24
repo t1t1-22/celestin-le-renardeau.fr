@@ -438,3 +438,9 @@ body.cel-page .cel-news-band>.cel-news-transition{position:absolute;left:0;right
 body.cel-page .cel-news-band>.cel-news-transition path{fill:#e98932!important;stroke:none!important}
 body.cel-page .cel-news-band .cel-news-silhouette{display:none!important}
 body.cel-page .cel-news-band .cel-news{margin-top:0!important}
+
+/* Le séparateur est superposé à l'image du slide, non placé dans un espace séparé. */
+body.cel-page .cel-hero{position:relative!important;overflow:hidden!important;margin-bottom:0!important;padding-bottom:0!important}
+body.cel-page .cel-hero>.cel-news-transition{position:absolute!important;display:block!important;left:0!important;bottom:-2px!important;width:100%!important;height:clamp(100px,14vw,220px)!important;max-width:none!important;max-height:none!important;background:transparent!important;z-index:4;pointer-events:none}
+body.cel-page .cel-hero>.cel-news-transition path{fill:#e98932!important;stroke:none!important}
+body.cel-page .cel-site .cel-news-band{background:#e98932!important;margin-top:-1px!important;padding-top:0!important}

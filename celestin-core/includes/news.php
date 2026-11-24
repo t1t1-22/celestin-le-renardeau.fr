@@ -16,7 +16,7 @@ final class Celestin_News {
   if(isset($_GET['saved']))echo '<div class="notice notice-success is-dismissible"><p>Sélection enregistrée.</p></div>';
 
   $order=array_values(array_map(fn($p)=>(int)$p->ID,Celestin_Home::cards()));
-  echo '<div class="cel-news-order"><h2>Ordre du carrousel</h2><p>Fais glisser les nouveautés ou utilise les flèches. La première carte sera affichée en premier.</p><input type="hidden" name="cel_news_order" id="cel-news-order-value" value="'.esc_attr(implode(',',$order)).'"><div id="cel-news-order-list"></div><p id="cel-news-order-empty">Sélectionne des contenus ci-dessous.</p><button type="submit" class="button button-primary" style="margin-top:12px">Enregistrer l’ordre des nouveautés</button></div>';
+  echo '<div class="cel-news-order"><h2>Ordre du carrousel</h2><p>Maintiens la poignée ⠿ à gauche et déplace-la vers une autre ligne, ou utilise les flèches. La première carte sera affichée en premier.</p><input type="hidden" name="cel_news_order" id="cel-news-order-value" value="'.esc_attr(implode(',',$order)).'"><div id="cel-news-order-list"></div><p id="cel-news-order-empty">Sélectionne des contenus ci-dessous.</p><button type="submit" class="button button-primary" style="margin-top:12px">Enregistrer l’ordre des nouveautés</button></div>';
   echo '<div class="cel-news-columns">';
   foreach(self::TYPES as $type=>$label){
    $items=get_posts(['post_type'=>$type,'post_status'=>'publish','posts_per_page'=>-1,'orderby'=>'date','order'=>'DESC']);
@@ -48,14 +48,29 @@ final class Celestin_News {
       list.replaceChildren();
       order.forEach((id,index)=>{
         const input=inputs.find(x=>x.value===id),label=input.closest('label'),row=document.createElement('div');row.className='cel-news-order-row';row.draggable=true;row.dataset.id=id;
-        const grip=document.createElement('span');grip.textContent='☰ '+(index+1);row.append(grip);
-        const image=label.querySelector('img');if(image)row.append(image.cloneNode(true));
+        const grip=document.createElement('span');grip.textContent='⠿ '+(index+1);grip.className='cel-news-grip';grip.style.cssText='cursor:grab;touch-action:none;user-select:none;font-size:22px;padding:8px';row.append(grip);row.draggable=false;
+        const image=label.querySelector('img');if(image){const thumb=image.cloneNode(true);thumb.draggable=false;row.append(thumb)}
         const title=document.createElement('strong');title.textContent=input.parentElement.textContent.trim();row.append(title);
         [-1,1].forEach(step=>{const button=document.createElement('button');button.type='button';button.className='button';button.textContent=step<0?'↑':'↓';button.setAttribute('aria-label',step<0?'Monter '+title.textContent:'Descendre '+title.textContent);button.disabled=index+step<0||index+step>=order.length;button.onclick=()=>{[order[index],order[index+step]]=[order[index+step],order[index]];render()};row.append(button)});
-        row.ondragstart=e=>{drag=id;row.classList.add('dragging');e.dataTransfer.setData('text/plain',id);e.dataTransfer.effectAllowed='move'};
-        row.ondragend=()=>{drag=null;row.classList.remove('dragging')};
-        row.ondragover=e=>{e.preventDefault();e.dataTransfer.dropEffect='move'};
-        row.ondrop=e=>{e.preventDefault();if(!drag||drag===id)return;const from=order.indexOf(drag),to=order.indexOf(id);if(from<0||to<0)return;order.splice(from,1);order.splice(to,0,drag);drag=null;render()};
+        grip.addEventListener('pointerdown',e=>{
+          if(e.button!==0)return;e.preventDefault();grip.setPointerCapture(e.pointerId);
+          const startY=e.clientY;let target=id;row.classList.add('dragging');grip.style.cursor='grabbing';
+          function move(ev){
+            if(Math.abs(ev.clientY-startY)<5)return;
+            const rows=Array.from(list.querySelectorAll('.cel-news-order-row'));
+            const hit=rows.find(el=>{const rect=el.getBoundingClientRect();return ev.clientY>=rect.top&&ev.clientY<=rect.bottom});
+            if(hit)target=hit.dataset.id;
+            rows.forEach(el=>el.style.outline=el.dataset.id===target&&target!==id?'2px solid #e98932':'');
+          }
+          function finish(ev){
+            grip.removeEventListener('pointermove',move);grip.removeEventListener('pointerup',finish);grip.removeEventListener('pointercancel',cancel);
+            if(grip.hasPointerCapture(e.pointerId))grip.releasePointerCapture(e.pointerId);
+            if(ev.type==='pointerup'&&target!==id){const from=order.indexOf(id),to=order.indexOf(target);order.splice(from,1);order.splice(to,0,id);}
+            render();
+          }
+          function cancel(ev){finish(ev)}
+          grip.addEventListener('pointermove',move);grip.addEventListener('pointerup',finish);grip.addEventListener('pointercancel',cancel);
+        });
         list.append(row);
       });sync();
     }

@@ -79,7 +79,7 @@ $hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_si
   <?php else: ?>
   <p class="cel-news-empty">De nouvelles aventures arrivent bientôt !</p>
   <?php endif; ?>
-</section></div>
+</section><svg class="cel-news-wave" viewBox="0 0 1440 55" preserveAspectRatio="none" aria-hidden="true"><path d="M0 25C300 0 450 55 760 26S1200 6 1440 25V55H0Z" fill="#fcf7ef"/></svg></div>
 <?php if($stories): ?>
 <section class="cel-story-section cel-audio-feature" aria-labelledby="cel-story-title">
  <svg class="cel-audio-wave" viewBox="0 0 1440 70" preserveAspectRatio="none" aria-hidden="true"><path d="M0 0H1440V25C1100 85 850 0 540 36S120 66 0 24Z" fill="#fcf7ef"/></svg>

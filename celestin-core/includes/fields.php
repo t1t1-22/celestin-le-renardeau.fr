@@ -15,7 +15,7 @@ final class Celestin_Fields {
         'univers' => ['Dans l’univers de Célestin'=>['description'=>'Description humoristique','anecdote'=>'Une petite anecdote','audio'=>'Présentation audio (MP3)']]
       ],
       'cel_livre' => [
-        'principal' => ['Informations du livre'=>['resume'=>'Résumé','collection'=>'Collection / édition','mois'=>'Mois de parution','saison'=>'Saison','couverture_arriere'=>'Quatrième de couverture (URL image)']],
+        'principal' => ['Informations du livre'=>['resume'=>'Résumé','collection'=>'Collection / édition','mois'=>'Mois de parution','saison'=>'Saison','age_lecture'=>'Âge conseillé','points_livre'=>'Dans ce livre… (un élément par ligne)','couverture_arriere'=>'Quatrième de couverture (URL image)']],
         'fichier' => ['Lecture'=>['pdf'=>'PDF complet du livre carré']]
       ],
       'cel_histoire' => [
@@ -131,7 +131,7 @@ final class Celestin_Fields {
         if(!$value && $key==='pdf' && $post->post_type==='cel_livre') $value=(string)get_post_meta($post->ID,'_cel_book_pdf',true);
         if(!$value && $key==='pdf' && $post->post_type==='cel_coloriage') $value=(string)get_post_meta($post->ID,'_cel_pdf_url',true);
         if(!$value && $key==='audio' && $post->post_type==='cel_histoire') $value=(string)get_post_meta($post->ID,'_cel_story_mp3',true);
-        $long=in_array($key,['description','anecdote','resume','texte','histoire','synchronisation','qualites','defauts','aime','deteste','peurs','reves'],true);
+        $long=in_array($key,['points_livre','description','anecdote','resume','texte','histoire','synchronisation','qualites','defauts','aime','deteste','peurs','reves'],true);
         $media=in_array($key,['audio','pdf','couverture_arriere'],true);
         echo '<div class="cel-field'.($long?' cel-field-wide':'').'"><label for="cel_f_'.esc_attr($key).'">'.esc_html($label).'</label>';
         if($long) {

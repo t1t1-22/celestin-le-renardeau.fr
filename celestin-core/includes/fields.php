@@ -41,6 +41,12 @@ final class Celestin_Fields {
     // Le nom affiché sur le site vient directement des champs Prénom + Nom.
     // Le filtre intervient avant l'insertion pour éviter un titre manquant au premier enregistrement.
     static function automatic_character_title(array $data,array $postarr): array {
+        if(($data['post_type']??'')==='cel_livre'){
+            if(isset($_POST['cel_fields_nonce'],$_POST['cel_book_title']) && is_string($_POST['cel_fields_nonce']) && is_string($_POST['cel_book_title']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['cel_fields_nonce'])),'cel_fields_save')){
+                $data['post_title']=wp_slash(sanitize_text_field(wp_unslash($_POST['cel_book_title'])));
+            }
+            return $data;
+        }
         if(($data['post_type']??'')!=='cel_personnage')return $data;
         if(!isset($_POST['cel_fields_nonce']) || !is_string($_POST['cel_fields_nonce']))return $data;
         $nonce=sanitize_text_field(wp_unslash($_POST['cel_fields_nonce']));
@@ -81,15 +87,16 @@ final class Celestin_Fields {
         wp_enqueue_media();
         if($screen->post_type==='cel_livre'){
             wp_enqueue_script('cel-admin-pdfjs','https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',[],'3.11.174',true);
-            wp_enqueue_script('cel-pdf-preview',plugins_url('../assets/pdf-preview.js',__FILE__),['jquery','cel-admin-pdfjs'],'0.4.8',true);
+            wp_enqueue_script('cel-pdf-preview',plugins_url('../assets/pdf-preview.js',__FILE__),['jquery','cel-admin-pdfjs'],'0.4.9',true);
         }
-        wp_enqueue_style('cel-fields',plugins_url('../assets/fields.css',__FILE__),[],'0.4.8');
-        wp_enqueue_script('cel-fields',plugins_url('../assets/fields.js',__FILE__),['jquery'],'0.4.8',true);
+        wp_enqueue_style('cel-fields',plugins_url('../assets/fields.css',__FILE__),[],'0.4.9');
+        wp_enqueue_script('cel-fields',plugins_url('../assets/fields.js',__FILE__),['jquery'],'0.4.9',true);
         if($screen->post_type==='cel_personnage')wp_add_inline_style('cel-fields','#post-body-content #titlediv{display:none!important}');
     }
     static function render(WP_Post $post): void {
         wp_nonce_field('cel_fields_save','cel_fields_nonce');
         $groups=self::fields_for($post);
+        if($post->post_type==='cel_livre')echo '<div class="cel-editor-heading"><span>Bibliothèque Célestin</span><h2>Fiche du livre</h2></div>';
         echo '<div class="cel-form-head"><p>'.($post->post_type==='cel_personnage'?'Le titre du personnage est généré automatiquement avec le prénom et le nom. ':'').'Complète les champs ci-dessous : la page du site sera construite automatiquement. Les champs vides ne seront pas affichés.</p></div>';
         echo '<div class="cel-form-tabs" role="tablist" aria-label="Sections de la fiche">';
         $i=0;
@@ -115,7 +122,7 @@ final class Celestin_Fields {
             if($post->post_type==='cel_livre' && $slug==='principal'){
                 echo '</div><div class="cel-book-identity-header">';
                 self::section_image($post,$slug,$title);
-                echo '<div class="cel-book-title-slot"><label for="title">Titre du livre</label></div></div><div class="cel-field-grid">';
+                echo '<div class="cel-book-title-slot"><label for="cel-book-title">Titre du livre</label><input id="cel-book-title" name="cel_book_title" type="text" value="'.esc_attr($post->post_title).'" placeholder="Titre du livre"><p class="description">Ce titre sera affiché sur le site et dans la bibliothèque.</p></div></div><div class="cel-field-grid">';
             }
             foreach($fields as $key=>$label) self::field($post,$key,$label);
             echo '</div>';

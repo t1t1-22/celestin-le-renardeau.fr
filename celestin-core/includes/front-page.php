@@ -223,6 +223,21 @@ body.cel-page .cel-identity-deck .cel-identity-controls button:hover{background:
  .cel-identity-card{transition:box-shadow .32s ease}
  .cel-identity-stack:hover>.cel-identity-card:first-child{box-shadow:0 12px 25px #63361930}
 }
+
+/* Ouverture légère en éventail de part et d'autre de la carte principale. */
+@media(hover:hover) and (prefers-reduced-motion:no-preference){
+ .cel-identity-stack>.cel-identity-card{transition:transform .36s cubic-bezier(.2,.7,.3,1),box-shadow .32s ease}
+ .cel-identity-stack:hover{transform:translateY(-4px)}
+ .cel-identity-stack:hover>.cel-identity-card:first-child{transform:translateY(-3px) rotate(-1deg)}
+ .cel-identity-stack:hover>.cel-identity-card:nth-child(2){transform:translate(-12px,10px) rotate(-4deg)}
+ .cel-identity-stack:hover>.cel-identity-card:nth-child(3){transform:translate(20px,12px) rotate(5deg)}
+ .cel-identity-stack:has(>.cel-identity-card:nth-child(2):last-child):hover>.cel-identity-card:first-child{transform:translate(-4px,-3px) rotate(-2deg)}
+ .cel-identity-stack:has(>.cel-identity-card:nth-child(2):last-child):hover>.cel-identity-card:nth-child(2){transform:translate(15px,9px) rotate(4deg)}
+ .cel-identity-stack.cel-deck-turning>.cel-identity-card{transition:none}
+ .cel-identity-stack.cel-deck-turning:hover>.cel-identity-card:first-child{transform:translate(0,0)}
+ .cel-identity-stack.cel-deck-turning:hover>.cel-identity-card:nth-child(2){transform:translate(9px,9px) rotate(2.5deg)}
+ .cel-identity-stack.cel-deck-turning:hover>.cel-identity-card:nth-child(3){transform:translate(17px,17px) rotate(4.5deg)}
+}
 </style>
 
 </head>
@@ -475,7 +490,7 @@ document.querySelectorAll('[data-cel-deck]').forEach(deck=>{
  const original=Array.from(stack.children);let busy=false;
  function refresh(){Array.from(stack.children).forEach((card,i)=>{card.inert=i!==0;if(i)card.setAttribute('aria-hidden','true');else card.removeAttribute('aria-hidden')});if(counter)counter.textContent=(original.indexOf(stack.firstElementChild)+1)+' / '+original.length;}
  async function turn(direction){
-  if(busy||original.length<2)return;busy=true;
+  if(busy||original.length<2)return;busy=true;stack.classList.add('cel-deck-turning');
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
   const front=stack.firstElementChild,last=stack.lastElementChild;
   const animate=async(card,frames,options)=>{if(!reduced&&card.animate){const anim=card.animate(frames,options);try{await anim.finished}catch(e){}finally{anim.cancel()}}};
@@ -503,7 +518,7 @@ document.querySelectorAll('[data-cel-deck]').forEach(deck=>{
     }else stack.prepend(last);
    }
   }finally{
-   original.forEach(card=>{card.style.removeProperty('z-index');card.style.removeProperty('transform');card.style.removeProperty('opacity')});refresh();busy=false;
+   original.forEach(card=>{card.style.removeProperty('z-index');card.style.removeProperty('transform');card.style.removeProperty('opacity')});refresh();busy=false;stack.classList.remove('cel-deck-turning');
   }
  }
  deck.querySelector('[data-deck-next]')?.addEventListener('click',()=>turn(1));deck.querySelector('[data-deck-prev]')?.addEventListener('click',()=>turn(-1));refresh();

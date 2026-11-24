@@ -445,11 +445,11 @@ body.cel-page .cel-hero{z-index:0!important;margin:0!important}
 body.cel-page .cel-site .cel-news-band{background:transparent!important;background-image:none!important;padding:16px 0 30px!important;margin:0!important;z-index:auto!important}
 body.cel-page .cel-news-band .cel-news{margin-top:0!important}
 body.cel-page .cel-audio-feature{position:relative;isolation:isolate;background:#e98932!important;margin-top:clamp(100px,13vw,205px);overflow:visible!important;padding-top:10px}
-body.cel-page .cel-audio-feature>.cel-fox-divider{position:absolute!important;bottom:calc(100% - 2px)!important;left:50%!important;width:min(52vw,800px)!important;aspect-ratio:4/1;transform:translateX(-50%);background:#e98932!important;pointer-events:none}
+body.cel-page .cel-footer-fox>.cel-fox-divider{position:absolute!important;bottom:calc(100% - 2px)!important;left:50%!important;width:min(52vw,800px)!important;aspect-ratio:4/1;transform:translateX(-50%);background:#e98932!important;pointer-events:none}
 body.cel-page .cel-audio-feature .cel-section-title,body.cel-page .cel-audio-feature .cel-audio-intro{color:#fff!important}
-@media(max-width:720px){body.cel-page .cel-audio-feature>.cel-fox-divider{width:70vw!important}}
+@media(max-width:720px){body.cel-page .cel-footer-fox>.cel-fox-divider{width:70vw!important}}
 /* Même silhouette, lissée par des courbes de Bézier dans un masque vectoriel. */
-body.cel-page .cel-audio-feature>.cel-fox-divider{
+body.cel-page .cel-footer-fox>.cel-fox-divider{
 clip-path:none!important;
 -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 200' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M0 200 C45 197 85 185 112 164 C98 135 84 75 92 26 Q96 3 116 8 C181 26 253 74 320 114 L344 108 Q312 83 332 85 Q353 84 384 98 Q350 60 372 67 Q397 72 432 92 Q404 43 424 53 C455 67 478 90 520 108 C584 43 655 12 704 7 Q727 3 735 24 C759 82 745 130 720 164 Q757 190 800 200 Z'/%3E%3C/svg%3E") center bottom / 100% 100% no-repeat;
 mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 200' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M0 200 C45 197 85 185 112 164 C98 135 84 75 92 26 Q96 3 116 8 C181 26 253 74 320 114 L344 108 Q312 83 332 85 Q353 84 384 98 Q350 60 372 67 Q397 72 432 92 Q404 43 424 53 C455 67 478 90 520 108 C584 43 655 12 704 7 Q727 3 735 24 C759 82 745 130 720 164 Q757 190 800 200 Z'/%3E%3C/svg%3E") center bottom / 100% 100% no-repeat;
@@ -458,17 +458,17 @@ mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='
 /* Déplacer la silhouette existante et le fond orange vers les mini-histoires. */
 body.cel-page .cel-site .cel-news-band{background:#fcf7ef!important;padding:20px 0 30px!important;margin-top:0!important;z-index:1!important}
 body.cel-page .cel-audio-feature{position:relative!important;background:#e98932!important;overflow:visible!important;margin-top:clamp(100px,13vw,200px)!important}
-body.cel-page .cel-audio-feature>.cel-fox-divider{display:block!important;position:absolute!important;bottom:calc(100% - 2px)!important;left:50%!important;width:min(52vw,800px)!important;height:auto!important;aspect-ratio:4/1;background:#e98932!important;transform:translateX(-50%);z-index:2!important}
+body.cel-page .cel-footer-fox>.cel-fox-divider{display:block!important;position:absolute!important;bottom:calc(100% - 2px)!important;left:50%!important;width:min(52vw,800px)!important;height:auto!important;aspect-ratio:4/1;background:#e98932!important;transform:translateX(-50%);z-index:2!important}
 body.cel-page .cel-audio-feature .cel-section-title,body.cel-page .cel-audio-feature .cel-audio-intro{color:white!important}
 body.cel-page .cel-audio-feature .cel-audio-inner{padding:22px 0 24px}
 /* Même silhouette, lissée par des courbes de Bézier dans un masque vectoriel. */
-body.cel-page .cel-audio-feature>.cel-fox-divider{
+body.cel-page .cel-footer-fox>.cel-fox-divider{
 clip-path:none!important;
 -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 200' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M0 200 C45 197 85 185 112 164 C98 135 84 75 92 26 Q96 3 116 8 C181 26 253 74 320 114 L344 108 Q312 83 332 85 Q353 84 384 98 Q350 60 372 67 Q397 72 432 92 Q404 43 424 53 C455 67 478 90 520 108 C584 43 655 12 704 7 Q727 3 735 24 C759 82 745 130 720 164 Q757 190 800 200 Z'/%3E%3C/svg%3E") center bottom / 100% 100% no-repeat;
 mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 200' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M0 200 C45 197 85 185 112 164 C98 135 84 75 92 26 Q96 3 116 8 C181 26 253 74 320 114 L344 108 Q312 83 332 85 Q353 84 384 98 Q350 60 372 67 Q397 72 432 92 Q404 43 424 53 C455 67 478 90 520 108 C584 43 655 12 704 7 Q727 3 735 24 C759 82 745 130 720 164 Q757 190 800 200 Z'/%3E%3C/svg%3E") center bottom / 100% 100% no-repeat;
 }
 
-@media(max-width:720px){body.cel-page .cel-audio-feature>.cel-fox-divider{width:70vw!important}}
+@media(max-width:720px){body.cel-page .cel-footer-fox>.cel-fox-divider{width:70vw!important}}
 
 /* Carrousel principal de nouveautés, palette extraite de chaque illustration. */
 body.cel-page .cel-feature-slider{position:relative;width:100%;background:#fcf7ef;isolation:isolate}
@@ -597,3 +597,9 @@ body.cel-page .cel-feature-slider .cel-feature-copy .cel-feature-duration>svg{wi
 /* Activités : cadre blanc et fond coloré derrière les feuilles, comme les portraits. */
 body.cel-page .cel-feature-slider .cel-feature-layout article.cel-news-cel_coloriage>.cel-card-image{background:linear-gradient(145deg,#f8d399,#efaa62)!important;border-radius:12px!important;overflow:hidden!important}
 body.cel-page .cel-feature-slider .cel-feature-layout article.cel-news-cel_coloriage{background:#fffdfa!important}
+
+/* Silhouette du renard au-dessus du pied de page, sans espace inutile avant les histoires. */
+body.cel-page .cel-audio-feature{margin-top:0!important}
+body.cel-page .cel-footer.cel-footer-fox{position:relative!important;isolation:isolate;overflow:visible!important;margin-top:clamp(90px,13vw,200px)!important;background:#e98932!important}
+body.cel-page .cel-footer-fox>.cel-fox-divider{background:#e98932!important;z-index:2!important;pointer-events:none}
+@media(max-width:720px){body.cel-page .cel-footer.cel-footer-fox{margin-top:18vw!important}}

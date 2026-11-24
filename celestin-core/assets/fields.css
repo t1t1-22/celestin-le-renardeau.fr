@@ -14,3 +14,5 @@
 .cel-section-image .description{margin:0 0 12px}
 .cel-section-image-preview{display:block;max-width:330px;max-height:245px;width:auto;height:auto;object-fit:contain;background:white;border:1px solid #ead9c5;border-radius:10px;padding:6px;margin:10px 0 14px}
 .cel-section-image-actions{display:flex;flex-wrap:wrap;gap:9px}
+
+#cel-pdf-preview{margin:24px 0;padding:18px;background:#fff8ed;border:1px solid #e9d4b7;border-radius:14px}.cel-pdf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px}.cel-pdf-thumb{margin:0;padding:8px;background:white;border:1px solid #ead9c5;border-radius:9px;text-align:center}.cel-pdf-thumb canvas{display:block;width:100%;aspect-ratio:1;object-fit:contain}.cel-pdf-thumb figcaption{font-weight:600;font-size:12px;margin-top:8px}.cel-pdf-thumb small{color:#a45a20}

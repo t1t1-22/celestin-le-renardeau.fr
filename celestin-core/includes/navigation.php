@@ -11,12 +11,11 @@ $items=[
  ['Les livres',Celestin_Home::url('cel_livre'),'book',is_singular('cel_livre')||is_post_type_archive('cel_livre')],
  ['Mini-histoires',Celestin_Home::url('cel_histoire'),'audio',is_singular('cel_histoire')||is_post_type_archive('cel_histoire')],
  ['Mes petites activités',Celestin_Home::url('cel_coloriage'),'activity',is_singular('cel_coloriage')||is_post_type_archive('cel_coloriage')],
- ['Fleuriville',Celestin_Home::url('cel_lieu'),'place',is_singular('cel_lieu')||is_post_type_archive('cel_lieu')],
- ['Les personnages',Celestin_Home::url('cel_personnage'),'people',is_singular('cel_personnage')||is_post_type_archive('cel_personnage')]
 ];
 ?><nav class="cel-nav cel-nav-illustrated" aria-label="Navigation principale">
 <?php foreach($items as [$label,$url,$icon,$active]): ?>
 <a href="<?php echo esc_url($url); ?>" <?php if($active)echo 'class="is-active" aria-current="page"'; ?>><span><?php echo esc_html($label); ?></span></a>
 <?php endforeach; ?>
+<div class="cel-town-nav"><a href="<?php echo esc_url(Celestin_Home::url('cel_lieu')); ?>" class="<?php echo (is_post_type_archive(['cel_lieu','cel_personnage'])||is_singular(['cel_lieu','cel_personnage']))?'is-active':''; ?>">Fleuriville</a><details class="cel-town-dropdown"><summary aria-label="Sous-menu Fleuriville">⌄</summary><div><a href="<?php echo esc_url(Celestin_Home::url('cel_personnage')); ?>">Les personnages</a><a href="<?php echo esc_url(add_query_arg('vue','galerie',Celestin_Home::url('cel_lieu'))); ?>">Galerie photo</a><a href="<?php echo esc_url(add_query_arg('vue','lieux',Celestin_Home::url('cel_lieu'))); ?>">Les lieux</a></div></details></div>
 <form action="<?php echo esc_url(home_url('/')); ?>" method="get" class="cel-nav-search"><input type="search" name="s" aria-label="Rechercher sur le site" placeholder="Rechercher" required><button aria-label="Rechercher" type="submit"><svg viewBox="0 0 32 32" aria-hidden="true"><?php echo $icons['search']; ?></svg></button></form>
 </nav>

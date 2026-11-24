@@ -105,6 +105,23 @@ body.cel-page .cel-book-editorial .cel-book-heading-row .cel-book-cover-audio{po
 body.cel-page .cel-book-editorial .cel-book-heading-row .cel-book-audio-unavailable>span{white-space:normal;max-width:85px;margin:4px auto 0}
 body.cel-page .cel-book-editorial .cel-book-heading-row .cel-book-audio-unavailable button{margin:auto}
 @media(max-width:760px){body.cel-page .cel-book-editorial .cel-book-heading-row{gap:8px}body.cel-page .cel-book-editorial .cel-book-heading-row .cel-book-audio-unavailable button{width:48px;height:48px}}
+
+/* Animation douce du livre, indépendante du survol. */
+@keyframes cel-home-book-float {
+  0%,100% {transform:translateY(0) rotateY(9deg) rotateX(0deg)}
+  50% {transform:translateY(-10px) rotateY(19deg) rotateX(2deg)}
+}
+@keyframes cel-home-book-shadow {
+  0%,100% {opacity:1;transform:translateX(-50%) scaleX(1)}
+  50% {opacity:.65;transform:translateX(-50%) scaleX(.88)}
+}
+@media(prefers-reduced-motion:no-preference){
+ body.cel-page .cel-book-editorial .cel-book-preview .cel-book-mockup{animation:cel-home-book-float 5s ease-in-out infinite}
+ body.cel-page .cel-book-editorial .cel-book-preview:before{animation:cel-home-book-shadow 5s ease-in-out infinite}
+}
+@media(prefers-reduced-motion:reduce){
+ body.cel-page .cel-book-editorial .cel-book-preview .cel-book-mockup,body.cel-page .cel-book-editorial .cel-book-preview:before{animation:none}
+}
 </style>
 
 </head>

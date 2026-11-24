@@ -14,3 +14,29 @@ body.cel-content-page{background:#fffaf4!important;color:#582d1b!important;font-
 
 .cel-section-illustration{margin:0 0 22px;text-align:center;background:#fffaf0;padding:12px;border-radius:17px}
 .cel-section-illustration img{display:block;max-width:100%;max-height:400px;width:auto;height:auto;object-fit:contain;margin:0 auto}
+
+body.cel-content-page{font-family:Nunito,sans-serif!important}
+.cel-content-page .cel-content-header{justify-content:center;padding:12px 3%;box-shadow:none}.cel-content-page .cel-nav-illustrated{margin:10px auto 25px}
+.cel-content-page .cel-book-detail{width:min(1480px,96vw);margin:25px auto 60px}
+.cel-breadcrumb{font-size:15px;margin:0 0 24px}
+.cel-book-intro{display:grid;grid-template-columns:minmax(180px,28%) 1fr minmax(200px,25%);gap:32px;align-items:start;margin:0 0 30px}
+.cel-book-cover{background:#fff;border:6px solid white;border-radius:24px;box-shadow:0 5px 14px #925b2833;overflow:hidden;aspect-ratio:1}
+.cel-book-cover img{width:100%;height:100%;object-fit:contain}
+.cel-book-ribbon{display:inline-block;background:#f3a11a;color:white;padding:5px 22px;border-radius:8px;font-weight:800}
+.cel-book-intro-copy h1{font:800 clamp(32px,4vw,53px)/1.05 'Baloo 2',sans-serif;color:#633619;margin:14px 0}
+.cel-book-resume{font-size:19px;line-height:1.5}
+.cel-book-meta{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}.cel-book-meta span{background:#fff2dd;border-radius:12px;padding:9px 12px;font-size:14px}
+.cel-book-note{transform:rotate(-1.5deg);background:#fff1c9;border:1px solid #efcc79;border-radius:18px;padding:23px;box-shadow:0 8px 13px #91632d20}.cel-book-note h2{font:800 26px 'Baloo 2',sans-serif}.cel-book-note ul{padding:0;list-style:none;margin:0}.cel-book-note li{margin:10px 0;line-height:1.4}.cel-book-note li:before{content:'✓';color:#e28020;font-weight:900;margin-right:8px}
+.cel-demo-notice{font-size:13px;color:#976d42}
+.cel-reader-layout{display:grid;grid-template-columns:120px minmax(0,1fr);gap:20px;align-items:stretch}
+.cel-reader-thumbs{max-height:560px;overflow-y:auto;background:#fffaf1;border-radius:18px;padding:10px;display:flex;flex-direction:column;gap:10px}
+.cel-reader-thumbs button{background:white;padding:5px;border:2px solid #ecd7b8;border-radius:9px;cursor:pointer;color:#633619}.cel-reader-thumbs button.active{border-color:#f08b25;background:#ffe6c4}.cel-reader-thumbs canvas{display:block;width:100%;height:auto;aspect-ratio:1;object-fit:contain}.cel-reader-thumbs span{display:block;font-size:11px}
+.cel-reader-center{min-width:0}.cel-reader-viewport{overflow:auto;width:100%;padding:5px 5px 17px}
+.cel-reader-spread{width:100%;max-width:none;display:flex;justify-content:center;position:relative;perspective:1800px;margin:auto;isolation:isolate}
+.cel-reader-spread>canvas:not(.cel-reader-flip){width:50%;aspect-ratio:1;object-fit:contain;background:white;display:block;box-shadow:0 4px 10px #58361d40}
+.cel-reader-spread>canvas.cel-reader-left{border-radius:8px 0 0 8px}.cel-reader-spread>canvas.cel-reader-right{border-radius:0 8px 8px 0}.cel-reader-spread.single>canvas.cel-reader-left{display:none}.cel-reader-spread.single>canvas.cel-reader-right{width:50%;border-radius:8px}
+.cel-reader-flip{display:none;position:absolute;width:50%;aspect-ratio:1;top:0;backface-visibility:hidden;z-index:4;background:white}.cel-reader-flip.visible{display:block}.cel-reader-flip.forward{left:50%;transform-origin:left center}.cel-reader-flip.backward{left:0;transform-origin:right center}
+.cel-reader-controls{background:#fffaf2;border:1px solid #f0d8bc;border-radius:25px;padding:8px 12px;justify-content:space-between}.cel-reader-progress{flex:1;min-width:75px;accent-color:#ef8c29}.cel-reader-controls button{background:white;color:#75451e;border:1px solid #edceab;min-width:42px;padding:7px 13px;font-size:20px}
+.cel-book-reader:fullscreen,.cel-book-reader.expanded{background:#fdf0df;overflow:auto;padding:20px}.cel-book-reader:fullscreen .cel-reader-spread{max-width:calc((100vh - 140px)*2)}
+@media(max-width:950px){.cel-book-intro{grid-template-columns:35% 1fr}.cel-book-note{grid-column:1/-1;transform:none}.cel-reader-layout{grid-template-columns:90px 1fr}}
+@media(max-width:720px){.cel-book-intro{grid-template-columns:1fr;gap:18px}.cel-book-cover{max-width:330px;width:100%;margin:auto}.cel-reader-layout{display:flex;flex-direction:column-reverse;gap:10px}.cel-reader-thumbs{flex-direction:row;max-height:95px;overflow-x:auto}.cel-reader-thumbs button{min-width:65px}.cel-reader-spread.single>canvas.cel-reader-right{width:100%}.cel-reader-flip{width:100%!important;left:0!important}.cel-reader-controls{gap:6px}.cel-reader-counter{font-size:12px}.cel-reader-controls button{min-width:32px;padding:5px 8px}}

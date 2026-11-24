@@ -161,8 +161,8 @@ final class Celestin_Home {
     }
     static function assets(): void {
         if (!is_front_page()) return;
-        wp_enqueue_style('celestin-home', plugins_url('../assets/home.css',__FILE__), [], '0.4.1');
-        wp_enqueue_script('celestin-home', plugins_url('../assets/home.js',__FILE__), [], '0.4.1', true);
+        wp_enqueue_style('celestin-home', plugins_url('../assets/home.css',__FILE__), [], '0.4.5');
+        wp_enqueue_script('celestin-home', plugins_url('../assets/home.js',__FILE__), [], '0.4.5', true);
     }
     static function template(string $template): string {
         if (is_front_page() && !is_admin() && !is_feed() && !is_embed() && !is_preview()) return __DIR__.'/front-page.php';
@@ -196,7 +196,7 @@ final class Celestin_Home {
         return get_posts([
             'post_type' => ['cel_coloriage', 'cel_personnage', 'cel_livre', 'cel_histoire'],
             'post_status' => 'publish',
-            'posts_per_page' => 8,
+            'posts_per_page' => -1,
             'meta_key' => '_cel_en_nouveaute',
             'meta_value' => '1',
             'orderby' => 'date',

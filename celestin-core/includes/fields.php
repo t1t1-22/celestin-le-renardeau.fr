@@ -81,10 +81,10 @@ final class Celestin_Fields {
         wp_enqueue_media();
         if($screen->post_type==='cel_livre'){
             wp_enqueue_script('cel-admin-pdfjs','https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',[],'3.11.174',true);
-            wp_enqueue_script('cel-pdf-preview',plugins_url('../assets/pdf-preview.js',__FILE__),['jquery','cel-admin-pdfjs'],'0.4.4',true);
+            wp_enqueue_script('cel-pdf-preview',plugins_url('../assets/pdf-preview.js',__FILE__),['jquery','cel-admin-pdfjs'],'0.4.6',true);
         }
-        wp_enqueue_style('cel-fields',plugins_url('../assets/fields.css',__FILE__),[],'0.4.4');
-        wp_enqueue_script('cel-fields',plugins_url('../assets/fields.js',__FILE__),['jquery'],'0.4.4',true);
+        wp_enqueue_style('cel-fields',plugins_url('../assets/fields.css',__FILE__),[],'0.4.6');
+        wp_enqueue_script('cel-fields',plugins_url('../assets/fields.js',__FILE__),['jquery'],'0.4.6',true);
         if($screen->post_type==='cel_personnage')wp_add_inline_style('cel-fields','#post-body-content #titlediv{display:none!important}');
     }
     static function render(WP_Post $post): void {
@@ -100,18 +100,28 @@ final class Celestin_Fields {
         if($post->post_type==='cel_personnage') echo '<button type="button" role="tab" data-tab="extras" class="cel-form-tab" aria-selected="false">Attributs personnalisés</button>';
         echo '<button type="button" role="tab" data-tab="relations" class="cel-form-tab" aria-selected="false">'.($post->post_type==='cel_livre'?'Contenus associés':'Associations').'</button>';
         echo '</div>';
+        if($post->post_type==='cel_livre'){
+            echo '<div class="cel-book-savebar"><span class="cel-book-save-label">'.esc_html($post->post_status==='publish'?'Livre publié':'Livre en préparation').'</span><button type="button" class="cel-book-preview-action">Prévisualiser</button><button type="button" class="cel-book-save-action">'.esc_html($post->post_status==='publish'?'Enregistrer les modifications':'Enregistrer le brouillon').'</button>';
+            if($post->post_status!=='publish')echo '<button type="button" class="cel-book-publish-action">Publier le livre</button>';
+            echo '</div>';
+        }
 
         $i=0;
         foreach($groups as $slug=>$group) {
           echo '<section class="cel-form-panel" data-panel="'.esc_attr($slug).'"'.($i?' hidden':'').'>';
           foreach($group as $title=>$fields) {
             echo '<h3>'.esc_html($title).'</h3><div class="cel-field-grid">';
+            if($post->post_type==='cel_livre' && $slug==='principal'){
+                echo '</div><div class="cel-book-identity-header">';
+                self::section_image($post,$slug,$title);
+                echo '<div class="cel-book-title-slot"><label for="title">Titre du livre</label></div></div><div class="cel-field-grid">';
+            }
             foreach($fields as $key=>$label) self::field($post,$key,$label);
             echo '</div>';
             if($post->post_type==='cel_livre' && $slug==='principal') Celestin_Library::identity($post);
             if($post->post_type==='cel_livre' && $slug==='fichier'){
                 echo '<div id="cel-pdf-preview"><h3>Aperçu des pages du livre</h3><p class="cel-pdf-status" aria-live="polite">Choisis le PDF pour afficher ses pages.</p><div class="cel-admin-reader" hidden><button type="button" class="button cel-admin-prev">←</button><div class="cel-admin-spread"><canvas></canvas><canvas></canvas></div><button type="button" class="button cel-admin-next">→</button><p class="cel-admin-counter"></p></div><div class="cel-pdf-grid"></div></div>';
-            } else self::section_image($post,$slug,$title);
+            } elseif($post->post_type!=='cel_livre') self::section_image($post,$slug,$title);
           }
           echo '</section>';
           $i++;

@@ -298,6 +298,9 @@ body.cel-page .cel-play-caption{align-items:center;padding:9px 3px 5px}
 .cel-play-text{min-width:0;flex:1}
 body.cel-page .cel-play-caption h3{font-size:16px;line-height:1.2;font-weight:700}
 body.cel-page .cel-play-detail{font:500 12px/1.4 Nunito,sans-serif;color:#a76129;margin:4px 0 0}
+
+body.cel-page .cel-origin-section>.cel-origin-wave{position:absolute;top:-1px;left:0;width:100%;height:clamp(24px,3.5vw,55px);display:block;z-index:1;pointer-events:none}
+body.cel-page .cel-origin-inner{padding-top:clamp(60px,6vw,90px)}
 </style>
 
 </head>
@@ -531,6 +534,7 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
  </section>
 </div>
 <section class="cel-origin-section" aria-labelledby="cel-origin-title">
+ <svg class="cel-origin-wave" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0 0H1440V22C1200 58 950 58 720 28S240 4 0 35Z" fill="#fcf7ef"/></svg>
  <?php if(Celestin_Home::image('footer')) echo '<img class="cel-origin-bg" src="'.esc_url(Celestin_Home::image('footer')).'" alt="" loading="lazy">'; ?>
  <div class="cel-origin-inner"><div class="cel-origin-copy">
  <h2 id="cel-origin-title"><?php echo esc_html($options['origin_title']); ?></h2>

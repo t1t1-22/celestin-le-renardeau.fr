@@ -52,6 +52,14 @@ $summary=Celestin_Fields::value($item->ID,'resume');
 if(!$summary && $item->post_type==='cel_personnage')$summary=Celestin_Fields::value($item->ID,'description');
 $summary=$summary?:$item->post_excerpt;
 $kicker=$item->post_type==='cel_coloriage'?(Celestin_Fields::value($item->ID,'type')?:'Activité'):($item->post_type==='cel_personnage'?'':$new_label);
+$story_tags=[];
+if($item->post_type==='cel_histoire'){
+ $themes=wp_get_object_terms($item->ID,Celestin_Library::TAX['categorie'],['fields'=>'names']);
+ $kicker=(!is_wp_error($themes)&&$themes)?implode(' · ',$themes):'Mini-histoire audio';
+ foreach(Celestin_Library::TAX as $key=>$tax){if($key==='categorie')continue;$terms=wp_get_object_terms($item->ID,$tax,['fields'=>'names']);if(!is_wp_error($terms))$story_tags=array_merge($story_tags,$terms);}
+ $story_tags=array_unique($story_tags);
+ if(!$summary)$summary=Celestin_Fields::value($item->ID,'texte');
+}
 $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir ce livre','cel_coloriage'=>'Découvrir cette activité','cel_personnage'=>'Rencontrer ce personnage'][$item->post_type]??'Découvrir';
 ?>
 <div class="cel-feature-slide" <?php if($idx!==0)echo 'hidden'; ?> data-slide="<?php echo esc_attr($idx); ?>">
@@ -74,6 +82,7 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
         </div>
       </article>
  <div class="cel-feature-copy"><?php if($kicker): ?><p class="cel-feature-kicker"><?php echo esc_html($kicker); ?></p><?php endif; ?><h2><?php echo esc_html($title); ?></h2>
+ <?php if($story_tags): ?><div class="cel-feature-tags"><?php foreach($story_tags as $tag): ?><span><?php echo esc_html($tag); ?></span><?php endforeach; ?></div><?php endif; ?>
  <?php if($summary): ?><p class="cel-feature-summary"><?php echo esc_html(wp_trim_words(wp_strip_all_tags($summary),$item->post_type==='cel_personnage'?38:65,'…')); ?></p><?php endif; ?>
 <?php if($item->post_type==='cel_personnage'): ?>
 <div class="cel-feature-character-facts">
@@ -82,7 +91,7 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
 <?php endif; endforeach; ?>
 </div>
 <?php endif; ?>
-        <?php if($item->post_type==='cel_histoire'): ?><div class="cel-feature-audio-info"><?php if($preview): ?><div class="cel-feature-audio-progress"><input type="range" min="0" max="1000" value="0" aria-label="Progression audio" disabled><div class="cel-feature-audio-times"><span class="cel-time-current">0:00</span><span class="cel-time-total">--:--</span></div></div><?php elseif($item->post_type==='cel_histoire'): ?><span>Audio bientôt disponible</span><?php endif; ?></div><?php endif; ?>
+        <?php if($item->post_type==='cel_histoire'): ?><div class="cel-feature-audio-info"><?php if($preview): ?><div class="cel-feature-duration"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="cel-time-total">--:--</span></div><?php elseif($item->post_type==='cel_histoire'): ?><span>Audio bientôt disponible</span><?php endif; ?></div><?php endif; ?>
  <a class="cel-feature-link" href="<?php echo esc_url(get_permalink($item)); ?>"><?php echo esc_html($cta); ?> →</a></div>
  </div>
 </div>

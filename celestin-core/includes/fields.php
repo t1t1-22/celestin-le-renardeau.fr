@@ -199,6 +199,7 @@ final class Celestin_Fields {
           $i++;
         }
         if($post->post_type==='cel_personnage') echo '<button type="button" role="tab" data-tab="extras" class="cel-form-tab" aria-selected="false">Attributs personnalisés</button>';
+        if($post->post_type==='cel_personnage')echo '<button type="button" role="tab" data-tab="family" class="cel-form-tab" aria-selected="false">Famille et relations</button>';
         echo '<button type="button" role="tab" data-tab="relations" class="cel-form-tab" aria-selected="false">'.($post->post_type==='cel_livre'?'Contenus associés':'Associations').'</button>';
         echo '</div>';
         if(in_array($post->post_type,['cel_livre','cel_histoire','cel_coloriage','cel_personnage'],true)){
@@ -246,6 +247,7 @@ final class Celestin_Fields {
         }
         if($post->post_type==='cel_personnage') self::extras($post);
         if(in_array($post->post_type,['cel_livre','cel_histoire','cel_coloriage'],true))Celestin_Library::categories($post);
+        if($post->post_type==='cel_personnage')self::family_panel($post);
         self::relations($post);
         if($post->post_type==='cel_personnage')echo '</div></div>';
     }
@@ -330,6 +332,79 @@ final class Celestin_Fields {
         echo '<input type="text" placeholder="Valeur (ex. Chemise à carreaux)" aria-label="Valeur" name="cel_extra_value[]" value="'.esc_attr($item['value']??'').'">';
         echo '<button class="button cel-remove-extra" type="button" aria-label="Supprimer la caractéristique">×</button></div>';
     }
+
+    const KINDS=['parent'=>'Est le parent de','child'=>'Est l’enfant de','spouse'=>'Est marié(e) avec','sibling'=>'Est frère ou sœur de','half'=>'Est demi-frère ou demi-sœur de','friend'=>'Est ami(e) avec'];
+    static function family_graph(bool $public=false): array {
+        $ids=get_posts(['post_type'=>'cel_personnage','post_status'=>$public?['publish']:['publish','draft','private','pending','future'],'posts_per_page'=>-1,'fields'=>'ids']);
+        $valid=array_fill_keys($ids,true);$g=[];$direct=[];
+        $inverse=['parent'=>'child','child'=>'parent','spouse'=>'spouse','sibling'=>'sibling','half'=>'half','friend'=>'friend','grandparent'=>'grandchild','grandchild'=>'grandparent'];
+        $add=function($a,$b,$kind,$explicit=false)use(&$g,&$direct,$valid,$inverse){
+            if($a===$b||!isset($valid[$a],$valid[$b],$inverse[$kind]))return false;
+            if($explicit){$direct[$a][$kind][$b]=true;$direct[$b][$inverse[$kind]][$a]=true;}
+            if(isset($g[$a][$kind][$b]))return false;
+            $g[$a][$kind][$b]=true;$g[$b][$inverse[$kind]][$a]=true;return true;
+        };
+        foreach($ids as $id)foreach((array)get_post_meta($id,'_cel_family_links',true) as $row){
+            if(!is_array($row))continue;$kind=$row['kind']??'';if(isset(self::KINDS[$kind]))$add((int)$id,absint($row['id']??0),$kind,true);
+        }
+        // Convention de Fleuriville : les frères/sœurs (hors demi-fratrie) partagent leurs parents;
+        // le conjoint d’un parent est considéré comme coparent, sauf lien contradictoire.
+        $reachable=function($from,$to)use(&$g){$seen=[];$todo=[$from];while($todo){$n=array_pop($todo);if($n===$to)return true;if(isset($seen[$n]))continue;$seen[$n]=true;foreach(array_keys($g[$n]['parent']??[]) as $child)$todo[]=$child;}return false;};
+        $parent=function($a,$b)use(&$g,$add,$reachable){
+            if(isset($g[$a]['spouse'][$b])||isset($g[$a]['sibling'][$b])||isset($g[$a]['half'][$b])||$reachable($b,$a))return false;
+            return $add($a,$b,'parent');
+        };
+        for($pass=0;$pass<count($ids)+1;$pass++){
+            $changed=false;
+            foreach($ids as $a){
+                $parents=array_keys($g[$a]['child']??[]);
+                foreach($parents as $p){
+                    foreach(array_keys($g[$a]['sibling']??[]) as $sib)$changed=$parent($p,$sib)||$changed;
+                    foreach(array_keys($g[$p]['spouse']??[]) as $partner)$changed=$parent($partner,$a)||$changed;
+                }
+            }
+            if(!$changed)break;
+        }
+        foreach($ids as $p){
+            $children=array_keys($g[$p]['parent']??[]);
+            foreach($children as $a){
+                foreach($children as $b)if($a!==$b&&!isset($g[$a]['half'][$b])&&!isset($g[$a]['spouse'][$b])&&!$reachable($a,$b)&&!$reachable($b,$a)){
+                    $pa=array_keys($g[$a]['child']??[]);$pb=array_keys($g[$b]['child']??[]);
+                    if(count(array_intersect($pa,$pb))>=2)$add($a,$b,'sibling');
+                }
+                foreach(array_keys($g[$a]['parent']??[]) as $b)if($p!==$b&&!$reachable($b,$p))$add($p,$b,'grandparent');
+            }
+        }
+        return [$g,$direct];
+    }
+    static function family_label(string $kind,int $other): string {
+        $gender=mb_strtolower(trim(self::value($other,'genre')));
+        $f=in_array($gender,['féminin','feminin','femme','fille'],true);$m=in_array($gender,['masculin','homme','garçon','garcon'],true);
+        $labels=['parent'=>[$f?'Fille':($m?'Fils':'Enfant')],'child'=>[$f?'Mère':($m?'Père':'Parent')],'spouse'=>[$f?'Épouse':($m?'Époux':'Conjoint(e)')],'sibling'=>[$f?'Sœur':($m?'Frère':'Frère ou sœur')],'half'=>[$f?'Demi-sœur':($m?'Demi-frère':'Demi-frère ou demi-sœur')],'friend'=>[$f?'Amie':($m?'Ami':'Ami(e)')],'grandparent'=>[$f?'Petite-fille':($m?'Petit-fils':'Petit-enfant')],'grandchild'=>[$f?'Grand-mère':($m?'Grand-père':'Grand-parent')]];
+        return $labels[$kind][0]??'Proche';
+    }
+    static function family_panel(WP_Post $post): void {
+        $items=get_posts(['post_type'=>'cel_personnage','post_status'=>['publish','draft','private','pending','future'],'posts_per_page'=>-1,'exclude'=>[$post->ID],'orderby'=>'title','order'=>'ASC']);
+        $items=array_values(array_filter($items,fn($p)=>current_user_can('edit_post',$p->ID)));
+        $rows=get_post_meta($post->ID,'_cel_family_links',true);if(!is_array($rows))$rows=[];
+        $row=function($value)use($items){
+            echo '<div class="cel-family-row" style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0"><select name="cel_family_kind[]" aria-label="Lien du personnage">';
+            foreach(self::KINDS as $kind=>$label)echo '<option value="'.esc_attr($kind).'"'.selected($value['kind']??'',$kind,false).'>'.esc_html($label).'</option>';
+            echo '</select><select name="cel_family_id[]" aria-label="Autre personnage"><option value="">Choisir un personnage</option>';
+            foreach($items as $item)echo '<option value="'.(int)$item->ID.'"'.selected((int)($value['id']??0),$item->ID,false).'>'.esc_html($item->post_title).'</option>';
+            echo '</select><button type="button" class="button cel-family-remove">Retirer</button></div>';
+        };
+        echo '<section class="cel-form-panel" data-panel="family" hidden><h3>Famille et relations</h3><p>Déclare le lien depuis ce personnage. Les liens réciproques et les déductions apparaissent automatiquement après enregistrement.</p><input type="hidden" name="cel_family_present" value="1"><div id="cel-family-rows">';
+        foreach($rows as $value)if(is_array($value))$row($value);
+        echo '</div><template id="cel-family-template">';$row([]);echo '</template><button type="button" class="button" id="cel-family-add">+ Ajouter un lien</button>';
+        [$graph,$direct]=self::family_graph();echo '<h3 style="margin-top:25px">Relations calculées et réciproques</h3><p>Les frères et sœurs partagent leurs parents dans cet univers; un conjoint est considéré comme coparent. Utilise demi-frère ou demi-sœur si nécessaire.</p><div style="display:grid;gap:8px">';
+        foreach($graph[$post->ID]??[] as $kind=>$others)foreach(array_keys($others) as $other){
+            if(!current_user_can('edit_post',$other))continue;
+            echo '<div style="display:flex;align-items:center;gap:12px;padding:8px;border:1px solid #ead5bb;border-radius:10px">'.get_the_post_thumbnail($other,[48,48]).'<a href="'.esc_url(get_edit_post_link($other)).'">'.esc_html(get_the_title($other)).'</a><strong>'.esc_html(self::family_label($kind,$other)).'</strong><small>'.(isset($direct[$post->ID][$kind][$other])?'Renseigné / réciproque':'Déduit automatiquement').'</small></div>';
+        }
+        echo '</div></section><script>document.addEventListener("click",function(e){if(e.target.id==="cel-family-add"){const t=document.getElementById("cel-family-template");document.getElementById("cel-family-rows").append(t.content.cloneNode(true))}if(e.target.classList.contains("cel-family-remove"))e.target.closest(".cel-family-row").remove()})</script>';
+    }
+
     static function relations(WP_Post $post): void {
         $types=[
             'cel_personnage'=>['cel_personnage'=>'Famille, amis et connaissances','cel_lieu'=>'Lieux associés','cel_livre'=>'Livres associés','cel_histoire'=>'Mini-histoires associées'],
@@ -410,6 +485,11 @@ final class Celestin_Fields {
                 if(count($extras)>=150)break;
             }
             update_post_meta($id,'_cel_f_extras',$extras);
+        }
+        if($post->post_type==='cel_personnage'&&isset($_POST['cel_family_present'])){
+            $k=(array)wp_unslash($_POST['cel_family_kind']??[]);$others=(array)wp_unslash($_POST['cel_family_id']??[]);$links=[];
+            foreach($k as $i=>$kind){if(!is_string($kind)||!isset(self::KINDS[$kind]))continue;$other=absint($others[$i]??0);if(!$other||$other===$id||get_post_type($other)!=='cel_personnage'||!current_user_can('edit_post',$other))continue;$links[$kind.':'.$other]=['kind'=>$kind,'id'=>$other];}
+            update_post_meta($id,'_cel_family_links',array_values($links));
         }
         $r=isset($_POST['cel_relation'])&&is_array($_POST['cel_relation'])?wp_unslash($_POST['cel_relation']):[];
         $out=[];

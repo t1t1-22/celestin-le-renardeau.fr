@@ -73,12 +73,12 @@ final class Celestin_Library {
   }
   $compact=in_array($key,['categorie','collection','evenement'],true);
   echo '<div class="cel-field cel-tax-picker" data-key="'.esc_attr($key).'" data-nonce="'.esc_attr(wp_create_nonce('cel_library_term')).'"><label>'.esc_html(self::LABELS[$key]).'</label>';
-  if($compact)echo '<div class="cel-tax-selected"></div><details class="cel-tax-details"><summary>Rechercher et sélectionner <span class="cel-tax-count"></span></summary><input type="search" class="cel-tax-search" placeholder="Rechercher…" aria-label="Rechercher dans '.esc_attr(self::LABELS[$key]).'">';
+  if($compact)echo '<div class="cel-tax-selected"></div><details class="cel-tax-details"><summary>Rechercher et sélectionner <span class="cel-tax-count"></span></summary><input type="search" class="cel-tax-search" maxlength="150" placeholder="Rechercher ou créer…" aria-label="Rechercher dans '.esc_attr(self::LABELS[$key]).'">';
   echo '<div class="cel-lib-choices">';
   foreach($terms as $t)echo '<label><input type="checkbox" name="cel_lib['.esc_attr($key).'][]" value="'.(int)$t->term_id.'"'.checked(in_array((int)$t->term_id,array_map('intval',$selected),true),true,false).'> <span>'.esc_html($t->name).'</span></label>';
   echo '</div>';
   if($compact){
-   echo '<p class="cel-tax-empty" hidden>Aucun résultat.</p></details><button type="button" class="button cel-tax-open">+ '.esc_html(['categorie'=>'Nouveau thème','collection'=>'Nouvelle collection','evenement'=>'Nouvel événement'][$key]).'</button><dialog class="cel-tax-dialog" aria-labelledby="cel-tax-dialog-'.esc_attr($key).'"><h3 id="cel-tax-dialog-'.esc_attr($key).'">'.esc_html(['categorie'=>'Créer un thème','collection'=>'Créer une collection','evenement'=>'Créer un événement'][$key]).'</h3><p>Cette valeur sera disponible dans toutes les rubriques de contenu.</p><label>Nom<input type="text" class="cel-tax-new" placeholder="Nouveau nom" maxlength="150"></label><p class="cel-tax-status" role="status"></p><div class="cel-tax-dialog-actions"><button type="button" class="button cel-tax-cancel">Annuler</button><button type="button" class="button cel-tax-add">Créer et sélectionner</button></div></dialog>';
+   echo '<p class="cel-tax-empty" hidden>Aucun résultat.</p><button type="button" class="button cel-tax-add" hidden>+ Ajouter</button><p class="cel-tax-status" role="status"></p></details>';
   }
   echo '</div>';
  }

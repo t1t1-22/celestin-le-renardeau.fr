@@ -190,3 +190,11 @@ body.admin-bar .cel-interior-header{top:32px}
 @media(max-width:1000px){.cel-news-track .cel-card{flex-basis:calc((100% - 48px)/4)}}
 @media(max-width:720px){.cel-hero-picture{height:auto;aspect-ratio:16/9}.cel-news{margin:-18px auto 25px;padding:16px 12px 10px}.cel-news-track .cel-card{flex-basis:calc((100% - 32px)/3)}.cel-news .cel-section-title{font-size:24px}}
 @media(max-width:480px){.cel-news-track .cel-card{flex-basis:calc((100% - 16px)/2)}.cel-news-track .cel-card-body h3{font-size:15px}}
+
+/* Seules les cartes chevauchent le slide, sans bandeau ni titre visible. */
+.cel-news{background:transparent;border-radius:0;margin:18px auto 30px;padding:0 0 10px}
+.cel-news.cel-news-has-items{margin-top:-48px}
+.cel-news .screen-reader-text{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.cel-news-track .cel-card{background:#fffdf8;box-shadow:0 3px 9px #63361918}
+.cel-news-track{padding-top:5px}
+@media(max-width:720px){.cel-news.cel-news-has-items{margin-top:-24px}.cel-news{padding:0 0 10px}}

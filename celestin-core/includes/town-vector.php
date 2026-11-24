@@ -1,0 +1,41 @@
+<?php
+if(!defined('ABSPATH'))exit;
+final class Celestin_Town_Vector {
+ static function render($id='cel-town-vector'){
+ ob_start(); ?>
+<svg id="<?php echo esc_attr($id); ?>" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 1000" role="img" aria-label="Plan vectoriel de Fleuriville" style="display:block;width:100%;height:auto">
+<defs>
+ <pattern id="cel-paving" width="25" height="15" patternUnits="userSpaceOnUse"><rect width="25" height="15" fill="#eed4a0"/><path d="M0 0H25M0 15H25M12 0V7.5M0 7.5H25M0 7.5V15" fill="none" stroke="#c6aa75" stroke-width=".65"/></pattern>
+ <g id="cel-tree" stroke="#344322" stroke-width="2" stroke-linejoin="round"><ellipse cx="3" cy="9" rx="20" ry="9" fill="#43542d" opacity=".25" stroke="none"/><path d="M-4 8V-21H4V8Z" fill="#886143"/><path d="M-18-12Q-27-20-19-31Q-25-44-10-48Q-6-63 6-55Q22-58 23-42Q35-33 23-23Q30-10 13-8Q3 1-6-8Q-16 1-18-12Z" fill="#66913c"/><path d="M-14-32Q-10-46 1-44M4-49Q14-51 17-39M-8-17Q2-12 9-23" fill="none" stroke="#91b650" stroke-width="4" stroke-linecap="round"/></g>
+ <g id="cel-pine" stroke="#304923" stroke-width="2" stroke-linejoin="round"><path d="M-4 7V-37H4V7Z" fill="#936944"/><path d="M0-76 22-35H13L30-12H-30L-13-35H-22Z" fill="#447c38"/><path d="M0-76V-12H-30L-13-35H-22Z" fill="#659b45" stroke="none"/></g>
+ <g id="cel-window"><rect width="17" height="25" rx="1" fill="#f5e2ae" stroke="#41372b" stroke-width="2"/><rect x="3" y="3" width="11" height="19" fill="#96c7d6"/><path d="M8.5 3V22M3 12H14" stroke="#41372b" stroke-width="1.5"/></g>
+ <g id="cel-house" stroke="#43372b" stroke-width="2.4" stroke-linejoin="round"><path d="M-53 3 26 17 79-9 1-23Z" fill="#314426" opacity=".25" stroke="none"/><path d="M-50-58 29-39 29 8-50-12Z" fill="#f4d69c"/><path d="M29-39 72-65 72-17 29 8Z" fill="#c8a675"/><path d="M-59-58-15-104 38-40 29-32Z" fill="currentColor"/><path d="M-15-104 29-125 82-65 38-40Z" fill="currentColor"/><path d="M-15-104 29-125 82-65 38-40Z" fill="#000" opacity=".12"/><path d="M-42-76 2-97M-29-62 15-83M-15-48 29-69M17-112 67-56" stroke="#493e31" opacity=".55" stroke-width="1"/><path d="M22-112V-137L32-134V-102Z" fill="#e6d1a7"/><g transform="translate(-39 -49) skewY(13)"><use href="#cel-window"/><use href="#cel-window" x="43"/><rect x="22" y="21" width="17" height="30" rx="2" fill="#704c2d" stroke="#43372b"/></g><g transform="translate(39 -35) skewY(-30)"><use href="#cel-window" transform="scale(.8)"/></g><path d="M-17-85-5-70-24-75Z" fill="#e8c894"/><path d="M-18-79v8" stroke="#43372b"/></g>
+ <g id="cel-lamp" stroke="#303c35" stroke-width="2"><path d="M0 0V-48" stroke-width="4"/><path d="M-8-48-6-62H6L8-48Z" fill="#fff0bf"/><path d="M-9-62 0-70 9-62Z" fill="#303c35"/><ellipse rx="7" ry="3" fill="#303c35"/></g>
+</defs>
+<rect width="1500" height="1000" fill="#8fa74d"/>
+<path d="M0 30Q300-60 540 70T1000 40T1500 70V0H0ZM0 860Q230 770 400 1000H0ZM1120 1000Q1200 790 1500 900V1000Z" fill="#64883b"/>
+<g fill="none" stroke-linecap="round" stroke-linejoin="round"><g stroke="#917b49" stroke-width="44"><path d="M-30 660Q240 510 400 480M560 350Q420 150 250 100M820 330Q940 170 860-20M1050 385Q1000 200 1130-20M1090 490Q1290 550 1450 390Q1510 320 1400 280M1120 250Q1450 240 1280 50M530 640Q480 830 230 1030M960 620Q1080 850 1510 1020M1100 560Q1220 650 1190 810"/></g><g stroke="#eed4a0" stroke-width="38"><path d="M-30 660Q240 510 400 480M560 350Q420 150 250 100M820 330Q940 170 860-20M1050 385Q1000 200 1130-20M1090 490Q1290 550 1450 390Q1510 320 1400 280M1120 250Q1450 240 1280 50M530 640Q480 830 230 1030M960 620Q1080 850 1510 1020M1100 560Q1220 650 1190 810"/></g></g>
+<ellipse cx="750" cy="485" rx="410" ry="205" fill="url(#cel-paving)" stroke="#8d784a" stroke-width="4"/>
+<g fill="#a6bd59" stroke="#526637" stroke-width="2"><rect x="55" y="657" width="390" height="230" rx="24" transform="rotate(-12 250 770)"/><rect x="1110" y="650" width="185" height="145" rx="25"/><path d="M1260 550 1500 590V740L1250 680Z"/></g>
+<path d="M533 779Q566 710 678 742Q755 774 821 744Q905 731 934 820Q975 906 875 960Q742 1007 619 952Q515 918 533 779Z" fill="#4d9cc6" stroke="#ad925e" stroke-width="15"/><path d="M550 800Q600 770 660 795M760 900q65 15 125-10M600 905q40 15 90 0" stroke="#79c2e4" stroke-width="4" fill="none" stroke-linecap="round"/>
+<g fill="#72a74d" stroke="#42663b" stroke-width="2"><ellipse cx="830" cy="920" rx="13" ry="6"/><ellipse cx="795" cy="940" rx="12" ry="6"/><ellipse cx="861" cy="883" rx="10" ry="5"/></g>
+<path d="M605 970 657 877 681 890 630 980Z" fill="#b2814a" stroke="#493a27" stroke-width="3"/><path d="M614 957 637 969M624 940 647 952M635 922 658 934M645 904 668 916" stroke="#65452c" stroke-width="3"/>
+<g transform="translate(750 465)" stroke="#544a37" stroke-width="3"><ellipse cy="15" rx="74" ry="42" fill="#c6a779"/><ellipse rx="74" ry="42" fill="#f1dba9"/><ellipse rx="63" ry="32" fill="#378dbd"/><ellipse rx="49" ry="23" fill="none" stroke="#79c9e5" stroke-width="2"/><path d="M-12-6H12L7-46H-7Z" fill="#d3b889"/><ellipse cy="-42" rx="32" ry="13" fill="#e8d1a0"/><ellipse cy="-45" rx="24" ry="8" fill="#439bca"/><path d="M-5-45V-78H5V-45Z" fill="#d6bd90"/><ellipse cy="-77" rx="16" ry="7" fill="#e8d1a0"/><path d="M0-78Q-19-104-24-71M0-78Q19-104 24-71" stroke="#a4e2f4" fill="none" stroke-width="2" stroke-dasharray="4 4"><animate attributeName="stroke-dashoffset" from="0" to="16" dur="1.4s" repeatCount="indefinite"/></path></g>
+<?php
+ $houses=[[110,225,1,'#3b6b91'],[185,165,.85,'#d66e35'],[285,180,1,'#80618c'],[380,230,.9,'#3c709a'],[465,180,1,'#805c85'],[555,205,.85,'#896644'],[620,115,1.15,'#d16b35'],[755,108,.95,'#3d6d9b'],[70,330,.95,'#d56f35'],[150,360,1,'#3c6b90'],[240,310,1,'#d57635'],[330,355,.95,'#be6833'],[410,300,.9,'#9b784a'],[490,280,.85,'#b85f38'],[65,445,.9,'#80618c'],[165,470,1,'#35668e'],[265,430,.9,'#a57541'],[425,478,1.25,'#38658d'],[1010,315,1.25,'#d3652e'],[1040,505,1.35,'#bd5830'],[1210,382,1.35,'#895b39'],[1370,400,1.25,'#38658d'],[1235,170,1.35,'#ce6532'],[180,790,1.25,'#c66630'],[350,675,1.1,'#b85d30'],[1370,815,1.3,'#c65d32']];
+ // Densité végétale déterministe : pas d’image ni de ressource externe.
+ for($y=30;$y<1000;$y+=46)for($x=20;$x<1500;$x+=43){
+   $j=($x*31+$y*17)%29-14;$xx=$x+$j;$yy=$y+($x*13+$y*7)%23-11;
+   $edge=($yy<90||$xx<45||$xx>1460||$yy>960||($xx>830&&$xx<1000&&$yy<160)||($xx>1000&&$xx<1120&&$yy>850));
+   if(!$edge)continue;$scale=.65+(($x+$y)%7)*.09;
+   echo '<use href="#cel-'.(($x+$y)%5===0?'pine':'tree').'" transform="translate('.$xx.' '.$yy.') scale('.$scale.')"/>';
+ }
+ foreach($houses as [$x,$y,$scale,$color])echo '<use href="#cel-house" transform="translate('.$x.' '.$y.') scale('.$scale.')" style="color:'.esc_attr($color).'"/>';
+ ?>
+<g transform="translate(750 265)" stroke="#493c2d" stroke-width="3"><rect x="-100" y="-103" width="200" height="117" fill="#ead19d"/><path d="M-115-103-73-157H73L115-103Z" fill="#38678e"/><path d="M-39-103 0-146 39-103V14H-39Z" fill="#f2dbab"/><circle cy="-108" r="12" fill="#fff2d4"/><path d="M0-117v10l6 3" fill="none"/><path d="M-18 14V-35a18 18 0 0 1 36 0V14Z" fill="#426c85"/><use href="#cel-window" x="-83" y="-80"/><use href="#cel-window" x="-83" y="-35"/><use href="#cel-window" x="65" y="-80"/><use href="#cel-window" x="65" y="-35"/><path d="M-37 15H37L44 25H-44Z" fill="#ad9572"/></g>
+<g stroke="#634a2c" stroke-width="3" fill="none"><path d="M55 695 420 615 475 848 110 935Z"/><path d="M1110 650H1295V795H1110Z"/><path d="M1170 745v-75l55-20 55 75M1150 745l20-75m55-20 20 95M1187 680v36m20-43v36" /><path d="M1187 716h-12m32-7h-12" stroke="#df9a3a" stroke-width="6"/></g><path d="M1260 690h20l-10 60-24 15" fill="none" stroke="#459bd1" stroke-width="11" stroke-linejoin="round"/>
+<?php for($i=0;$i<5;$i++)for($j=0;$j<9;$j++){echo '<use href="#cel-tree" transform="translate('.(1250+$j*27).' '.(565+$i*29+$j*5).') scale(.35)"/>';} foreach([[340,580],[495,625],[930,635],[1080,575],[570,335],[930,335],[330,440],[1140,440]] as [$x,$y])echo '<use href="#cel-lamp" transform="translate('.$x.' '.$y.')"/>'; foreach([[350,550],[490,630],[945,640],[1100,560],[560,340],[940,335],[650,700],[750,715],[840,700],[1000,870],[510,950],[1150,870],[1400,920],[1100,210],[1320,220],[290,580],[45,570]] as [$x,$y])echo '<use href="#cel-tree" transform="translate('.$x.' '.$y.')"/>'; ?>
+</svg>
+<?php return ob_get_clean();
+ }
+}

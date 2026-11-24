@@ -68,7 +68,7 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
          </button><span class="cel-audio-error" role="status" hidden>Audio indisponible.</span>
          <?php endif; ?>
         </div>
-        <div class="cel-card-body"><span class="cel-news-kind"><?php echo esc_html($kind); ?></span><?php if($preview): ?><div class="cel-feature-audio-progress"><input type="range" min="0" max="1000" value="0" aria-label="Progression audio" disabled><div class="cel-feature-audio-times"><span class="cel-time-current">0:00</span><span class="cel-time-total">--:--</span></div></div><?php elseif($item->post_type==='cel_histoire'): ?><span>Audio bientôt disponible</span><?php else: ?><h3><a href="<?php echo esc_url(get_permalink($item)); ?>"><?php echo esc_html($title); ?></a></h3><?php endif; ?></div>
+        <div class="cel-card-body"><span class="cel-news-kind"><?php echo esc_html($kind); ?></span><?php if($preview): ?><div class="cel-feature-audio-progress"><input type="range" min="0" max="1000" value="0" aria-label="Progression audio" disabled><div class="cel-feature-audio-times"><span class="cel-time-current">0:00</span><span class="cel-time-total">--:--</span></div></div><?php elseif($item->post_type==='cel_histoire'): ?><span>Audio bientôt disponible</span><?php endif; ?></div>
       </article>
  <div class="cel-feature-copy"><p class="cel-feature-kicker"><?php echo esc_html($kind); ?> · Nouveauté</p><h2><?php echo esc_html($title); ?></h2>
  <?php if($summary): ?><p class="cel-feature-summary"><?php echo esc_html(wp_trim_words(wp_strip_all_tags($summary),65,'…')); ?></p><?php endif; ?>

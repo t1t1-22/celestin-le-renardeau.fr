@@ -199,6 +199,12 @@ body.cel-page .cel-audio-feature .cel-section-title{font:700 clamp(29px,3vw,40px
 .cel-identity-card:nth-child(2){transform:translate(9px,9px) rotate(2.5deg)}
 .cel-identity-card:nth-child(3){transform:translate(17px,17px) rotate(4.5deg)}
 @media(prefers-reduced-motion:reduce){.cel-identity-card{will-change:auto}}
+
+body.cel-page .cel-identity-deck .cel-identity-controls{display:flex!important;visibility:visible!important;position:relative;z-index:10;justify-content:center;align-items:center;gap:18px;margin:27px 0 12px}
+body.cel-page .cel-identity-deck .cel-identity-controls button{display:grid!important;place-items:center;width:44px;height:44px;flex:0 0 44px;border:1px solid #d87928;background:#e98932;color:#fff;border-radius:50%;box-shadow:0 3px 8px #63361925;cursor:pointer;padding:0}
+body.cel-page .cel-identity-deck .cel-identity-controls button:hover{background:#633619;border-color:#633619;color:white}
+body.cel-page .cel-identity-deck .cel-identity-controls button:focus-visible{outline:2px solid #633619;outline-offset:3px}
+.cel-deck-position{display:grid;text-align:center;color:#633619;line-height:1.35;font-weight:700}.cel-deck-position small{font-size:11px;font-weight:500;color:#a76129}
 </style>
 
 </head>
@@ -414,7 +420,7 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
      </article>
     <?php endforeach; ?>
     </div>
-    <?php if(count($characters)>1): ?><div class="cel-identity-controls"><button type="button" data-deck-prev aria-label="Personnage précédent">‹</button><span data-deck-count>1 / <?php echo count($characters); ?></span><button type="button" data-deck-next aria-label="Personnage suivant">›</button></div><?php endif; ?>
+    <?php if(count($characters)>1): ?><div class="cel-identity-controls"><button type="button" data-deck-prev aria-label="Personnage précédent" title="Personnage précédent"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 5-7 7 7 7"/></svg></button><span class="cel-deck-position"><small>Les personnages</small><span data-deck-count>1 / <?php echo count($characters); ?></span></span><button type="button" data-deck-next aria-label="Personnage suivant" title="Personnage suivant"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m10 5 7 7-7 7"/></svg></button></div><?php endif; ?>
    </div>
    <?php else: ?><p class="cel-home-empty">Les personnages seront bientôt à découvrir.</p><?php endif; ?>
    <a class="cel-text-link" href="<?php echo esc_url(Celestin_Home::url('cel_personnage')); ?>">Tous les personnages →</a>

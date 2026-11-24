@@ -19,6 +19,7 @@ final class Celestin_Home {
             'logo'=>0, 'footer_logo'=>0, 'hero'=>0, 'footer'=>0, 'story'=>0, 'book'=>0,
             'character'=>0, 'city'=>0, 'activity'=>0,
             'headline'=>'Pars à l’aventure à Fleuriville',
+            'hero_title_size'=>64, 'hero_text_size'=>18, 'hero_x'=>50, 'hero_y'=>50, 'hero_width'=>680, 'hero_text_location'=>'overlay',
             'hero_intro'=>'Bienvenue dans l’univers de Célestin', 'hero_description'=>'Des histoires à lire, des aventures à écouter et plein de petites activités à découvrir.', 'hero_button'=>'Découvrir l’univers', 'hero_link'=>'#cel-decouvrir',
             'welcome'=>'Un petit coin de nature plein de charme où Célestin vit de grandes et de petites aventures avec Octet, son fidèle compagnon.',
             'newsletter'=>''
@@ -104,6 +105,12 @@ final class Celestin_Home {
         self::text_setting('hero_description', 'Description', $o, true);
         self::text_setting('hero_button', 'Texte du bouton', $o);
         self::text_setting('hero_link', 'Lien du bouton', $o);
+        echo '<h2 style="margin-top:28px">Taille et position du texte</h2><p>Déplace le bloc de texte sur ton illustration ou affiche-le sous l’image.</p>';
+        foreach(['hero_title_size'=>['Taille maximale du titre (px)',24,100],'hero_text_size'=>['Taille de la description (px)',12,32],'hero_x'=>['Position horizontale (%) : gauche → droite',0,100],'hero_y'=>['Position verticale (%) : haut → bas',0,100],'hero_width'=>['Largeur maximale du bloc de texte (px)',240,1100]] as $key=>[$label,$min,$max]){
+            echo '<div class="cel-text-setting"><label for="cel_'.esc_attr($key).'"><strong>'.esc_html($label).'</strong></label><input type="number" id="cel_'.esc_attr($key).'" name="design['.esc_attr($key).']" min="'.$min.'" max="'.$max.'" value="'.esc_attr((string)$o[$key]).'" style="max-width:180px"></div>';
+        }
+        echo '<div class="cel-text-setting"><label for="cel_hero_text_location"><strong>Emplacement du texte</strong></label><select id="cel_hero_text_location" name="design[hero_text_location]"><option value="overlay"'.selected($o['hero_text_location'],'overlay',false).'>Sur l’image</option><option value="below"'.selected($o['hero_text_location'],'below',false).'>Sous l’image</option></select></div>';
+
         echo '</section>';
 
         echo '<section id="cel-panel-rubriques" class="cel-design-panel" role="tabpanel" aria-labelledby="cel-tab-rubriques"' . ($active !== 'rubriques' ? ' hidden' : '') . '>';
@@ -139,6 +146,11 @@ final class Celestin_Home {
         foreach(['logo','footer_logo','hero','footer','story','book','character','city','activity'] as $key) $out[$key]=absint($raw[$key]??0);
         foreach(['headline','welcome','hero_intro','hero_description','hero_button'] as $key) $out[$key]=sanitize_textarea_field($raw[$key]??$out[$key]);
         $out['hero_link']=esc_url_raw($raw['hero_link']??'#cel-decouvrir');
+        foreach(['hero_title_size'=>[24,100],'hero_text_size'=>[12,32],'hero_x'=>[0,100],'hero_y'=>[0,100],'hero_width'=>[240,1100]] as $key=>[$min,$max]){
+            $out[$key]=max($min,min($max,(int)($raw[$key]??$out[$key])));
+        }
+        $out['hero_text_location']=($raw['hero_text_location']??'overlay')==='below'?'below':'overlay';
+
         $out['newsletter']=esc_url_raw($raw['newsletter']??'');
         update_option(self::OPTION,$out);
         $allowed_tabs = ['identite', 'accueil', 'rubriques', 'fleuriville', 'newsletter'];
@@ -149,8 +161,8 @@ final class Celestin_Home {
     }
     static function assets(): void {
         if (!is_front_page()) return;
-        wp_enqueue_style('celestin-home', plugins_url('../assets/home.css',__FILE__), [], '0.4.0');
-        wp_enqueue_script('celestin-home', plugins_url('../assets/home.js',__FILE__), [], '0.4.0', true);
+        wp_enqueue_style('celestin-home', plugins_url('../assets/home.css',__FILE__), [], '0.4.1');
+        wp_enqueue_script('celestin-home', plugins_url('../assets/home.js',__FILE__), [], '0.4.1', true);
     }
     static function template(string $template): string {
         if (is_front_page() && !is_admin() && !is_feed() && !is_embed() && !is_preview()) return __DIR__.'/front-page.php';

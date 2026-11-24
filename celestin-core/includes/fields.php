@@ -61,7 +61,10 @@ final class Celestin_Fields {
         return $data;
     }
     static function remove_editor(): void {
-        foreach(self::TYPES as $type) remove_post_type_support($type,'editor');
+        foreach(self::TYPES as $type) {
+            remove_post_type_support($type,'editor');
+            remove_post_type_support($type,'custom-fields');
+        }
     }
     static function disable_blocks($use,$type) {
         return in_array($type,self::TYPES,true)?false:$use;
@@ -71,6 +74,7 @@ final class Celestin_Fields {
     }
     static function boxes(): void {
         foreach(self::TYPES as $type) {
+            foreach(['normal','advanced','side'] as $context) remove_meta_box('postcustom',$type,$context);
             add_meta_box('cel_structured','Remplir ma fiche',[__CLASS__,'render'],$type,'normal','high');
             add_meta_box('cel_illustration_help','Illustration principale',[__CLASS__,'illustration_help'],$type,'side','high');
         }

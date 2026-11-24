@@ -205,6 +205,12 @@ body.cel-page .cel-identity-deck .cel-identity-controls button{display:grid!impo
 body.cel-page .cel-identity-deck .cel-identity-controls button:hover{background:#633619;border-color:#633619;color:white}
 body.cel-page .cel-identity-deck .cel-identity-controls button:focus-visible{outline:2px solid #633619;outline-offset:3px}
 .cel-deck-position{display:grid;text-align:center;color:#633619;line-height:1.35;font-weight:700}.cel-deck-position small{font-size:11px;font-weight:500;color:#a76129}
+
+body.cel-page .cel-identity-deck .cel-identity-controls{gap:10px;margin:22px 0 4px}
+body.cel-page .cel-identity-deck .cel-identity-controls button{width:28px;height:28px;flex:0 0 28px;background:transparent;color:#a76129;border:1px solid #dfb584;box-shadow:none}
+body.cel-page .cel-identity-deck .cel-identity-controls button svg{width:15px;height:15px}
+body.cel-page .cel-identity-deck .cel-identity-controls button:hover{background:#e98932;color:#fff;border-color:#e98932}
+.cel-deck-position{font-size:11px;font-weight:600;color:#a76129}
 </style>
 
 </head>
@@ -420,10 +426,10 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
      </article>
     <?php endforeach; ?>
     </div>
-    <?php if(count($characters)>1): ?><div class="cel-identity-controls"><button type="button" data-deck-prev aria-label="Personnage précédent" title="Personnage précédent"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 5-7 7 7 7"/></svg></button><span class="cel-deck-position"><small>Les personnages</small><span data-deck-count>1 / <?php echo count($characters); ?></span></span><button type="button" data-deck-next aria-label="Personnage suivant" title="Personnage suivant"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m10 5 7 7-7 7"/></svg></button></div><?php endif; ?>
+    <?php if(count($characters)>1): ?><div class="cel-identity-controls"><button type="button" data-deck-prev aria-label="Personnage précédent" title="Personnage précédent"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 5-7 7 7 7"/></svg></button><span class="cel-deck-position"><span data-deck-count>1 / <?php echo count($characters); ?></span></span><button type="button" data-deck-next aria-label="Personnage suivant" title="Personnage suivant"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m10 5 7 7-7 7"/></svg></button></div><?php endif; ?>
    </div>
    <?php else: ?><p class="cel-home-empty">Les personnages seront bientôt à découvrir.</p><?php endif; ?>
-   <a class="cel-text-link" href="<?php echo esc_url(Celestin_Home::url('cel_personnage')); ?>">Tous les personnages →</a>
+   
  </section>
  <section class="cel-info-panel" aria-labelledby="cel-city-title">
    <h2 id="cel-city-title" class="cel-section-title small">Fleuriville</h2>

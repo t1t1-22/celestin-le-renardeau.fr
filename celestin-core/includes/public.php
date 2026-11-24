@@ -19,12 +19,12 @@ final class Celestin_Public {
     static function assets(): void {
         if(!is_singular(self::TYPES) && !is_post_type_archive(self::TYPES) && !is_tax(array_values(Celestin_Library::TAX)))return;
         wp_enqueue_style('celestin-home',plugins_url('../assets/home.css',__FILE__),[],'0.4.24');
-        wp_enqueue_style('cel-content',plugins_url('../assets/content.css',__FILE__),['celestin-home'],'0.4.24');
+        wp_enqueue_style('cel-content',plugins_url('../assets/content.css',__FILE__),['celestin-home'],'0.4.26');
         if(is_singular('cel_livre')){
             wp_enqueue_script('cel-pdfjs','https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',[],'3.11.174',true);
             wp_enqueue_script('cel-reader',plugins_url('../assets/reader.js',__FILE__),['cel-pdfjs'],'0.4.4',true);
         }
-        if(is_singular('cel_histoire'))wp_enqueue_script('cel-story',plugins_url('../assets/story.js',__FILE__),[],'0.3.0',true);
+        if(is_singular('cel_histoire'))wp_enqueue_script('cel-story',plugins_url('../assets/story.js',__FILE__),[],'0.4.26',true);
     }
     static function title(string $type): string {
         return ['cel_personnage'=>'Les personnages','cel_livre'=>'Les livres','cel_histoire'=>'Mini-histoires audio','cel_coloriage'=>'Mes petites activités','cel_lieu'=>'Les lieux de Fleuriville'][$type]??'Découvertes';
@@ -128,8 +128,10 @@ final class Celestin_Public {
         echo '<div class="cel-story-layout"><div class="cel-story-visual">'.self::illustration($id).'</div><div class="cel-story-main">';
         $resume=Celestin_Fields::value($id,'resume');
         if($resume)echo '<p class="cel-story-resume">'.nl2br(esc_html($resume)).'</p>';
+        $preview=Celestin_Fields::value($id,'resume_audio');
+        if($preview)echo '<div class="cel-listen cel-listen-preview"><h2>Écouter le résumé</h2><p>Un petit aperçu avant de découvrir toute l’aventure.</p><audio controls preload="metadata" data-cel-story-preview src="'.esc_url($preview).'"></audio></div>';
         if($audio){
-            echo '<div class="cel-listen"><h2>Écouter l’histoire</h2><audio controls preload="metadata" data-cel-story-audio src="'.esc_url($audio).'"></audio><p>Tu peux mettre en pause ou avancer dans l’histoire.</p></div>';
+            echo '<div class="cel-listen"><h2>Écouter l’histoire complète</h2><audio controls preload="metadata" data-cel-story-audio src="'.esc_url($audio).'"></audio><p>Tu peux mettre en pause ou avancer dans l’histoire.</p></div>';
         }else echo '<p class="cel-empty-info">La version audio sera bientôt disponible.</p>';
         echo '<div class="cel-story-reading"><h2>Lire l’histoire</h2><p>Tu peux lire tranquillement, même sans lancer l’audio.</p>';
         if($texte){

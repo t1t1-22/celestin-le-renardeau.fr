@@ -7,10 +7,11 @@ $socials=[
 ];
 ?>
 <header class="cel-interior-header">
+ <div class="cel-contact-bar"><div class="cel-contact-inner"><a class="cel-contact-email" href="mailto:celestin-le-renardeau@gmail.com">celestin-le-renardeau@gmail.com</a><div class="cel-social-links" aria-label="Réseaux sociaux"><?php foreach($socials as $key=>[$label,$svg]): if(empty($options[$key]))continue; ?><a class="cel-social-<?php echo esc_attr($key); ?>" href="<?php echo esc_url($options[$key]); ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php echo esc_attr($label); ?>"><svg viewBox="0 0 24 24" aria-hidden="true"><?php echo $svg; ?></svg></a><?php endforeach; ?></div></div></div>
  <div class="cel-interior-header-inner">
  <a class="cel-logo" href="<?php echo esc_url(home_url('/')); ?>" aria-label="Accueil — Célestin le renardeau"><?php if(Celestin_Home::image('logo'))echo '<img src="'.esc_url(Celestin_Home::image('logo')).'" alt="Célestin le renardeau">';else echo '<span class="cel-script">Célestin<small>le renardeau</small></span>'; ?></a>
  <?php require __DIR__.'/navigation.php'; ?>
- <div class="cel-social-links" aria-label="Réseaux sociaux"><?php foreach($socials as $key=>[$label,$svg]): if(empty($options[$key]))continue; ?><a class="cel-social-<?php echo esc_attr($key); ?>" href="<?php echo esc_url($options[$key]); ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php echo esc_attr($label); ?>"><svg viewBox="0 0 24 24" aria-hidden="true"><?php echo $svg; ?></svg></a><?php endforeach; ?></div>
+ 
  <form action="<?php echo esc_url(home_url('/')); ?>" method="get" class="cel-nav-search"><input type="search" name="s" aria-label="Rechercher sur le site" placeholder="Rechercher" required><button aria-label="Rechercher" type="submit"><svg viewBox="0 0 32 32" aria-hidden="true"><?php echo $icons['search']; ?></svg></button></form>
  </div>
 </header>

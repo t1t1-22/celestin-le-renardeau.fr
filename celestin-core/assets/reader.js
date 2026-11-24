@@ -3,7 +3,7 @@ document.querySelectorAll('.cel-book-reader').forEach(reader=>{
  const spread=reader.querySelector('.cel-reader-spread'),left=reader.querySelector('.cel-reader-left'),right=reader.querySelector('.cel-reader-right'),flip=reader.querySelector('.cel-reader-flip');
  const controlsRoot=reader.closest('.cel-reader-section')||reader;
  const prev=controlsRoot.querySelector('.cel-reader-prev'),next=controlsRoot.querySelector('.cel-reader-next'),range=controlsRoot.querySelector('.cel-reader-progress'),counter=controlsRoot.querySelector('.cel-reader-counter'),thumbs=reader.querySelector('.cel-reader-thumbs'),error=controlsRoot.querySelector('.cel-reader-error');
- if(!spread||!left||!right||!prev||!next||!range||!counter||!thumbs||!error)return;
+ if(!spread||!left||!right||!prev||!next||!range||!counter||!error)return;
  let pdf,page=1,busy=false,zoom=1,resizeTimer;
  const single=()=>matchMedia('(max-width: 720px)').matches;
  const cover=()=>page===1||page===pdf.numPages||page===pdf.numPages-1&&page%2===0;
@@ -52,7 +52,7 @@ document.querySelectorAll('.cel-book-reader').forEach(reader=>{
      }else{spread.classList.toggle('single',one);copy(left,a);copy(right,b);}
      page=target;
      counter.textContent=page===1?'Première de couverture':page===pdf.numPages?'Quatrième de couverture':'Page'+(end!==page?'s '+page+' – '+end:' '+page)+' sur '+pdf.numPages;
-     range.value=page;thumbs.querySelectorAll('button').forEach(b=>b.classList.toggle('active',Number(b.dataset.page)>=page&&Number(b.dataset.page)<=end));
+     range.value=page;thumbs?.querySelectorAll('button').forEach(b=>b.classList.toggle('active',Number(b.dataset.page)>=page&&Number(b.dataset.page)<=end));
      error.hidden=true;
    }catch(e){fail()}
    finally{busy=false;prev.disabled=page<=1;next.disabled=end>=pdf.numPages;range.disabled=false;}
@@ -69,9 +69,9 @@ document.querySelectorAll('.cel-book-reader').forEach(reader=>{
  pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
  pdfjsLib.getDocument({url:reader.dataset.pdf,isEvalSupported:false}).promise.then(async doc=>{
    pdf=doc;range.max=doc.numPages;document.querySelectorAll('[data-cel-page-total]').forEach(x=>x.textContent=doc.numPages+' pages');
-   for(let n=1;n<=pdf.numPages;n++){const b=document.createElement('button'),c=document.createElement('canvas');b.type='button';b.dataset.page=n;b.setAttribute('aria-label','Page '+n);b.append(c);const label=document.createElement('span');label.textContent=n;b.append(label);b.onclick=()=>show(n,Math.sign(n-page));thumbs.append(b);}
+   if(thumbs)for(let n=1;n<=pdf.numPages;n++){const b=document.createElement('button'),c=document.createElement('canvas');b.type='button';b.dataset.page=n;b.setAttribute('aria-label','Page '+n);b.append(c);const label=document.createElement('span');label.textContent=n;b.append(label);b.onclick=()=>show(n,Math.sign(n-page));thumbs.append(b);}
    await show(1);
-   for(const b of thumbs.querySelectorAll('button')){try{await draw(b.querySelector('canvas'),Number(b.dataset.page),145)}catch(e){}}
+   if(thumbs)for(const b of thumbs.querySelectorAll('button')){try{await draw(b.querySelector('canvas'),Number(b.dataset.page),145)}catch(e){}}
  }).catch(fail);
 });
 });

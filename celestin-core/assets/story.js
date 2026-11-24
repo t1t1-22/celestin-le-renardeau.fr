@@ -19,3 +19,5 @@ document.addEventListener('DOMContentLoaded',function(){
  audio.addEventListener('play',update);
  audio.addEventListener('ended',function(){sentences.forEach(s=>s.classList.remove('is-current'));active=-1});
 });
+
+document.addEventListener('DOMContentLoaded',()=>{const players=Array.from(document.querySelectorAll('[data-cel-story-audio],[data-cel-story-preview]'));players.forEach(audio=>audio.addEventListener('play',()=>players.forEach(other=>{if(other!==audio)other.pause()})));});

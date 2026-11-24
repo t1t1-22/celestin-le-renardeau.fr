@@ -239,6 +239,18 @@ body.cel-page .cel-identity-deck .cel-identity-controls button:hover{background:
  .cel-identity-stack.cel-deck-turning:hover>.cel-identity-card:nth-child(3){transform:translate(17px,17px) rotate(4.5deg)}
 }
 .cel-character-intro{color:#80532b;font-size:15px;line-height:1.5;margin:0 0 12px}
+
+.cel-play-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;padding:12px 6px 8px}
+.cel-play-grid.cel-play-single{grid-template-columns:minmax(0,280px);justify-content:center}
+.cel-play-card{display:block;min-width:0;padding:8px;background:#fffdfa;border:1px solid #ead5bb;border-radius:15px;box-shadow:0 5px 14px #63361918;text-decoration:none;color:#633619;transition:transform .25s ease,box-shadow .25s ease}
+.cel-play-paper{position:relative;aspect-ratio:1/1;border-radius:9px;overflow:hidden;background:#f5e6d3}
+.cel-play-paper img{width:100%;height:100%;object-fit:contain;display:block}
+.cel-play-tag{position:absolute;top:8px;left:8px;background:#fffaf0;color:#925222;border-radius:20px;padding:3px 9px;font-size:11px;font-weight:700}
+.cel-play-caption{display:flex;align-items:center;justify-content:space-between;gap:7px;padding:9px 4px 3px}
+.cel-play-caption h3{font:700 17px/1.2 'Baloo 2',sans-serif;margin:0;color:#633619}
+.cel-play-arrow{font-size:20px;color:#a76129}
+.cel-play-all{display:block;text-align:center;color:#a76129;font-weight:700;font-size:14px;margin:14px 0 4px;text-decoration:none}
+@media(hover:hover) and (prefers-reduced-motion:no-preference){.cel-play-card:hover{transform:translateY(-4px) rotate(-1deg);box-shadow:0 9px 20px #63361928}}
 </style>
 
 </head>
@@ -418,20 +430,6 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
  <svg class="cel-audio-wave" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0 32Q360 -12 720 32T1440 15V60H0Z" fill="#fcf7ef"/></svg>
 </section>
 <?php endif; ?>
-<?php if($activity): ?>
-<section class="cel-section cel-home-activity" aria-labelledby="cel-activity-title">
- <h2 id="cel-activity-title" class="cel-section-title"><span>✦</span> Mes petites activités <span>✦</span></h2>
- <div class="cel-featured-activity">
-  <a href="<?php echo esc_url(get_permalink($activity)); ?>" class="cel-featured-activity-image">
-   <?php if(has_post_thumbnail($activity)): echo get_the_post_thumbnail($activity->ID,'medium_large'); else: ?><div class="cel-illustration-placeholder"><span>✎</span><span>Illustration à ajouter</span></div><?php endif; ?>
-  </a>
-  <div><h3><?php echo esc_html($activity->post_title); ?></h3>
-   <p><?php echo esc_html(Celestin_Fields::value($activity->ID,'resume')); ?></p>
-   <a class="cel-button cel-primary" href="<?php echo esc_url(get_permalink($activity)); ?>">Découvrir cette activité →</a>
-  </div>
- </div>
-</section>
-<?php endif; ?>
 <div class="cel-two-columns">
  <section class="cel-info-panel" aria-labelledby="cel-character-title">
    <h2 id="cel-character-title" class="cel-section-title small">Rencontre nos personnages</h2><p class="cel-character-intro">Fais connaissance avec les habitants de Fleuriville, découvre leurs petites habitudes, leurs secrets et les liens qui les unissent.</p>
@@ -459,23 +457,24 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
    <?php else: ?><p class="cel-home-empty">Les personnages seront bientôt à découvrir.</p><?php endif; ?>
    
  </section>
- <section class="cel-info-panel" aria-labelledby="cel-city-title">
-   <h2 id="cel-city-title" class="cel-section-title small">Fleuriville</h2>
-   <?php if($places): ?>
-   <div class="cel-city-wrap">
-     <div class="cel-city-image">
-       <?php if($city && has_post_thumbnail($city)): ?><a href="<?php echo esc_url(get_permalink($city)); ?>"><?php echo get_the_post_thumbnail($city->ID,'medium_large'); ?></a>
-       <?php else: ?><div class="cel-illustration-placeholder"><span aria-hidden="true">⌂</span><span>Illustration du lieu à ajouter</span></div><?php endif; ?>
-     </div>
-     <div><h3>Découvre les lieux de Fleuriville</h3>
-       <?php if($city): ?><p><?php echo esc_html(wp_trim_words(Celestin_Fields::value($city->ID,'resume'),23,'…')); ?></p><?php endif; ?>
-       <?php foreach($places as $place): ?>
-       <a class="cel-city-link" href="<?php echo esc_url(get_permalink($place)); ?>">⌂ <?php echo esc_html($place->post_title); ?> →</a>
-       <?php endforeach; ?>
-       <a class="cel-text-link" href="<?php echo esc_url(Celestin_Home::url('cel_lieu')); ?>">Tous les lieux →</a>
-     </div>
+ <section class="cel-info-panel cel-play-panel" aria-labelledby="cel-play-title">
+   <h2 id="cel-play-title" class="cel-section-title small">À toi de jouer !</h2>
+   <p class="cel-character-intro">Sors tes crayons et laisse parler ton imagination avec les petites activités de Célestin.</p>
+   <?php $activities=Celestin_Home::featured('cel_coloriage',4); ?>
+   <?php if($activities): ?>
+   <div class="cel-play-grid<?php echo count($activities)===1?' cel-play-single':''; ?>">
+   <?php foreach($activities as $act): $kind=Celestin_Fields::value($act->ID,'type'); ?>
+    <a class="cel-play-card" href="<?php echo esc_url(get_permalink($act)); ?>">
+      <div class="cel-play-paper">
+        <?php echo Celestin_Public::illustration($act->ID,'medium_large'); ?>
+        <?php if($kind): ?><span class="cel-play-tag"><?php echo esc_html($kind); ?></span><?php endif; ?>
+      </div>
+      <div class="cel-play-caption"><h3><?php echo esc_html($act->post_title); ?></h3><span class="cel-play-arrow" aria-hidden="true">→</span></div>
+    </a>
+   <?php endforeach; ?>
    </div>
-   <?php else: ?><p class="cel-home-empty">Sélectionne les lieux de Fleuriville à afficher ici.</p><?php endif; ?>
+   <a class="cel-play-all" href="<?php echo esc_url(Celestin_Home::url('cel_coloriage')); ?>">Toutes les activités →</a>
+   <?php else: ?><p class="cel-home-empty">De nouvelles activités arrivent bientôt !</p><?php endif; ?>
  </section>
 </div>
 <section class="cel-welcome" aria-labelledby="cel-welcome-title">

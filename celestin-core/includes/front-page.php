@@ -104,9 +104,9 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
  ?>
  <div class="cel-books-layout">
    <div class="cel-book-preview">
-     <?php $pdf=Celestin_Fields::value($book->ID,'pdf'); if($pdf): Celestin_Public::reader($pdf,true); else: ?>
-     <a href="<?php echo esc_url(get_permalink($book)); ?>"><?php echo Celestin_Public::illustration($book->ID); ?></a>
-     <?php endif; ?>
+     <a class="cel-home-cover-card" href="<?php echo esc_url(get_permalink($book)); ?>" aria-label="<?php echo esc_attr('Découvrir '.$book->post_title); ?>">
+     <?php echo Celestin_Public::illustration($book->ID,'large'); ?>
+     </a>
    </div>
    <div class="cel-book-description">
     <h3><a href="<?php echo esc_url(get_permalink($book)); ?>"><?php echo esc_html($book->post_title); ?></a></h3>

@@ -255,3 +255,14 @@ body.cel-page,body.cel-page .cel-site{background:#fcf7ef!important}
 .cel-news-band .cel-news{background:transparent;margin-bottom:0}
 .cel-news-band .cel-news.cel-news-has-items{margin-top:-48px}
 @media(max-width:720px){.cel-news-band .cel-news.cel-news-has-items{margin-top:-24px}.cel-news-band{padding-bottom:14px}}
+
+/* Nouveautés : véritable section pleine largeur, cartes plus présentes. */
+body.cel-page .cel-site .cel-news-band{background:#fce5ce!important;width:100%;max-width:none;margin:0;padding:0;display:flow-root}
+body.cel-page .cel-news-band .cel-news{width:min(1320px,94%);max-width:none;background:transparent!important;padding:0;margin-bottom:0}
+body.cel-page .cel-news-band .cel-news.cel-news-has-items{margin-top:-55px}
+.cel-news-band .cel-news-track{gap:22px;padding:16px 16px 26px}
+.cel-news-band .cel-news-track .cel-news-card{flex:0 0 calc((100% - 88px)/5);max-width:245px}
+.cel-news-wave{display:block;width:100%;height:clamp(22px,3vw,55px)}
+@media(max-width:1050px){.cel-news-band .cel-news-track .cel-news-card{flex-basis:calc((100% - 66px)/4)}}
+@media(max-width:720px){body.cel-page .cel-news-band .cel-news.cel-news-has-items{margin-top:-25px}.cel-news-band .cel-news-track{gap:12px;padding:12px 12px 20px}.cel-news-band .cel-news-track .cel-news-card{flex-basis:calc((100% - 24px)/3)}}
+@media(max-width:480px){.cel-news-band .cel-news-track .cel-news-card{flex-basis:calc((100% - 12px)/2)}}

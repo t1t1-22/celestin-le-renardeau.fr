@@ -399,3 +399,9 @@ body .cel-town-dropdown summary::after{content:"";width:7px;height:7px;border-ri
 body .cel-town-dropdown[open] summary::after{transform:rotate(225deg)}
 body .cel-contact-bar .cel-social-links a{display:grid;place-items:center;width:26px;height:26px;background:#fff7ea;color:#633619;border-radius:50%}
 body .cel-contact-bar .cel-social-links a:hover{background:#633619;color:#fff}
+
+/* Silhouette haute et organique, fidèle au dessin du renardeau. */
+body.cel-page .cel-audio-feature .cel-audio-fox-ears{height:clamp(105px,12vw,205px);width:100%}
+body.cel-page .cel-audio-feature .cel-section-title,body.cel-page .cel-audio-feature .cel-audio-intro{color:#fff!important}
+body.cel-page .cel-audio-feature .cel-audio-cta>.cel-audio-all:hover,body.cel-page .cel-audio-feature .cel-audio-cta>.cel-audio-all:focus-visible{background:#633619!important;color:#fff!important;border-color:#fff;box-shadow:0 5px 14px #63361955}
+@media(max-width:600px){body.cel-page .cel-audio-feature .cel-audio-fox-ears{height:100px}}

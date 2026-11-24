@@ -25,12 +25,7 @@ $links=[
 <?php wp_body_open(); ?>
 <a class="cel-skip" href="#cel-main">Aller au contenu</a>
 <div class="cel-site">
-<header class="cel-header">
-  <a class="cel-logo" href="<?php echo esc_url(home_url('/')); ?>" aria-label="Accueil — Célestin le renardeau">
-  <?php if(Celestin_Home::image('logo')) echo '<img src="'.esc_url(Celestin_Home::image('logo')).'" alt="Célestin le renardeau">'; else echo '<span class="cel-script">Célestin<small>le renardeau</small></span>'; ?>
-  </a>
-  <a class="cel-button cel-header-cta" href="#cel-decouvrir">Rejoins l’aventure ! <span aria-hidden="true">→</span></a>
-</header>
+<?php require __DIR__.'/interior-header.php'; ?>
 <main id="cel-main">
 <?php
 $hero_below=($options['hero_text_location']??'overlay')==='below';
@@ -47,7 +42,6 @@ $hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_si
  <?php if($options['hero_button']): ?><a class="cel-button cel-primary" href="<?php echo esc_url($options['hero_link']?:'#cel-decouvrir'); ?>"><?php echo esc_html($options['hero_button']); ?> <span aria-hidden="true">→</span></a><?php endif; ?>
  </div>
 </section>
-<?php require __DIR__.'/navigation.php'; ?>
 <section id="cel-decouvrir" class="cel-section cel-news" aria-labelledby="cel-news-h">
   <h2 id="cel-news-h" class="cel-section-title"><span>✦</span> Les nouveautés <span>✦</span></h2>
   <?php if($news): ?>

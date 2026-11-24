@@ -29,8 +29,10 @@ body .cel-interior-header .cel-town-trigger:hover,body .cel-interior-header .cel
 body .cel-interior-header .cel-town-submenu{position:absolute;top:100%;left:0;min-width:190px;background:#fffdfa;border:1px solid #ead5bb;padding:6px;border-radius:12px;box-shadow:0 8px 22px #63361922;z-index:1001}
 body .cel-interior-header .cel-town-submenu[hidden]{display:none!important}
 body .cel-interior-header .cel-town-submenu a{display:block!important;padding:10px!important;border-radius:8px;color:#633619!important}
-body .cel-interior-header .cel-town-submenu a:hover,body .cel-interior-header .cel-town-submenu a:focus-visible{background:#f6e1c9!important;color:#633619!important}
+body .cel-interior-header .cel-town-submenu a:hover,body .cel-interior-header .cel-town-submenu a:focus-visible{background:#e98932!important;color:#fff!important;text-decoration:none!important}
 @media(max-width:600px){body .cel-interior-header .cel-town-trigger{font-size:13px;padding:6px}body .cel-interior-header .cel-town-submenu{position:fixed;left:auto;right:16px;top:var(--cel-town-top,140px)}}
+body .cel-interior-header nav.cel-nav a,body .cel-interior-header .cel-town-trigger{text-decoration:none!important}
+body .cel-interior-header nav.cel-nav a:hover,body .cel-interior-header nav.cel-nav a:hover span,body .cel-interior-header .cel-town-trigger:hover,body .cel-interior-header .cel-town-trigger:hover span{color:#fff!important;text-decoration:none!important}
 </style>
 <script>
 (function(){

@@ -18,13 +18,13 @@ final class Celestin_Public {
     }
     static function assets(): void {
         if(!is_front_page() && !is_singular(self::TYPES) && !is_post_type_archive(self::TYPES) && !is_tax(array_values(Celestin_Library::TAX)))return;
-        wp_enqueue_style('celestin-home',plugins_url('../assets/home.css',__FILE__),[],'0.4.49');
-        wp_enqueue_style('cel-content',plugins_url('../assets/content.css',__FILE__),['celestin-home'],'0.4.49');
+        wp_enqueue_style('celestin-home',plugins_url('../assets/home.css',__FILE__),[],'0.4.50');
+        wp_enqueue_style('cel-content',plugins_url('../assets/content.css',__FILE__),['celestin-home'],'0.4.50');
         if(is_front_page()||is_singular('cel_livre')){
             wp_enqueue_script('cel-pdfjs','https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',[],'3.11.174',true);
-            wp_enqueue_script('cel-reader',plugins_url('../assets/reader.js',__FILE__),['cel-pdfjs'],'0.4.49',true);
+            wp_enqueue_script('cel-reader',plugins_url('../assets/reader.js',__FILE__),['cel-pdfjs'],'0.4.50',true);
         }
-        if(is_singular('cel_histoire'))wp_enqueue_script('cel-story',plugins_url('../assets/story.js',__FILE__),[],'0.4.49',true);
+        if(is_singular('cel_histoire'))wp_enqueue_script('cel-story',plugins_url('../assets/story.js',__FILE__),[],'0.4.50',true);
     }
     static function title(string $type): string {
         return ['cel_personnage'=>'Les personnages','cel_livre'=>'Les livres','cel_histoire'=>'Mini-histoires audio','cel_coloriage'=>'Mes petites activités','cel_lieu'=>'Les lieux de Fleuriville'][$type]??'Découvertes';

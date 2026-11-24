@@ -211,6 +211,10 @@ body.cel-page .cel-identity-deck .cel-identity-controls button{width:28px;height
 body.cel-page .cel-identity-deck .cel-identity-controls button svg{width:15px;height:15px}
 body.cel-page .cel-identity-deck .cel-identity-controls button:hover{background:#e98932;color:#fff;border-color:#e98932}
 .cel-deck-position{font-size:11px;font-weight:600;color:#a76129}
+
+.cel-identity-photo-column{min-width:0}
+.cel-identity-location{display:flex;align-items:center;justify-content:center;gap:4px;margin-top:7px;color:#a76129;font-size:12px;line-height:1.4;font-weight:600}
+.cel-identity-location svg{flex:none}
 </style>
 
 </head>
@@ -415,7 +419,7 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
     <?php foreach($characters as $index=>$person): ?>
      <article class="cel-identity-card" <?php if($index)echo 'inert aria-hidden="true"'; ?>>
       <div class="cel-identity-top"><span>CARTE D’IDENTITÉ</span><span>FLEURIVILLE</span></div>
-      <div class="cel-identity-body"><div class="cel-identity-portrait"><?php echo Celestin_Public::illustration($person->ID,'medium_large'); ?></div>
+      <div class="cel-identity-body"><div class="cel-identity-photo-column"><div class="cel-identity-portrait"><?php echo Celestin_Public::illustration($person->ID,'medium_large'); ?></div><div class="cel-identity-location"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg><span>Fleuriville</span></div></div>
       <div class="cel-identity-info">
       <?php $name=trim(Celestin_Fields::value($person->ID,'prenom').' '.Celestin_Fields::value($person->ID,'nom')); $birthday=Celestin_Fields::value($person->ID,'anniversaire');$age=Celestin_Fields::value($person->ID,'age'); ?>
       <h3><?php echo esc_html($name?:get_the_title($person)); ?></h3>

@@ -62,13 +62,13 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
          </a>
          <span class="cel-card-type cel-news-badge">Nouveauté</span>
          <?php if($preview): ?>
-         <audio preload="none" src="<?php echo esc_url($preview); ?>"></audio>
+         <audio preload="metadata" src="<?php echo esc_url($preview); ?>"></audio>
          <button type="button" class="cel-audio-toggle" aria-label="<?php echo esc_attr('Écouter '.$title); ?>" data-title="<?php echo esc_attr($title); ?>" aria-pressed="false">
          <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="30" fill="#fffaf3"/><circle cx="32" cy="32" r="26" fill="none" stroke="#e9d3bb" stroke-width="4"/><circle class="cel-audio-ring" cx="32" cy="32" r="26" fill="none" stroke="#e98932" stroke-width="4" pathLength="100" stroke-dasharray="0 100" stroke-linecap="round" transform="rotate(-90 32 32)"/><path class="cel-audio-play" d="M25 20L44 32L25 44Z" fill="#a45b2c"/><rect class="cel-audio-stop" x="23" y="23" width="18" height="18" rx="3" fill="#a45b2c"/></svg>
          </button><span class="cel-audio-error" role="status" hidden>Audio indisponible.</span>
          <?php endif; ?>
         </div>
-        <div class="cel-card-body"><span class="cel-news-kind"><?php echo esc_html($kind); ?></span><h3><a href="<?php echo esc_url(get_permalink($item)); ?>"><?php echo esc_html($title); ?></a></h3></div>
+        <div class="cel-card-body"><span class="cel-news-kind"><?php echo esc_html($kind); ?></span><?php if($preview): ?><div class="cel-feature-audio-progress"><input type="range" min="0" max="1000" value="0" aria-label="Progression audio" disabled><div class="cel-feature-audio-times"><span class="cel-time-current">0:00</span><span class="cel-time-total">--:--</span></div></div><?php elseif($item->post_type==='cel_histoire'): ?><span>Audio bientôt disponible</span><?php else: ?><h3><a href="<?php echo esc_url(get_permalink($item)); ?>"><?php echo esc_html($title); ?></a></h3><?php endif; ?></div>
       </article>
  <div class="cel-feature-copy"><p class="cel-feature-kicker"><?php echo esc_html($kind); ?> · Nouveauté</p><h2><?php echo esc_html($title); ?></h2>
  <?php if($summary): ?><p class="cel-feature-summary"><?php echo esc_html(wp_trim_words(wp_strip_all_tags($summary),65,'…')); ?></p><?php endif; ?>
@@ -93,6 +93,30 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
 
 <?php endif; ?>
 
+<section class="cel-section cel-books" aria-labelledby="cel-book-title">
+ <h2 id="cel-book-title" class="cel-section-title"><span>✦</span> Les livres <span>✦</span></h2>
+ <?php if($book):
+   $book_image=get_the_post_thumbnail_url($book->ID,'large');
+   $book_resume=Celestin_Fields::value($book->ID,'resume');
+   $book_month=Celestin_Fields::value($book->ID,'mois');
+   $book_collection=Celestin_Fields::value($book->ID,'collection');
+   $book_activities=Celestin_Fields::linked($book->ID,'cel_coloriage');
+ ?>
+ <div class="cel-books-layout">
+   <div class="cel-book-preview">
+     <?php $pdf=Celestin_Fields::value($book->ID,'pdf'); if($pdf): Celestin_Public::reader($pdf,true); else: ?>
+     <a href="<?php echo esc_url(get_permalink($book)); ?>"><?php echo Celestin_Public::illustration($book->ID); ?></a>
+     <?php endif; ?>
+   </div>
+   <div class="cel-book-description">
+    <h3><a href="<?php echo esc_url(get_permalink($book)); ?>"><?php echo esc_html($book->post_title); ?></a></h3>
+    <?php if($book_resume): ?><div class="cel-home-book-summary"><?php echo wpautop(esc_html($book_resume)); ?></div><?php endif; ?>
+    <div class="cel-chips"><?php foreach(['categorie','collection','mois','saison','age_lecture','evenement'] as $key): $value=Celestin_Fields::value($book->ID,$key); if($value): ?><span><?php echo esc_html($value); ?></span><?php endif; endforeach; ?></div>
+    <a class="cel-button cel-primary cel-home-book-all" href="<?php echo esc_url(Celestin_Home::url('cel_livre')); ?>">Découvrir tous les livres →</a>
+   </div>
+ </div>
+ <?php else: ?><p class="cel-home-empty">Sélectionne un livre depuis sa fiche WordPress pour l’afficher ici.</p><?php endif; ?>
+</section>
 <?php if($stories): ?>
 <section class="cel-story-section cel-audio-feature" aria-labelledby="cel-story-title"><div aria-hidden="true" class="cel-fox-divider" style="position:absolute;bottom:calc(100% - 2px);left:50%;transform:translateX(-50%);width:min(52vw,800px);aspect-ratio:4/1;z-index:20;pointer-events:none;background:#e98932;"></div>
 
@@ -126,30 +150,6 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
  <svg class="cel-audio-wave" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0 32Q360 -12 720 32T1440 15V60H0Z" fill="#fcf7ef"/></svg>
 </section>
 <?php endif; ?>
-<section class="cel-section cel-books" aria-labelledby="cel-book-title">
- <h2 id="cel-book-title" class="cel-section-title"><span>✦</span> Les livres <span>✦</span></h2>
- <?php if($book):
-   $book_image=get_the_post_thumbnail_url($book->ID,'large');
-   $book_resume=Celestin_Fields::value($book->ID,'resume');
-   $book_month=Celestin_Fields::value($book->ID,'mois');
-   $book_collection=Celestin_Fields::value($book->ID,'collection');
-   $book_activities=Celestin_Fields::linked($book->ID,'cel_coloriage');
- ?>
- <div class="cel-books-layout">
-   <div class="cel-book-preview">
-     <?php $pdf=Celestin_Fields::value($book->ID,'pdf'); if($pdf): Celestin_Public::reader($pdf,true); else: ?>
-     <a href="<?php echo esc_url(get_permalink($book)); ?>"><?php echo Celestin_Public::illustration($book->ID); ?></a>
-     <?php endif; ?>
-   </div>
-   <div class="cel-book-description">
-    <h3><a href="<?php echo esc_url(get_permalink($book)); ?>"><?php echo esc_html($book->post_title); ?></a></h3>
-    <?php if($book_resume): ?><div class="cel-home-book-summary"><?php echo wpautop(esc_html($book_resume)); ?></div><?php endif; ?>
-    <div class="cel-chips"><?php foreach(['categorie','collection','mois','saison','age_lecture','evenement'] as $key): $value=Celestin_Fields::value($book->ID,$key); if($value): ?><span><?php echo esc_html($value); ?></span><?php endif; endforeach; ?></div>
-    <a class="cel-button cel-primary cel-home-book-all" href="<?php echo esc_url(Celestin_Home::url('cel_livre')); ?>">Découvrir tous les livres →</a>
-   </div>
- </div>
- <?php else: ?><p class="cel-home-empty">Sélectionne un livre depuis sa fiche WordPress pour l’afficher ici.</p><?php endif; ?>
-</section>
 <?php if($activity): ?>
 <section class="cel-section cel-home-activity" aria-labelledby="cel-activity-title">
  <h2 id="cel-activity-title" class="cel-section-title"><span>✦</span> Mes petites activités <span>✦</span></h2>

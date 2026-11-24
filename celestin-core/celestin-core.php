@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Célestin Core
  * Description: Gestion des contenus de l'univers Célestin le renardeau.
- * Version: 0.4.37
+ * Version: 0.4.38
  * Requires PHP: 8.0
  * Text Domain: celestin-core
  */
@@ -19,11 +19,73 @@ final class Celestin_Core {
 
     static function init(): void {
         add_action('init', [__CLASS__, 'register']);
+        add_action('admin_head-edit.php', [__CLASS__, 'story_cards_style']);
+        add_filter('manage_cel_histoire_posts_columns', [__CLASS__, 'story_columns']);
+        add_action('manage_cel_histoire_posts_custom_column', [__CLASS__, 'story_column'], 10, 2);
+        add_filter('post_row_actions', [__CLASS__, 'story_actions'], 10, 2);
+        add_action('admin_post_cel_duplicate_story', [__CLASS__, 'duplicate_story']);
         add_action('add_meta_boxes', [__CLASS__, 'meta_boxes']);
         add_action('save_post', [__CLASS__, 'save'], 10, 2);
         add_action('admin_menu', [__CLASS__, 'menu']);
         add_shortcode('celestin_nouveautes', [__CLASS__, 'news']);
         add_action('wp_enqueue_scripts', [__CLASS__, 'styles']);
+    }
+    static function story_columns($columns): array {
+        return ['cb'=>$columns['cb']??'<input type="checkbox">','cel_story_cover'=>'Illustration','title'=>'Mini-histoire','cel_story_info'=>'Informations','date'=>'Date'];
+    }
+    static function story_column($column,$id): void {
+        if($column==='cel_story_cover'){echo has_post_thumbnail($id)?get_the_post_thumbnail($id,'medium_large',['class'=>'cel-list-cover','loading'=>'lazy']):'<div class="cel-list-cover"></div>';return;}
+        if($column!=='cel_story_info')return;
+        $terms=wp_get_post_terms($id,'cel_collection',['fields'=>'names']);
+        if(!is_wp_error($terms))foreach($terms as $term)echo '<span class="cel-list-tag">'.esc_html($term).'</span> ';
+        echo '<p>'.(Celestin_Fields::value($id,'audio')?'✓ Narration audio':'Narration à ajouter').'</p>';
+        echo '<p>'.(Celestin_Fields::value($id,'resume_audio')?'✓ Résumé audio':'Résumé audio à ajouter').'</p>';
+    }
+    static function story_actions($actions,$post): array {
+        if($post->post_type!=='cel_histoire')return $actions;
+        if(current_user_can('edit_post',$post->ID)){
+            $url=wp_nonce_url(admin_url('admin-post.php?action=cel_duplicate_story&post='.$post->ID),'cel_duplicate_story_'.$post->ID);
+            $actions['cel_duplicate']='<a href="'.esc_url($url).'">Dupliquer</a>';
+        }
+        return $actions;
+    }
+    static function duplicate_story(): void {
+        $id=absint($_GET['post']??0);$p=get_post($id);
+        if(!$p||$p->post_type!=='cel_histoire'||!current_user_can('edit_post',$id)||!current_user_can(get_post_type_object('cel_histoire')->cap->create_posts))wp_die('Accès refusé.');
+        check_admin_referer('cel_duplicate_story_'.$id);
+        $copy=wp_insert_post(wp_slash(['post_type'=>'cel_histoire','post_status'=>'draft','post_title'=>$p->post_title.' (copie)','post_content'=>$p->post_content,'post_excerpt'=>$p->post_excerpt,'post_author'=>get_current_user_id()]),true);
+        if(is_wp_error($copy)||!$copy)wp_die('Impossible de dupliquer la fiche.');
+        foreach(get_post_meta($id) as $key=>$values){
+            if(!str_starts_with($key,'_cel_f_')&&!str_starts_with($key,'_cel_section_image_')&&!in_array($key,['_thumbnail_id','_cel_relations','_cel_story_mp3'],true))continue;
+            foreach($values as $value)add_post_meta($copy,$key,wp_slash(maybe_unserialize($value)));
+        }
+        foreach(get_object_taxonomies('cel_histoire') as $tax){
+            $ids=wp_get_object_terms($id,$tax,['fields'=>'ids']);
+            if(!is_wp_error($ids))wp_set_object_terms($copy,array_map('intval',$ids),$tax);
+        }
+        wp_safe_redirect(admin_url('post.php?post='.$copy.'&action=edit'));exit;
+    }
+    static function story_cards_style(): void {
+        $screen=get_current_screen();if(!$screen||$screen->post_type!=='cel_histoire')return;
+        echo '<style>
+        body.post-type-cel_histoire #wpbody-content .wrap{color:#633619}
+        body.post-type-cel_histoire .wp-list-table{display:block;background:transparent;border:0;box-shadow:none}
+        body.post-type-cel_histoire .wp-list-table thead,body.post-type-cel_histoire .wp-list-table tfoot{display:none}
+        body.post-type-cel_histoire .wp-list-table tbody{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:20px;padding:16px 0}
+        body.post-type-cel_histoire .wp-list-table tbody tr{display:flex;flex-direction:column;position:relative;background:#fffdfa;border:1px solid #ead5bb;border-radius:15px;padding:14px;box-shadow:0 3px 12px #6336190c}
+        body.post-type-cel_histoire .wp-list-table tbody td,body.post-type-cel_histoire .wp-list-table tbody th{display:block;width:auto!important;padding:5px 0;border:0}
+        body.post-type-cel_histoire .wp-list-table .check-column{position:absolute;top:20px;left:20px;z-index:2;padding:0}
+        body.post-type-cel_histoire .wp-list-table .check-column input{margin:0}
+        body.post-type-cel_histoire .wp-list-table .row-title{font-size:17px;color:#633619}
+        body.post-type-cel_histoire .wp-list-table .row-actions{position:static;display:flex;flex-wrap:wrap;gap:5px;padding:8px 0}
+        body.post-type-cel_histoire .wp-list-table .row-actions a{display:inline-block;border:1px solid #ead5bb;border-radius:6px;padding:4px 8px;color:#633619;text-decoration:none;background:#fff7eb}
+        body.post-type-cel_histoire .wp-list-table .row-actions .cel_duplicate a{background:#e98932;color:#fff;border-color:#e98932}
+        body.post-type-cel_histoire .cel-list-cover{width:100%;aspect-ratio:1;object-fit:contain;background:#f6e0d3;border-radius:10px;margin-bottom:10px}
+        body.post-type-cel_histoire .cel-list-tag{display:inline-block;background:#f6e0d3;padding:3px 8px;border-radius:20px;margin:2px}
+        body.post-type-cel_histoire .column-cel_story_info p{margin:4px 0;font-size:12px}
+        body.post-type-cel_histoire .column-date{font-size:12px;color:#80532b}
+        body.post-type-cel_histoire .toggle-row{display:none}
+        </style>';
     }
     static function register(): void {
         foreach (self::TYPES as $type => $config) {

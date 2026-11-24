@@ -1,5 +1,5 @@
 <?php if(!defined('ABSPATH'))exit;
-$type=get_query_var('post_type');if(is_array($type))$type=reset($type);
+$type=is_tax(array_values(Celestin_Library::TAX))?'cel_livre':get_query_var('post_type');if(is_array($type))$type=reset($type);
 $heading=Celestin_Public::title((string)$type);
 ?><!DOCTYPE html><html <?php language_attributes(); ?>><head><meta charset="<?php bloginfo('charset'); ?>"><meta name="viewport" content="width=device-width,initial-scale=1"><?php wp_head(); ?></head>
 <body <?php body_class('cel-content-page'); ?>><?php wp_body_open(); ?>

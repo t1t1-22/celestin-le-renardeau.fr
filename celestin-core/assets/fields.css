@@ -100,3 +100,5 @@ body.cel-book-custom-editor #wpcontent{background:#fcf7ef}
 .cel-tax-dialog .cel-tax-add{background:#d97927!important;color:white!important;border-color:#c56a20!important;border-radius:8px}
 
 .cel-tax-details .cel-tax-add{display:block;width:100%;text-align:left;white-space:normal;height:auto;padding:9px 12px;margin:8px 0 0;background:#fff0dc!important;border:1px dashed #dca36d!important;color:#8a471c!important;border-radius:8px!important;font-weight:600}.cel-tax-details .cel-tax-add[hidden]{display:none!important}.cel-tax-details .cel-tax-add:hover{background:#ffe2b9!important}
+
+.cel-activity-type-picker select{flex:1;min-width:0;width:100%;max-width:none;border:1px solid #d2c2b1;border-radius:8px;padding:9px 12px;background:#fffdfa;color:#633619}.cel-activity-type-open{font-size:22px!important;min-width:40px;background:#e98932!important;color:white!important;border-color:#d47b29!important}.cel-activity-type-create{margin-top:10px}.cel-activity-type-create[hidden]{display:none!important}.cel-activity-type-status{color:#80532b;margin:6px 0 0;font-size:12px}

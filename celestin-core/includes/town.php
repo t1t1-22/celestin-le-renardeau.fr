@@ -30,13 +30,13 @@ final class Celestin_Town {
   wp_safe_redirect(admin_url('admin.php?page=cel-town&updated=1'));exit;
  }
  static function boxes(){
-  add_meta_box('cel_character_album','Album photo du personnage',[__CLASS__,'album_box'],'cel_personnage','normal','default');
+
   add_meta_box('cel_place_position','Position sur la carte de Fleuriville',[__CLASS__,'position_box'],'cel_lieu','normal','default');
  }
  static function album($id){$a=get_post_meta($id,'_cel_character_album',true);return is_array($a)?$a:[];}
  static function album_box($p){
   wp_enqueue_media();wp_nonce_field('cel_album_save','cel_album_nonce');
-  echo '<p>Ajoute autant de photos que tu le souhaites, avec un titre et une description.</p><div id="cel-album-rows">';
+  echo '<p>Ajoute autant de photos que tu le souhaites, avec un titre, une description, des thèmes et des événements. Les photos apparaissent aussi dans la galerie de Fleuriville.</p><div id="cel-album-rows">';
   foreach(self::album($p->ID) as $i=>$a)self::album_row($i,$a);
   echo '</div><button type="button" class="button button-primary" id="cel-album-add">+ Ajouter une photo</button><template id="cel-album-template">';
   self::album_row('INDEX',[]);echo '</template>';
@@ -46,7 +46,12 @@ final class Celestin_Town {
  }
  static function album_row($i,$a){
   $id=absint($a['image']??0);$n='cel_album['.$i.']';
-  ?><div class="cel-album-row" style="display:grid;grid-template-columns:120px 1fr;gap:15px;padding:14px;border:1px solid #ead5bb;border-radius:10px;margin-bottom:12px;background:#fffaf4"><div><img style="width:100%;aspect-ratio:1;object-fit:contain" src="<?php echo esc_url($id?wp_get_attachment_image_url($id,'thumbnail'):''); ?>" <?php if(!$id)echo 'hidden'; ?>><input type="hidden" name="<?php echo esc_attr($n.'[image]'); ?>" value="<?php echo $id; ?>"><button type="button" class="button cel-album-pick">Choisir l’image</button></div><div><label>Nom de la photo<input class="widefat" name="<?php echo esc_attr($n.'[title]'); ?>" value="<?php echo esc_attr($a['title']??''); ?>"></label><p><label>Description<textarea class="widefat" rows="3" name="<?php echo esc_attr($n.'[description]'); ?>"><?php echo esc_textarea($a['description']??''); ?></textarea></label></p><button type="button" class="button cel-album-remove">Retirer</button></div></div><?php
+  ?><div class="cel-album-row" style="display:grid;grid-template-columns:120px 1fr;gap:15px;padding:14px;border:1px solid #ead5bb;border-radius:10px;margin-bottom:12px;background:#fffaf4"><div><img style="width:100%;aspect-ratio:1;object-fit:contain" src="<?php echo esc_url($id?wp_get_attachment_image_url($id,'thumbnail'):''); ?>" <?php if(!$id)echo 'hidden'; ?>><input type="hidden" name="<?php echo esc_attr($n.'[image]'); ?>" value="<?php echo $id; ?>"><button type="button" class="button cel-album-pick">Choisir l’image</button></div><div><label>Nom de la photo<input class="widefat" name="<?php echo esc_attr($n.'[title]'); ?>" value="<?php echo esc_attr($a['title']??''); ?>"></label><p><label>Description<textarea class="widefat" rows="3" name="<?php echo esc_attr($n.'[description]'); ?>"><?php echo esc_textarea($a['description']??''); ?></textarea></label></p><?php foreach(['categorie'=>'Thèmes','saison'=>'Saisons','mois'=>'Mois','evenement'=>'Événements'] as $key=>$label):
+    $terms=get_terms(['taxonomy'=>Celestin_Library::TAX[$key],'hide_empty'=>false]);$selected=array_map('absint',(array)($a[$key]??[]));
+    echo '<details style="margin:8px 0"><summary><strong>'.esc_html($label).'</strong></summary><div style="display:flex;gap:10px;flex-wrap:wrap;padding:8px 0">';
+    if(!is_wp_error($terms))foreach($terms as $term)echo '<label><input type="checkbox" name="'.esc_attr($n.'['.$key.'][]').'" value="'.(int)$term->term_id.'"'.checked(in_array((int)$term->term_id,$selected,true),true,false).'> '.esc_html($term->name).'</label>';
+    echo '</div></details>';
+  endforeach; ?><p><a href="<?php echo esc_url(admin_url('edit-tags.php?taxonomy='.Celestin_Library::TAX['categorie'].'&post_type=cel_livre')); ?>" target="_blank" rel="noopener">Gérer les thèmes existants ou en créer</a></p><button type="button" class="button cel-album-remove">Retirer</button></div></div><?php
  }
  static function position_box($p){
   wp_nonce_field('cel_position_save','cel_position_nonce');
@@ -59,20 +64,30 @@ final class Celestin_Town {
  static function save($id,$p){
   if(wp_is_post_revision($id)||wp_is_post_autosave($id)||!current_user_can('edit_post',$id))return;
   if($p->post_type==='cel_personnage'&&isset($_POST['cel_album_nonce'])&&wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['cel_album_nonce'])),'cel_album_save')){
-   $out=[];foreach((array)wp_unslash($_POST['cel_album']??[]) as $a){$im=absint($a['image']??0);if($im&&wp_attachment_is_image($im))$out[]=['image'=>$im,'title'=>sanitize_text_field($a['title']??''),'description'=>sanitize_textarea_field($a['description']??'')];}update_post_meta($id,'_cel_character_album',wp_slash($out));
+   $out=[];foreach((array)wp_unslash($_POST['cel_album']??[]) as $a){$im=absint($a['image']??0);if($im&&wp_attachment_is_image($im)){$row=['image'=>$im,'title'=>sanitize_text_field($a['title']??''),'description'=>sanitize_textarea_field($a['description']??'')];foreach(['categorie','saison','mois','evenement'] as $key)$row[$key]=array_values(array_unique(array_filter(array_map('absint',(array)($a[$key]??[])),fn($tid)=>$tid&&term_exists($tid,Celestin_Library::TAX[$key]))));$out[]=$row;}}update_post_meta($id,'_cel_character_album',wp_slash($out));
   }
   if($p->post_type==='cel_lieu'&&isset($_POST['cel_position_nonce'])&&wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['cel_position_nonce'])),'cel_position_save'))foreach(['x','y'] as $k){$v=$_POST['cel_pos_'.$k]??'';if(is_numeric($v))update_post_meta($id,'_cel_map_'.$k,max(0,min(100,(float)$v)));else delete_post_meta($id,'_cel_map_'.$k);}
  }
- static function photos($id){
+ static function photos($id,$filters=[]){
   foreach(self::album($id) as $a){
+   foreach($filters as $key=>$term)if($term&&!in_array($term,array_map('absint',(array)($a[$key]??[])),true))continue 2;
    $url=wp_get_attachment_image_url($a['image'],'full');if(!$url)continue;
-   echo '<figure class="cel-town-photo"><a href="'.esc_url($url).'" target="_blank" rel="noopener">'.wp_get_attachment_image($a['image'],'medium_large',false,['loading'=>'lazy']).'</a><figcaption><strong>'.esc_html($a['title']).'</strong><p>'.nl2br(esc_html($a['description'])).'</p><a href="'.esc_url(get_permalink($id)).'">'.esc_html(get_the_title($id)).'</a></figcaption></figure>';
+   echo '<figure class="cel-town-photo"><a href="'.esc_url($url).'" target="_blank" rel="noopener">'.wp_get_attachment_image($a['image'],'medium_large',false,['loading'=>'lazy']).'</a><figcaption><strong>'.esc_html($a['title']).'</strong><p>'.nl2br(esc_html($a['description'])).'</p>'.self::photo_tags($a).'<a href="'.esc_url(get_permalink($id)).'">'.esc_html(get_the_title($id)).'</a></figcaption></figure>';
   }
  }
  static function character_album($id){if(!self::album($id))return;echo '<section class="cel-detail-section"><h2>Mon album photo</h2><div class="cel-town-gallery">';self::photos($id);echo '</div></section>';}
+ static function photo_tags($a){
+  $html='';foreach(['categorie','saison','mois','evenement'] as $key)foreach((array)($a[$key]??[]) as $tid){$term=get_term((int)$tid,Celestin_Library::TAX[$key]);if($term&&!is_wp_error($term))$html.='<span style="display:inline-block;background:#fff0df;color:#633619;border-radius:16px;padding:4px 9px;font-size:12px;margin:2px">'.esc_html($term->name).'</span>';}
+  return $html?'<div style="margin:6px 0">'.$html.'</div>':'';
+ }
  static function gallery(){
-  echo '<h1>La galerie photo de Fleuriville</h1><p>Les petits et grands souvenirs de nos habitants.</p><div class="cel-town-gallery">';
-  foreach(get_posts(['post_type'=>'cel_personnage','post_status'=>'publish','numberposts'=>-1]) as $p)self::photos($p->ID);
+  $filters=[];echo '<h1>La galerie photo de Fleuriville</h1><p>Les petits et grands souvenirs de nos habitants.</p><form method="get" style="display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin:18px 0"><input type="hidden" name="vue" value="galerie">';
+  foreach(['categorie'=>'Thème','saison'=>'Saison','mois'=>'Mois','evenement'=>'Événement'] as $key=>$label){
+   $filters[$key]=absint($_GET['photo_'.$key]??0);$terms=get_terms(['taxonomy'=>Celestin_Library::TAX[$key],'hide_empty'=>false]);echo '<label>'.esc_html($label).' <select name="photo_'.esc_attr($key).'"><option value="0">Tous</option>';
+   if(!is_wp_error($terms))foreach($terms as $term)echo '<option value="'.(int)$term->term_id.'"'.selected($filters[$key],$term->term_id,false).'>'.esc_html($term->name).'</option>';echo '</select></label>';
+  }
+  echo '<button type="submit">Filtrer</button></form><div class="cel-town-gallery">';
+  foreach(get_posts(['post_type'=>'cel_personnage','post_status'=>'publish','numberposts'=>-1]) as $p)self::photos($p->ID,$filters);
   echo '</div>';
  }
  static function town(){

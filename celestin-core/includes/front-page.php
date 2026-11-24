@@ -132,6 +132,25 @@ body.cel-page .cel-book-editorial .cel-book-more[open] summary{display:none}
 body.cel-page .cel-book-editorial .cel-book-more[open] .cel-book-full{display:block}
 body.cel-page .cel-book-editorial .cel-book-collapse{display:none;background:none;border:0;padding:0;color:#a75721;font:700 14px/1.5 Nunito,sans-serif;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 body.cel-page .cel-book-editorial .cel-book-more[open] .cel-book-collapse{display:inline-block}
+
+.cel-identity-deck{padding:12px 14px 8px;color:#633619}
+.cel-identity-stack{display:grid;position:relative;isolation:isolate;margin:0 10px 18px}
+.cel-identity-card{grid-area:1/1;position:relative;min-width:0;background:#fffaf0;border:1px solid #dfb584;border-radius:17px;box-shadow:0 7px 14px #63361921;overflow:hidden;opacity:0;pointer-events:none;transform:translate(0,0);z-index:0}
+.cel-identity-card:nth-child(1){opacity:1;pointer-events:auto;z-index:3}
+.cel-identity-card:nth-child(2){opacity:1;transform:translate(8px,8px) rotate(2deg);z-index:2}
+.cel-identity-card:nth-child(3){opacity:1;transform:translate(15px,15px) rotate(4deg);z-index:1}
+.cel-identity-top{background:#e98932;color:#633619;display:flex;justify-content:space-between;gap:8px;padding:10px 14px;font:800 11px/1.4 Nunito,sans-serif;letter-spacing:.06em}
+.cel-identity-body{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:14px;padding:15px;align-items:center}
+.cel-identity-portrait{background:#f5e6d3;border:1px solid #e8d0b5;border-radius:10px;aspect-ratio:3/4;overflow:hidden;display:grid;place-items:center}
+.cel-identity-portrait img{width:100%;height:100%;object-fit:contain}
+.cel-identity-body h3{font:700 25px/1.15 'Baloo 2',sans-serif;color:#633619;margin:0 0 9px}
+.cel-identity-body p{font-size:13px;margin:0 0 5px;line-height:1.4}
+.cel-identity-body p strong{display:block;font-size:10px;text-transform:uppercase;color:#a66a3c}
+.cel-identity-body a{font-size:13px;display:inline-block;margin-top:7px}
+.cel-identity-controls{display:flex;align-items:center;justify-content:center;gap:15px;margin:20px 0 8px;font-size:13px}
+.cel-identity-controls button{border:1px solid #dfb584;background:#fffaf0;color:#633619;border-radius:50%;width:36px;height:36px;padding:0;font-size:26px;line-height:1;cursor:pointer}
+.cel-identity-controls button:hover{background:#e98932;color:white}
+@media(max-width:420px){.cel-identity-deck{padding-inline:0}.cel-identity-body{gap:8px;padding:10px}.cel-identity-body h3{font-size:20px}}
 </style>
 
 </head>
@@ -328,21 +347,25 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
 <div class="cel-two-columns">
  <section class="cel-info-panel" aria-labelledby="cel-character-title">
    <h2 id="cel-character-title" class="cel-section-title small">Fiches personnages</h2>
-   <?php if($character):
-      $character_desc=Celestin_Fields::value($character->ID,'description');
-      $character_prenom=Celestin_Fields::value($character->ID,'prenom');
-      $character_age=Celestin_Fields::value($character->ID,'age');
-   ?>
-   <div class="cel-character-wrap">
-    <div class="cel-character-image"><?php if(has_post_thumbnail($character))echo get_the_post_thumbnail($character->ID,'medium');else echo '<div class="cel-illustration-placeholder"><span>✦</span><span>Portrait à ajouter</span></div>'; ?></div>
-    <div><h3><?php echo esc_html($character->post_title); ?></h3>
-    <?php if($character_prenom): ?><p><strong>Prénom :</strong> <?php echo esc_html($character_prenom); ?></p><?php endif; ?>
-    <?php if($character_age): ?><p><strong>Âge :</strong> <?php echo esc_html($character_age); ?></p><?php endif; ?>
-    <?php if($character_desc): ?><p class="cel-character-desc"><?php echo esc_html(wp_trim_words($character_desc,30,'…')); ?></p><?php endif; ?>
-    <a class="cel-text-link" href="<?php echo esc_url(get_permalink($character)); ?>">Découvrir sa fiche →</a>
+   <?php
+   $characters=Celestin_Home::featured('cel_personnage',8);
+   if($characters): ?>
+   <div class="cel-identity-deck" data-cel-deck>
+    <div class="cel-identity-stack" aria-live="polite">
+    <?php foreach($characters as $index=>$person): ?>
+     <article class="cel-identity-card" <?php if($index)echo 'inert aria-hidden="true"'; ?>>
+      <div class="cel-identity-top"><span>CARTE D’IDENTITÉ</span><span>FLEURIVILLE</span></div>
+      <div class="cel-identity-body"><div class="cel-identity-portrait"><?php echo Celestin_Public::illustration($person->ID,'medium_large'); ?></div>
+      <div><h3><?php echo esc_html(get_the_title($person)); ?></h3>
+      <?php foreach(['prenom'=>'Prénom','age'=>'Âge','espece'=>'Espèce','role'=>'Rôle'] as $key=>$label): $value=Celestin_Fields::value($person->ID,$key);if($value): ?><p><strong><?php echo esc_html($label); ?></strong> <?php echo esc_html($value); ?></p><?php endif; endforeach; ?>
+      <a class="cel-text-link" href="<?php echo esc_url(get_permalink($person)); ?>">Découvrir ma fiche →</a></div></div>
+     </article>
+    <?php endforeach; ?>
     </div>
+    <?php if(count($characters)>1): ?><div class="cel-identity-controls"><button type="button" data-deck-prev aria-label="Personnage précédent">‹</button><span data-deck-count>1 / <?php echo count($characters); ?></span><button type="button" data-deck-next aria-label="Personnage suivant">›</button></div><?php endif; ?>
    </div>
-   <?php else: ?><p class="cel-home-empty">Choisis un personnage à présenter sur l’accueil.</p><?php endif; ?>
+   <?php else: ?><p class="cel-home-empty">Les personnages seront bientôt à découvrir.</p><?php endif; ?>
+   <a class="cel-text-link" href="<?php echo esc_url(Celestin_Home::url('cel_personnage')); ?>">Tous les personnages →</a>
  </section>
  <section class="cel-info-panel" aria-labelledby="cel-city-title">
    <h2 id="cel-city-title" class="cel-section-title small">Fleuriville</h2>
@@ -370,5 +393,18 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
 </main>
 <?php require __DIR__.'/shared-footer.php'; ?>
 </div>
+<script>
+document.querySelectorAll('[data-cel-deck]').forEach(deck=>{
+ const stack=deck.querySelector('.cel-identity-stack'), counter=deck.querySelector('[data-deck-count]');
+ const original=Array.from(stack.children);let busy=false;
+ function refresh(){Array.from(stack.children).forEach((card,i)=>{card.inert=i!==0;if(i)card.setAttribute('aria-hidden','true');else card.removeAttribute('aria-hidden')});if(counter)counter.textContent=(original.indexOf(stack.firstElementChild)+1)+' / '+original.length;}
+ async function turn(direction){if(busy||original.length<2)return;busy=true;const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const front=stack.firstElementChild;
+ try{if(direction>0){if(!reduced&&front.animate)await front.animate([{transform:'translate(0,0)'},{transform:'translate(-38%, 3%) rotate(-12deg)',offset:.48},{transform:'translate(-38%, 12%) rotate(-12deg)',opacity:.25}],{duration:340,easing:'ease-in-out'}).finished;stack.append(front);}
+ else{const last=stack.lastElementChild;stack.prepend(last);if(!reduced&&last.animate)await last.animate([{transform:'translate(-38%, 12%) rotate(-12deg)',opacity:.25},{transform:'translate(0,0)',opacity:1}],{duration:340,easing:'ease-out'}).finished;}
+ }finally{refresh();busy=false;}}
+ deck.querySelector('[data-deck-next]')?.addEventListener('click',()=>turn(1));deck.querySelector('[data-deck-prev]')?.addEventListener('click',()=>turn(-1));refresh();
+});
+</script>
 <?php wp_footer(); ?>
 </body></html>

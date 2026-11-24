@@ -49,6 +49,15 @@ final class Celestin_Fields {
         if(in_array($data['post_type']??'',['cel_livre','cel_histoire','cel_coloriage'],true)){
             if(isset($_POST['cel_fields_nonce'],$_POST['cel_book_title']) && is_string($_POST['cel_fields_nonce']) && is_string($_POST['cel_book_title']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['cel_fields_nonce'])),'cel_fields_save')){
                 $data['post_title']=wp_slash(sanitize_text_field(wp_unslash($_POST['cel_book_title'])));
+                if($data['post_type']==='cel_coloriage' && !in_array($data['post_status']??'',['auto-draft','trash','inherit'],true)){
+                    $title_slug=sanitize_title(wp_unslash($data['post_title']));
+                    $type=isset($_POST['cel_f']['type'])&&is_string($_POST['cel_f']['type'])?sanitize_title(wp_unslash($_POST['cel_f']['type'])):'';
+                    if($title_slug!==''){
+                        $slug=$title_slug;
+                        if($type!=='' && $slug!==$type && !str_ends_with($slug,'-'.$type))$slug.='-'.$type;
+                        $data['post_name']=wp_unique_post_slug($slug,absint($postarr['ID']??0),$data['post_status'],'cel_coloriage',absint($data['post_parent']??0));
+                    }
+                }
             }
             return $data;
         }

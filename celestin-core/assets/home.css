@@ -142,3 +142,10 @@ html{scroll-padding-top:110px}
 @media(max-width:1180px){.cel-interior-header-inner{flex-wrap:wrap;gap:8px}.cel-interior-header .cel-nav-illustrated{order:3;flex-basis:100%}.cel-social-links{margin-left:auto}html{scroll-padding-top:165px}}
 @media(max-width:782px){body.admin-bar .cel-interior-header{top:46px}}
 @media(max-width:600px){.cel-interior-header{padding:8px 12px}body.admin-bar .cel-interior-header{top:0}.cel-interior-header .cel-logo img{width:125px}.cel-interior-header .cel-nav-illustrated{display:flex;flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;scrollbar-width:thin;min-width:0}.cel-interior-header .cel-nav-illustrated a{font-size:13px;padding:6px;flex-shrink:0}.cel-interior-header .cel-nav-illustrated svg{width:19px;height:19px}.cel-interior-header .cel-nav-search{flex-shrink:0}}
+
+/* Slide : respecter le ratio natif de l'illustration sur tous les écrans. */
+.cel-hero{width:100%;max-width:none;min-height:0;border:0;border-radius:0;overflow:hidden}
+.cel-hero-picture{height:auto;min-height:0;aspect-ratio:auto}
+.cel-hero-picture .cel-hero-art{position:relative;inset:auto;display:block;width:100%;height:auto;max-width:100%;max-height:none;object-fit:contain}
+.cel-hero-picture:not(:has(.cel-hero-art)){min-height:240px}
+@media(max-width:720px){.cel-hero-picture{height:auto}.cel-hero-overlay .cel-hero-copy{position:relative;left:auto;top:auto;transform:none;margin:0 auto;padding:18px 12px;background:none;text-shadow:none}.cel-hero-overlay{background:#fff8ed}}

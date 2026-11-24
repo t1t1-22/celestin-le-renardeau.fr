@@ -62,3 +62,5 @@ body.cel-content-page .cel-content-container{width:min(1200px,94%);margin-inline
 body.cel-content-page .cel-content-container h1{font-size:clamp(26px,3vw,36px);font-weight:600;line-height:1.2}
 body.cel-content-page .cel-content-container h2{font-size:clamp(20px,2.2vw,27px);font-weight:600}
 body.cel-content-page .cel-archive-description h2{font-size:20px}
+
+.cel-listen.cel-listen-preview{background:#f6e0d3;border:1px solid #ead0bd;margin:16px 0 20px;padding:16px;border-radius:15px}.cel-listen-preview audio{width:100%}.cel-listen-preview h2{margin:0 0 6px}.cel-listen-preview p{margin:0 0 10px}

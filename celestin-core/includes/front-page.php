@@ -59,6 +59,7 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
        <article class="cel-card cel-news-card cel-news-<?php echo esc_attr($item->post_type); ?>">
         <span class="cel-card-type cel-news-badge"><?php echo esc_html($new_label); ?></span>
         <div class="cel-card-image">
+         <?php if($item->post_type==='cel_coloriage' && $img): ?><div class="cel-paper-stack" aria-hidden="true"><img src="<?php echo esc_url($img); ?>" alt=""><img src="<?php echo esc_url($img); ?>" alt=""></div><?php endif; ?>
          <a class="cel-news-image-link" href="<?php echo esc_url(get_permalink($item)); ?>" aria-label="<?php echo esc_attr($title); ?>">
          <?php if($img): ?><img src="<?php echo esc_url($img); ?>" alt="" loading="lazy"><?php else: ?><div class="cel-card-placeholder" aria-hidden="true">✦</div><?php endif; ?>
          </a>

@@ -4,24 +4,29 @@ final class Celestin_Town {
  static function init(){
   add_action('add_meta_boxes', [__CLASS__,'boxes']);
   add_action('save_post',[__CLASS__,'save'],30,2);
-  add_action('admin_menu',[__CLASS__,'menu']);
+  add_action('admin_menu',[__CLASS__,'menu'],20);
+  add_action('admin_enqueue_scripts',static function($hook){if(isset($_GET['page'])&&$_GET['page']==='cel-town')wp_enqueue_media();});
   add_action('admin_post_cel_town_settings',[__CLASS__,'save_settings']);
  }
  static function menu(){add_submenu_page('celestin-core','Fleuriville','Fleuriville','manage_options','cel-town',[__CLASS__,'settings']);}
  static function settings(){
   if(!current_user_can('manage_options'))return;
   $o=get_option('cel_town',[]);
-  ?><div class="wrap"><h1>Présentation de Fleuriville</h1><form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"><input type="hidden" name="action" value="cel_town_settings"><?php wp_nonce_field('cel_town_settings'); ?>
-  <p><label>Texte de présentation<br><textarea name="intro" rows="6" class="large-text"><?php echo esc_textarea($o['intro']??''); ?></textarea></label></p>
-  <p><label>URL de l’illustration panoramique de la ville<br><input type="url" name="hero" class="large-text" value="<?php echo esc_attr($o['hero']??''); ?>"></label></p>
-  <p><label>URL du plan illustré de Fleuriville<br><input type="url" name="map" class="large-text" value="<?php echo esc_attr($o['map']??''); ?>"></label></p>
-  <p>Importe tes illustrations dans la médiathèque puis colle leurs URL. Dans chaque fiche lieu, indique sa position sur le plan en pourcentage.</p><?php submit_button(); ?></form></div><?php
+  ?><div class="wrap cel-town-admin"><style>
+  .cel-town-admin{color:#633619;max-width:1250px}.cel-town-admin h1{font-size:30px;font-weight:800;color:#633619}.cel-town-admin .town-panel{background:#fffdfa;border:1px solid #ead5bb;border-radius:16px;padding:24px;margin:16px 0}.cel-town-admin .town-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.cel-town-admin label{font-weight:700;display:block;margin-bottom:10px}.cel-town-admin textarea,.cel-town-admin input{border:1px solid #dec3a7;border-radius:8px;padding:10px}.cel-town-admin .town-preview{width:100%;height:220px;object-fit:contain;background:#fff4e6;border-radius:10px;display:block;margin:10px 0}.cel-town-admin .town-preview[hidden]{display:none}.cel-town-admin .button-primary{background:#e98932;border-color:#d47b29;border-radius:20px;color:white;padding:4px 18px}.cel-town-admin .button{margin:5px 5px 5px 0}@media(max-width:780px){.cel-town-admin .town-grid{grid-template-columns:1fr}}
+  </style><h1>Fleuriville</h1><p>Personnalise la présentation de la ville et son plan illustré.</p>
+  <?php if(isset($_GET['updated'])): ?><div class="notice notice-success inline"><p>Modifications enregistrées.</p></div><?php endif; ?>
+  <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"><input type="hidden" name="action" value="cel_town_settings"><?php wp_nonce_field('cel_town_settings'); ?>
+  <div class="town-panel"><h2>Bienvenue à Fleuriville</h2><label for="cel-town-intro">Texte de présentation</label><textarea id="cel-town-intro" name="intro" rows="5" class="large-text"><?php echo esc_textarea($o['intro']??''); ?></textarea></div>
+  <div class="town-grid"><?php foreach(['hero'=>'Illustration panoramique de la ville','map'=>'Plan illustré de Fleuriville'] as $key=>$label): ?><div class="town-panel town-media"><h2><?php echo esc_html($label); ?></h2><img class="town-preview" alt="" src="<?php echo esc_url($o[$key]??''); ?>" <?php if(empty($o[$key]))echo 'hidden'; ?>><label for="cel-town-<?php echo esc_attr($key); ?>">Image</label><input id="cel-town-<?php echo esc_attr($key); ?>" type="url" name="<?php echo esc_attr($key); ?>" class="large-text" value="<?php echo esc_attr($o[$key]??''); ?>"><button type="button" class="button town-pick">Choisir une illustration</button><button type="button" class="button town-remove">Retirer</button></div><?php endforeach; ?></div>
+  <div class="town-panel"><h2>Les lieux de Fleuriville</h2><p>Ajoute les lieux et positionne-les directement sur le plan depuis leurs fiches.</p><a class="button" href="<?php echo esc_url(admin_url('edit.php?post_type=cel_lieu')); ?>">Gérer les lieux</a><a class="button" href="<?php echo esc_url(admin_url('post-new.php?post_type=cel_lieu')); ?>">Ajouter un lieu</a></div><?php submit_button('Enregistrer les modifications'); ?></form></div>
+  <script>document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll(".town-media").forEach(box=>{const input=box.querySelector("input"),img=box.querySelector("img");function sync(){img.src=input.value;img.hidden=!input.value}input.addEventListener("change",sync);box.querySelector(".town-remove").onclick=()=>{input.value="";sync()};box.querySelector(".town-pick").onclick=()=>{const picker=wp.media({title:"Choisir une illustration",library:{type:"image"},multiple:false});picker.on("select",()=>{input.value=picker.state().get("selection").first().toJSON().url;sync()});picker.open()}})});</script><?php
  }
  static function save_settings(){
   if(!current_user_can('manage_options'))wp_die('Accès refusé');
   check_admin_referer('cel_town_settings');
   update_option('cel_town',['intro'=>sanitize_textarea_field(wp_unslash($_POST['intro']??'')),'hero'=>esc_url_raw(wp_unslash($_POST['hero']??'')),'map'=>esc_url_raw(wp_unslash($_POST['map']??''))]);
-  wp_safe_redirect(admin_url('admin.php?page=cel-town'));exit;
+  wp_safe_redirect(admin_url('admin.php?page=cel-town&updated=1'));exit;
  }
  static function boxes(){
   add_meta_box('cel_character_album','Album photo du personnage',[__CLASS__,'album_box'],'cel_personnage','normal','default');

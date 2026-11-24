@@ -159,6 +159,11 @@ body.cel-page .cel-book-editorial .cel-book-more[open] .cel-book-collapse{displa
 .cel-identity-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .cel-identity-info p{margin-bottom:8px}
 @media(max-width:480px){.cel-identity-body .cel-identity-info h3{white-space:normal;font-size:18px}}
+
+.cel-identity-facts{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 14px;align-items:start}
+.cel-identity-facts p{margin:0;overflow-wrap:anywhere}
+.cel-identity-info>a{margin-top:14px}
+.cel-identity-body .cel-identity-info h3{white-space:normal;overflow-wrap:normal;font-size:clamp(16px,1.4vw,23px)}
 </style>
 
 </head>
@@ -367,9 +372,9 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
       <div class="cel-identity-info">
       <?php $name=trim(Celestin_Fields::value($person->ID,'prenom').' '.Celestin_Fields::value($person->ID,'nom')); $birthday=Celestin_Fields::value($person->ID,'anniversaire');$age=Celestin_Fields::value($person->ID,'age'); ?>
       <h3><?php echo esc_html($name?:get_the_title($person)); ?></h3>
-      <div class="cel-identity-pair"><?php foreach(['espece'=>'Espèce','genre'=>'Genre'] as $key=>$label):$value=Celestin_Fields::value($person->ID,$key);if($value): ?><p><strong><?php echo esc_html($label); ?></strong> <?php echo esc_html($value); ?></p><?php endif;endforeach; ?></div>
+      <div class="cel-identity-pair cel-identity-facts"><?php foreach(['espece'=>'Espèce','genre'=>'Genre'] as $key=>$label):$value=Celestin_Fields::value($person->ID,$key);if($value): ?><p><strong><?php echo esc_html($label); ?></strong> <?php echo esc_html($value); ?></p><?php endif;endforeach; ?>
       <?php if($birthday||$age): ?><p><strong><?php echo $birthday?'Anniversaire':'Âge'; ?></strong> <?php echo esc_html($birthday); ?><?php if($age): ?><?php echo esc_html(($birthday?' (':'').$age.(preg_match('/^\d+$/u',trim($age))?' ans':'').($birthday?')':'')); ?><?php endif; ?></p><?php endif; ?>
-      <?php foreach(['role'=>'Rôle','pelage'=>'Pelage'] as $key=>$label):$value=Celestin_Fields::value($person->ID,$key);if($value): ?><p><strong><?php echo esc_html($label); ?></strong> <?php echo esc_html($value); ?></p><?php endif;endforeach; ?>
+      <?php foreach(['role'=>'Rôle','pelage'=>'Pelage'] as $key=>$label):$value=Celestin_Fields::value($person->ID,$key);if($value): ?><p><strong><?php echo esc_html($label); ?></strong> <?php echo esc_html($value); ?></p><?php endif;endforeach; ?></div>
       <a class="cel-text-link" href="<?php echo esc_url(get_permalink($person)); ?>">Découvrir ma fiche →</a></div></div>
      </article>
     <?php endforeach; ?>

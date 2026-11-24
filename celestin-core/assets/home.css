@@ -151,7 +151,7 @@ html{scroll-padding-top:110px}
 @media(max-width:720px){.cel-hero-picture{height:auto}.cel-hero-overlay .cel-hero-copy{position:relative;left:auto;top:auto;transform:none;margin:0 auto;padding:18px 12px;background:none;text-shadow:none}.cel-hero-overlay{background:#fff8ed}}
 
 /* Header unifié : neutraliser entièrement l'ancien menu flottant. */
-body .cel-interior-header{position:sticky;top:0;z-index:1000;width:100%;box-sizing:border-box;background:#fcf7ef;box-shadow:none!important;border:0!important;padding:14px clamp(24px,4vw,80px)!important}
+body .cel-interior-header{position:sticky;top:0;z-index:1000;width:100%;box-sizing:border-box;background:#fcf7ef;box-shadow:0 5px 12px rgba(63,38,20,.13)!important;border:0!important;padding:14px clamp(24px,4vw,80px)!important}
 body .cel-interior-header .cel-interior-header-inner{width:100%;max-width:1440px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:28px}
 body .cel-interior-header .cel-logo{position:static!important;align-self:center;margin:0!important;padding:0!important;flex:0 0 auto}
 body .cel-interior-header .cel-logo img{width:145px;max-height:62px;display:block;object-fit:contain}

@@ -332,6 +332,17 @@ body.cel-page .cel-news-theme-list svg{flex:none;width:13px;height:13px}
 body.cel-page .cel-feature-layout .cel-news-cel_histoire .cel-card-image{position:relative}
 body.cel-page .cel-feature-layout .cel-news-duration-overlay{position:absolute;bottom:10px;left:10px;z-index:5;background:rgba(255,250,243,.96);color:#633619;border-radius:20px;padding:6px 10px;box-shadow:0 2px 8px #63361922;line-height:1.3;font-size:12px;pointer-events:none}
 body.cel-page .cel-feature-layout .cel-news-duration-overlay .cel-feature-duration{display:flex;align-items:center;gap:5px;font-size:13px;font-weight:700}
+
+/* Mise en avant éditoriale réservée au slide nouveauté livre. */
+body.cel-page .cel-feature-slider .cel-feature-book-slide .cel-feature-layout article.cel-news-cel_livre{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;transform:none!important}
+body.cel-page .cel-feature-slider .cel-feature-book-slide .cel-feature-layout article.cel-news-cel_livre>.cel-card-image{background:transparent!important;border:0!important;box-shadow:none!important;overflow:visible!important;perspective:1000px;aspect-ratio:1/1}
+body.cel-page .cel-feature-book-slide .cel-feature-layout .cel-news-cel_livre .cel-news-image-link{width:94%!important;max-width:405px!important;height:auto!important;aspect-ratio:1/1}
+body.cel-page .cel-feature-book-slide .cel-feature-layout .cel-news-cel_livre .cel-card-image:before{left:5%;right:5%;bottom:0;height:28px;background:radial-gradient(ellipse,#51371980,transparent 70%);filter:blur(7px)}
+body.cel-page .cel-feature-book-slide .cel-feature-backdrop img{opacity:.35!important}
+body.cel-page .cel-feature-book-slide .cel-feature-backdrop:after{background:linear-gradient(110deg,#f2e4d0b0,#fcf7ef95)!important}
+body.cel-page .cel-feature-book-slide .cel-news-under-image{margin-top:18px;gap:5px 18px}
+body.cel-page .cel-feature-slider .cel-feature-book-slide .cel-feature-layout article.cel-news-cel_livre>.cel-news-badge{top:0!important;left:0!important}
+@media(max-width:720px){body.cel-page .cel-feature-book-slide .cel-feature-layout .cel-news-cel_livre .cel-news-image-link{max-width:285px!important;width:90%!important}}
 </style>
 
 </head>
@@ -366,7 +377,7 @@ $summary=Celestin_Fields::value($item->ID,'resume');
 if(!$summary && $item->post_type==='cel_personnage')$summary=Celestin_Fields::value($item->ID,'description');
 $summary=$summary?:$item->post_excerpt;
 $kicker=$item->post_type==='cel_coloriage'?(Celestin_Fields::value($item->ID,'type')?:'Activité'):($item->post_type==='cel_personnage'?'':$new_label);
-$story_tags=[];$story_under_image=[];
+$story_tags=[];$story_under_image=[];$themes=[];
 if($item->post_type==='cel_histoire'){
  $themes=wp_get_object_terms($item->ID,Celestin_Library::TAX['categorie'],['fields'=>'names']);
  $kicker=(!is_wp_error($themes)&&$themes)?implode(' · ',$themes):'Mini-histoire audio';
@@ -386,9 +397,20 @@ if($item->post_type==='cel_histoire'){
  }
  if(!$summary)$summary=Celestin_Fields::value($item->ID,'texte');
 }
+if($item->post_type==='cel_livre'){
+ $themes=wp_get_object_terms($item->ID,Celestin_Library::TAX['categorie'],['fields'=>'names']);
+ if(is_wp_error($themes)||!$themes){$theme_value=Celestin_Fields::value($item->ID,'categorie');$themes=$theme_value?[$theme_value]:[];}
+ foreach(['collection'=>'Collection','mois'=>'Date de sortie','saison'=>'Saison','age_lecture'=>'Âge','evenement'=>'Événement'] as $key=>$label){
+  $terms=wp_get_object_terms($item->ID,Celestin_Library::TAX[$key],['fields'=>'names']);
+  $value=!is_wp_error($terms)&&$terms?implode(', ',$terms):Celestin_Fields::value($item->ID,$key);
+  if(!$value)continue;
+  if($key==='collection'||$key==='mois')$story_under_image[$label]=$value;else $story_tags[]=$label.' : '.$value;
+ }
+ $kicker='';
+}
 $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir ce livre','cel_coloriage'=>'Découvrir cette activité','cel_personnage'=>'Rencontrer ce personnage'][$item->post_type]??'Découvrir';
 ?>
-<div class="cel-feature-slide" <?php if($idx!==0)echo 'hidden'; ?> data-slide="<?php echo esc_attr($idx); ?>">
+<div class="cel-feature-slide<?php echo $item->post_type==='cel_livre'?' cel-feature-book-slide':''; ?>" <?php if($idx!==0)echo 'hidden'; ?> data-slide="<?php echo esc_attr($idx); ?>">
  <?php if($img): ?><div class="cel-feature-backdrop" aria-hidden="true"><img src="<?php echo esc_url(get_the_post_thumbnail_url($item->ID,'large')?:$img); ?>" alt="" decoding="async"></div><?php endif; ?>
  <div class="cel-feature-layout">
        <div class="cel-news-visual"><article class="cel-card cel-news-card cel-news-<?php echo esc_attr($item->post_type); ?>">
@@ -409,7 +431,7 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
         </div>
       </article>
       <?php if($story_under_image): ?><div class="cel-news-under-image"><?php foreach($story_under_image as $label=>$value): ?><div><strong><?php echo esc_html($label); ?></strong> <span><?php echo esc_html($value); ?></span></div><?php endforeach; ?></div><?php endif; ?></div>
- <div class="cel-feature-copy"><?php if($item->post_type==='cel_histoire'&&!is_wp_error($themes)&&$themes): ?><div class="cel-news-themes"><span class="cel-news-theme-label">Les thèmes de cette histoire</span><div class="cel-news-theme-list"><?php foreach($themes as $theme): ?><span><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z"/></svg><?php echo esc_html($theme); ?></span><?php endforeach; ?></div></div><?php elseif($kicker): ?><p class="cel-feature-kicker"><?php echo esc_html($kicker); ?></p><?php endif; ?><h2><?php echo esc_html($title); ?></h2>
+ <div class="cel-feature-copy"><?php if(in_array($item->post_type,['cel_histoire','cel_livre'],true)&&!is_wp_error($themes)&&$themes): ?><div class="cel-news-themes"><span class="cel-news-theme-label">Les thèmes de cette histoire</span><div class="cel-news-theme-list"><?php foreach($themes as $theme): ?><span><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z"/></svg><?php echo esc_html($theme); ?></span><?php endforeach; ?></div></div><?php elseif($kicker): ?><p class="cel-feature-kicker"><?php echo esc_html($kicker); ?></p><?php endif; ?><h2><?php echo esc_html($title); ?></h2>
  <?php if($story_tags): ?><div class="cel-feature-tags"><?php foreach($story_tags as $tag): ?><span><?php echo esc_html($tag); ?></span><?php endforeach; ?></div><?php endif; ?>
  <?php if($summary): ?><p class="cel-feature-summary"><?php echo esc_html(wp_trim_words(wp_strip_all_tags($summary),$item->post_type==='cel_personnage'?38:65,'…')); ?></p><?php endif; ?>
 <?php if($item->post_type==='cel_personnage'): ?>

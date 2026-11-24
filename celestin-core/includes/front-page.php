@@ -82,7 +82,7 @@ $hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_si
 </section></div>
 <?php if($stories): ?>
 <section class="cel-story-section cel-audio-feature" aria-labelledby="cel-story-title">
- <svg class="cel-audio-wave cel-audio-fox-ears" viewBox="0 0 1440 220" preserveAspectRatio="none" aria-hidden="true"><path fill="#fcf7ef" d="M0 0H1440V220H0Z"/><path fill="#e98932" d="M0 220H1440V214C1255 214 1130 205 1080 184C1100 132 1108 65 1084 24Q1076 9 1060 14C966 39 871 112 829 155C783 150 750 126 724 107Q709 96 711 110L725 128Q677 100 660 114Q650 120 677 138Q638 122 620 134Q611 142 638 152L603 162C550 108 468 43 375 15Q355 8 346 26C323 75 331 139 357 184C280 209 150 214 0 214Z"/><g fill="none" stroke="#fff0ce" stroke-opacity=".32" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M382 171Q357 96 371 42Q375 34 385 38Q480 77 548 155"/><path d="M1048 171Q1078 96 1061 42Q1057 34 1047 38Q951 77 883 155"/></g></svg>
+ <svg class="cel-audio-wave cel-audio-fox-ears" viewBox="0 0 1440 250" preserveAspectRatio="xMidYMax meet" aria-hidden="true"><path fill="#e98932" d="M0 250H1440V244H1225C1170 244 1135 235 1100 213C1060 187 1027 152 1007 119C1035 55 1029 9 1012 4C993 -2 915 39 824 121Q781 111 746 85Q731 74 737 87L746 100Q708 76 689 84Q681 89 708 109Q670 94 656 100Q646 104 670 120L642 130C575 54 480 -1 455 4C432 9 423 57 444 119C427 151 394 189 353 213C318 235 280 244 215 244H0Z"/></svg>
  <div class="cel-audio-inner">
  <h2 id="cel-story-title" class="cel-section-title">Les mini-histoires du moment</h2>
  <p class="cel-audio-intro">Installe-toi confortablement et laisse-toi raconter une histoire.</p>

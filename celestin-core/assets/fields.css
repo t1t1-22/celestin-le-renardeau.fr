@@ -55,3 +55,24 @@
 .cel-tax-create input{flex:1;min-width:0}
 .cel-tax-create .button{background:#e98932;color:white;border-color:#d47b29}
 .cel-tax-status{margin:5px 0;color:#80532b;font-size:12px}
+
+/* Interface bibliothèque, limitée aux fiches livres. */
+.cel-book-custom-editor #titlediv,.cel-book-custom-editor #screen-meta-links,.cel-book-custom-editor #poststuff #post-body-content{display:none!important}
+.cel-book-custom-editor #poststuff{padding-top:0}
+.cel-book-custom-editor #cel_structured>.postbox-header{display:none}
+.cel-book-custom-editor #cel_structured>.inside{padding:24px;margin:0}
+.cel-book-custom-editor #cel_structured{box-shadow:0 8px 28px #79523112;border:1px solid #e9d7bd;border-radius:20px;overflow:visible}
+body.cel-book-custom-editor #wpcontent{background:#fcf7ef}
+.cel-editor-heading{padding:4px 0 20px;color:#633619}
+.cel-editor-heading span{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#b47739;font-weight:700}
+.cel-editor-heading h2{font-size:28px!important;font-weight:800!important;padding:8px 0!important;color:#633619}
+.cel-book-custom-editor .cel-form-head{display:none}
+.cel-book-custom-editor .cel-form-tabs{margin:0}
+.cel-book-custom-editor .cel-form-tab{font-size:14px;padding:14px 20px}
+.cel-book-custom-editor .cel-form-panel{padding:24px 10px}
+.cel-book-custom-editor .cel-book-title-slot input{display:block;width:100%;border:1px solid #e3c9aa;border-radius:12px;padding:12px 16px;font-size:25px;color:#633619;background:#fffdfa;margin-top:8px}
+.cel-book-custom-editor .cel-book-title-slot input:focus{border-color:#e98932;box-shadow:0 0 0 2px #e9893225;outline:0}
+.cel-book-custom-editor .cel-form-panel .button{border-color:#e4c4a1;color:#77431f;background:#fff7eb;border-radius:9px}
+.cel-book-custom-editor .cel-form-panel .cel-tax-add{background:#e98932;color:white}
+.cel-book-custom-editor .cel-book-savebar{top:32px;z-index:100;box-shadow:0 5px 12px #80532220}
+@media(max-width:782px){.cel-book-custom-editor #cel_structured>.inside{padding:12px}.cel-book-custom-editor .cel-form-tab{padding:9px 11px}.cel-book-custom-editor .cel-book-savebar{top:46px}}

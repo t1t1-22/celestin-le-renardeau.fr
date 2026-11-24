@@ -204,3 +204,6 @@ body.admin-bar .cel-interior-header{top:32px}
 .cel-audio-card{max-width:285px}
 .cel-audio-toggle{width:55px;height:55px}
 @media(max-width:760px){.cel-audio-toggle{width:48px;height:48px}}
+
+/* Centrer les nouveautés si elles tiennent dans le carrousel, sans masquer le début en cas de débordement. */
+.cel-news-track{justify-content:safe center}

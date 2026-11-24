@@ -46,6 +46,23 @@ body.cel-page .cel-book-editorial .cel-book-listen audio{width:100%;max-width:35
 body.cel-page .cel-book-editorial .cel-home-book-all{margin-top:18px} body.cel-page .cel-book-editorial .cel-book-listen .cel-audio-toggle{position:relative;inset:auto;transform:none;width:48px;height:48px;flex:0 0 48px;padding:0;border:0;background:transparent;box-shadow:none} body.cel-page .cel-book-editorial .cel-book-listen .cel-audio-toggle svg{width:48px;height:48px;display:block} body.cel-page .cel-book-editorial .cel-book-listen .cel-audio-error[hidden]{display:none}
 @media(max-width:760px){body.cel-page .cel-book-editorial .cel-books-layout{grid-template-columns:1fr;gap:12px;padding:15px 8px}body.cel-page .cel-book-editorial .cel-book-preview .cel-book-mockup{max-width:240px}body.cel-page .cel-book-editorial .cel-feature-tags{justify-content:flex-start}}
 @media(prefers-reduced-motion:reduce){body.cel-page .cel-book-editorial .cel-book-preview .cel-book-mockup:hover{transform:rotateY(9deg) rotateX(0deg) rotateZ(0deg)}}
+/* Présentation éditoriale de l’album. */
+body.cel-page .cel-book-editorial .cel-book-description{display:flex;flex-direction:column;align-items:flex-start;gap:16px}
+body.cel-page .cel-book-editorial .cel-book-editorial-title{margin:0;line-height:1.12;font-size:clamp(29px,3vw,40px)}
+body.cel-page .cel-book-editorial .cel-feature-tags{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 18px;width:100%;margin:0;padding:14px 0;border-top:1px solid #e5d8c7;border-bottom:1px solid #e5d8c7}
+body.cel-page .cel-book-editorial .cel-feature-tags>span{display:flex;flex-direction:column;align-items:flex-start;gap:3px;background:none;border:0;border-radius:0;padding:3px 0;font-size:14px;line-height:1.35}
+body.cel-page .cel-book-editorial .cel-feature-tags>span>strong{font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:#a75b28;font-weight:700}
+body.cel-page .cel-book-editorial .cel-feature-tags>span>span{font-size:14px;background:none;border:0;padding:0;border-radius:0;font-weight:600}
+body.cel-page .cel-book-editorial .cel-home-book-summary{width:100%;margin:0;font-size:15px;line-height:1.65}
+body.cel-page .cel-book-editorial .cel-book-more summary{font-size:15px;line-height:1.7}
+body.cel-page .cel-book-editorial .cel-book-more-label{display:inline-flex;margin:4px 0 0 5px;text-decoration:underline;text-underline-offset:3px}
+body.cel-page .cel-book-editorial .cel-book-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;width:100%;margin-top:4px}
+body.cel-page .cel-book-editorial .cel-book-actions .cel-home-book-all{margin:0;background:#e98932;color:#fff!important;padding:12px 20px;border-radius:25px;box-shadow:0 3px 0 #c46c23}
+body.cel-page .cel-book-editorial .cel-book-actions .cel-home-book-all:hover{background:#d77929}
+body.cel-page .cel-book-editorial .cel-book-actions .cel-book-library-link{display:inline-flex;align-items:center;gap:8px;margin:0;padding:10px 14px;border:1px solid #d9c5ad;border-radius:25px;text-decoration:none;font-weight:600}
+body.cel-page .cel-book-editorial .cel-book-actions .cel-book-library-link:hover{background:#f2e5d5}
+body.cel-page .cel-book-editorial .cel-book-listen{width:auto;display:flex;align-items:center;gap:10px;margin:0;padding:5px 13px 5px 5px;border:1px solid #e5d8c7;border-radius:32px;background:#fffaf3;box-shadow:none}
+@media(max-width:760px){body.cel-page .cel-book-editorial .cel-book-description{gap:13px}body.cel-page .cel-book-editorial .cel-book-actions{justify-content:flex-start}}
 </style>
 
 </head>
@@ -166,11 +183,11 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
  </div>
  <div class="cel-book-description">
  <h2 class="cel-book-editorial-title"><a href="<?php echo esc_url(get_permalink($book)); ?>"><?php echo esc_html($book->post_title); ?></a></h2>
- <div class="cel-feature-tags"><?php foreach(['categorie'=>'Thème','collection'=>'Collection','saison'=>'Saison','mois'=>'Parution','age_lecture'=>'Âge','evenement'=>'Événement'] as $key=>$label): $value=Celestin_Fields::value($book->ID,$key); if($value): ?><span><?php echo esc_html($label.' : '.$value); ?></span><?php endif; endforeach; ?></div>
+ <div class="cel-feature-tags"><?php foreach(['categorie'=>'Thème','collection'=>'Collection','saison'=>'Saison','mois'=>'Parution','age_lecture'=>'Âge','evenement'=>'Événement'] as $key=>$label): $value=Celestin_Fields::value($book->ID,$key); if($value): ?><span><strong><?php echo esc_html($label); ?></strong><span><?php echo esc_html($value); ?></span></span><?php endif; endforeach; ?></div>
  <?php if($book_resume): ?><div class="cel-home-book-summary"><?php if($book_short!==wp_strip_all_tags($book_resume) && mb_strlen($book_short)<mb_strlen(wp_strip_all_tags($book_resume))): ?><details class="cel-book-more"><summary><span class="cel-book-excerpt"><?php echo esc_html($book_short); ?></span><span class="cel-book-more-label"><span class="cel-book-open">Lire plus +</span><span class="cel-book-close">Lire moins −</span></span></summary><div class="cel-book-full"><?php echo wpautop(esc_html($book_resume)); ?></div></details><?php else: ?><p><?php echo esc_html($book_resume); ?></p><?php endif; ?></div><?php endif; ?>
  <?php if($book_audio): ?><div class="cel-book-listen cel-audio-card"><audio preload="metadata" src="<?php echo esc_url($book_audio); ?>"></audio><button type="button" class="cel-audio-toggle" data-title="<?php echo esc_attr($book->post_title); ?>" aria-label="Écouter le résumé" aria-pressed="false"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="30" fill="#fffaf3"/><circle cx="32" cy="32" r="26" fill="none" stroke="#e9d3bb" stroke-width="4"/><circle class="cel-audio-ring" cx="32" cy="32" r="26" fill="none" stroke="#e98932" stroke-width="4" pathLength="100" stroke-dasharray="0 100" stroke-linecap="round" transform="rotate(-90 32 32)"/><path class="cel-audio-play" d="M25 20L44 32L25 44Z" fill="#a45b2c"/><rect class="cel-audio-stop" x="23" y="23" width="18" height="18" rx="3" fill="#a45b2c"/></svg></button><span>Écouter le résumé</span><span class="cel-audio-error" role="status" hidden>Audio indisponible.</span></div><?php endif; ?>
- <a class="cel-feature-link cel-home-book-all" href="<?php echo esc_url(get_permalink($book)); ?>">Découvrir ce livre →</a>
- <a class="cel-book-library-link" href="<?php echo esc_url(Celestin_Home::url('cel_livre')); ?>">Voir tous les livres</a>
+ <div class="cel-book-actions"><a class="cel-feature-link cel-home-book-all" href="<?php echo esc_url(get_permalink($book)); ?>">Découvrir ce livre →</a>
+ <a class="cel-book-library-link" href="<?php echo esc_url(Celestin_Home::url('cel_livre')); ?>">Voir tous les livres <span aria-hidden="true">↗</span></a></div>
  </div>
  </div>
  <?php else: ?><p class="cel-home-empty">Sélectionne un livre depuis sa fiche WordPress pour l’afficher ici.</p><?php endif; ?>

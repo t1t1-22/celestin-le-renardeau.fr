@@ -590,3 +590,6 @@ body.cel-page .cel-feature-tags span{background:#ffffffaa;border:1px solid #6336
 body.cel-page .cel-feature-duration{display:flex;gap:7px;align-items:center;font-size:14px;color:#633619;font-variant-numeric:tabular-nums}
 body.cel-page .cel-feature-duration svg{width:18px;height:18px}
 @media(max-width:720px){body.cel-page .cel-feature-tags,body.cel-page .cel-feature-duration{justify-content:center}}
+
+body.cel-page .cel-feature-slider .cel-feature-copy .cel-feature-duration{display:flex!important;align-items:center!important;gap:6px!important;font-size:13px!important;line-height:1.4!important}
+body.cel-page .cel-feature-slider .cel-feature-copy .cel-feature-duration>svg{width:16px!important;height:16px!important;min-width:16px!important;max-width:16px!important;max-height:16px!important;flex:0 0 16px!important;display:inline-block!important}

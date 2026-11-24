@@ -18,7 +18,7 @@ $items=[
 <?php endforeach; ?>
 <div class="cel-town-nav cel-town-menu">
 <button type="button" class="cel-town-trigger<?php echo (is_post_type_archive(['cel_lieu','cel_personnage'])||is_singular(['cel_lieu','cel_personnage']))?' is-active':''; ?>" aria-expanded="false" aria-controls="cel-town-submenu"><span>Fleuriville</span><svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="m4 6 4 4 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-<div id="cel-town-submenu" class="cel-town-submenu" hidden><a href="<?php echo esc_url(Celestin_Home::url('cel_personnage')); ?>">Les personnages</a><a href="<?php echo esc_url(add_query_arg('vue','galerie',Celestin_Home::url('cel_lieu'))); ?>">Galerie photo</a><a href="<?php echo esc_url(add_query_arg('vue','lieux',Celestin_Home::url('cel_lieu'))); ?>">Les lieux</a></div></div>
+<div id="cel-town-submenu" class="cel-town-submenu" hidden><a href="<?php echo esc_url(Celestin_Home::url('cel_personnage')); ?>">Les personnages</a><a href="<?php echo esc_url(add_query_arg('vue','galerie',Celestin_Home::url('cel_lieu'))); ?>">Galerie photo</a></div></div>
 </nav>
 <style>
 body .cel-interior-header .cel-town-menu{position:relative;display:flex;align-items:center;flex-shrink:0}
@@ -33,6 +33,7 @@ body .cel-interior-header .cel-town-submenu a:hover,body .cel-interior-header .c
 @media(max-width:600px){body .cel-interior-header .cel-town-trigger{font-size:13px;padding:6px}body .cel-interior-header .cel-town-submenu{position:fixed;left:auto;right:16px;top:var(--cel-town-top,140px)}}
 body .cel-interior-header nav.cel-nav a,body .cel-interior-header .cel-town-trigger{text-decoration:none!important}
 body .cel-interior-header nav.cel-nav a:hover,body .cel-interior-header nav.cel-nav a:hover span,body .cel-interior-header .cel-town-trigger:hover,body .cel-interior-header .cel-town-trigger:hover span{color:#fff!important;text-decoration:none!important}
+body .cel-interior-header .cel-town-trigger,body .cel-interior-header .cel-town-trigger:hover,body .cel-interior-header .cel-town-trigger:focus,body .cel-interior-header .cel-town-trigger[aria-expanded=true]{box-shadow:none!important;text-shadow:none!important;filter:none!important}
 </style>
 <script>
 (function(){

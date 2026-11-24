@@ -112,6 +112,7 @@ final class Celestin_Fields {
 .post-type-cel_coloriage .cel-activity-layout{display:grid;grid-template-columns:minmax(210px, .7fr) minmax(0,1.7fr);gap:24px;align-items:start}
 .post-type-cel_coloriage .cel-activity-layout .cel-section-image{margin:0;background:#fff8ed;padding:16px}
 .post-type-cel_coloriage .cel-activity-layout .cel-section-image-preview{width:100%;max-width:100%;height:auto;max-height:300px;box-sizing:border-box}
+.post-type-cel_coloriage .cel-activity-images{display:grid;gap:16px}
 .post-type-cel_coloriage .cel-activity-content{display:grid;gap:18px}
 .post-type-cel_coloriage .cel-activity-content .cel-field-grid{grid-template-columns:1fr}
 .post-type-cel_coloriage .cel-activity-content .cel-field{padding:14px 16px;border:1px solid #ead9c5;border-radius:12px;background:#fffdfa}
@@ -161,9 +162,10 @@ final class Celestin_Fields {
                 echo '<div class="cel-book-title-slot"><label for="cel-book-title">'.esc_html($title_label).'</label><input id="cel-book-title" name="cel_book_title" type="text" value="'.esc_attr($post->post_title).'" placeholder="'.esc_attr($title_label).'"><p class="description">Ce titre sera affiché sur le site et dans la bibliothèque.</p></div></div><div class="cel-field-grid">';
             }
             if($post->post_type==='cel_coloriage' && $slug==='principal'){
-                echo '</div><div class="cel-activity-layout">';
+                echo '</div><div class="cel-activity-layout"><div class="cel-activity-images">';
                 self::section_image($post,$slug,$title);
-                echo '<div class="cel-activity-content"><div class="cel-field-grid">';
+                self::section_image($post,'modele_colore','Modèle colorié');
+                echo '</div><div class="cel-activity-content"><div class="cel-field-grid">';
                 foreach(['type','resume','pdf'] as $key)self::field($post,$key,$fields[$key]);
                 echo '</div></div></div><div>';
             }else foreach($fields as $key=>$label) self::field($post,$key,$label);
@@ -187,8 +189,8 @@ final class Celestin_Fields {
         $id=absint(get_post_meta($post->ID,'_cel_section_image_'.$section,true));
         if(!$id && $section===$primary)$id=(int)get_post_thumbnail_id($post);
         $url=$id?wp_get_attachment_image_url($id,'medium'):'';
-        echo '<div class="cel-section-image"><h4>'.esc_html($section===$primary?($post->post_type==='cel_livre'?'Première de couverture':'Illustration principale'):'Illustration de cette rubrique').'</h4>';
-        echo '<p class="description">'.($section===$primary?'Cette image sera aussi utilisée comme vignette sur le site et dans les nouveautés.':'Illustration facultative propre à « '.esc_html($title).' ».').'</p>';
+        echo '<div class="cel-section-image"><h4>'.esc_html($section===$primary?($post->post_type==='cel_livre'?'Première de couverture':'Illustration principale'):($section==='modele_colore'?'Modèle déjà colorié':'Illustration de cette rubrique')).'</h4>';
+        echo '<p class="description">'.($section===$primary?'Cette image sera aussi utilisée comme vignette sur le site et dans les nouveautés.':($section==='modele_colore'?'Ajoute le dessin en couleurs qui servira de modèle, indépendamment du coloriage à imprimer.':'Illustration facultative propre à « '.esc_html($title).' ».')).'</p>';
         echo '<input type="hidden" name="cel_section_images['.esc_attr($section).']" value="'.esc_attr((string)$id).'" class="cel-section-image-id">';
         echo '<img class="cel-section-image-preview" src="'.esc_url($url?:'').'" alt="Aperçu de l’illustration" style="display:'.($url?'block':'none').'">';
         echo '<div class="cel-section-image-actions"><button type="button" class="button cel-select-section-image">Choisir une image</button> <button type="button" class="button cel-remove-section-image">Retirer</button></div></div>';
@@ -308,7 +310,9 @@ final class Celestin_Fields {
         // Seule l'image de l'onglet principal devient l'image mise en avant.
         $images=isset($_POST['cel_section_images'])&&is_array($_POST['cel_section_images'])?wp_unslash($_POST['cel_section_images']):[];
         $primary=$post->post_type==='cel_personnage'?'identite':'principal';
-        foreach(array_keys($defs) as $section){
+        $image_sections=array_keys($defs);
+        if($post->post_type==='cel_coloriage')$image_sections[]='modele_colore';
+        foreach($image_sections as $section){
             if(!array_key_exists($section,$images))continue;
             $candidate=absint($images[$section]);
             $valid=$candidate && wp_attachment_is_image($candidate)?$candidate:0;

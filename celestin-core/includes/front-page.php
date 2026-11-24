@@ -82,7 +82,7 @@ $hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_si
 </section></div>
 <?php if($stories): ?>
 <section class="cel-story-section cel-audio-feature" aria-labelledby="cel-story-title">
- <svg class="cel-audio-wave" viewBox="0 0 1440 70" preserveAspectRatio="none" aria-hidden="true"><path d="M0 0H1440V25C1100 85 850 0 540 36S120 66 0 24Z" fill="#fcf7ef"/></svg>
+ <svg class="cel-audio-wave cel-audio-fox-ears" viewBox="0 0 1440 95" preserveAspectRatio="none" aria-hidden="true"><path d="M0 0H1440V95H1080Q990 95 930 74L854 8Q842 -2 835 13L810 69Q720 52 630 69L605 13Q598 -2 586 8L510 74Q450 95 360 95H0Z" fill="#fcf7ef"/></svg>
  <div class="cel-audio-inner">
  <h2 id="cel-story-title" class="cel-section-title">Les mini-histoires du moment</h2>
  <p class="cel-audio-intro">Installe-toi confortablement et laisse-toi raconter une histoire.</p>

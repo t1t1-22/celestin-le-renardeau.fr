@@ -63,7 +63,7 @@ final class Celestin_Home {
         echo '</div>';
     }
     static function featured_settings(): void {
-        echo '<h2 style="margin-top:32px">Contenus mis en avant</h2><p>Choisis un contenu publié par rubrique, et jusqu’à trois mini-histoires dans leur ordre d’affichage. Les nouveautés sont gérées séparément.</p><div class="cel-feature-settings">';
+        echo '<h2 style="margin-top:32px">Contenus mis en avant</h2><p>Choisis un contenu publié par rubrique, et jusqu’à trois mini-histoires dans leur ordre d’affichage. Les nouveautés sont gérées dans leur propre onglet.</p><div class="cel-feature-settings">';
         foreach(Celestin_Core::TYPES as $type=>$config){
             $current=self::featured($type,$type==='cel_histoire'?3:1);
             $id=$current?(int)$current[0]->ID:0;
@@ -91,13 +91,14 @@ final class Celestin_Home {
         $tabs = [
             'identite' => ['Identité visuelle', 'dashicons-admin-appearance'],
             'accueil' => ['Page d’accueil', 'dashicons-admin-home'],
-            'rubriques' => ['Rubriques', 'dashicons-screenoptions'],
+            'rubriques' => ['Contenus mis en avant', 'dashicons-screenoptions'],
+            'nouveautes' => ['Nouveautés', 'dashicons-megaphone'],
             'fleuriville' => ['Fleuriville & pied de page', 'dashicons-location-alt'],
             'newsletter' => ['Newsletter', 'dashicons-email-alt']
         ];
         $active = isset($_GET['tab']) ? sanitize_key(wp_unslash($_GET['tab'])) : 'identite';
         if (!isset($tabs[$active])) $active = 'identite';
-        echo '<div class="wrap cel-design-admin"><h1>Apparence du site</h1>';
+        echo '<div class="wrap cel-design-admin"><h1>Apparence de la page d’accueil</h1>';
         echo '<p class="cel-admin-intro">Personnalise les images et les textes de ton site. Tes illustrations restent dans la médiathèque WordPress.</p>';
         if (isset($_GET['saved'])) echo '<div class="notice notice-success is-dismissible"><p>Les paramètres ont été enregistrés.</p></div>';
         echo '<form id="cel-design-form" action="' . esc_url(admin_url('admin-post.php')) . '" method="post">';
@@ -136,15 +137,15 @@ final class Celestin_Home {
         }
         echo '<div class="cel-text-setting"><label for="cel_hero_text_location"><strong>Emplacement du texte</strong></label><select id="cel_hero_text_location" name="design[hero_text_location]"><option value="overlay"'.selected($o['hero_text_location'],'overlay',false).'>Sur l’image</option><option value="below"'.selected($o['hero_text_location'],'below',false).'>Sous l’image</option></select></div>';
 
-        self::featured_settings();
         echo '</section>';
 
         echo '<section id="cel-panel-rubriques" class="cel-design-panel" role="tabpanel" aria-labelledby="cel-tab-rubriques"' . ($active !== 'rubriques' ? ' hidden' : '') . '>';
-        echo '<h2>Visuels des rubriques</h2><p>Images de présentation. Les contenus publiés utilisent en priorité leur propre image à la une.</p>';
-        self::image_setting('activity', 'Mes petites activités', $o);
-        self::image_setting('story', 'Mini-histoires audio', $o);
-        self::image_setting('book', 'Les livres', $o);
-        self::image_setting('character', 'Fiches personnages', $o);
+        self::featured_settings();
+        echo '</section>';
+
+        echo '<section id="cel-panel-nouveautes" class="cel-design-panel" role="tabpanel" aria-labelledby="cel-tab-nouveautes"' . ($active !== 'nouveautes' ? ' hidden' : '') . '>';
+        echo '<input type="hidden" name="cel_news_present" value="1">';
+        Celestin_News::selection();
         echo '</section>';
 
         echo '<section id="cel-panel-fleuriville" class="cel-design-panel" role="tabpanel" aria-labelledby="cel-tab-fleuriville"' . ($active !== 'fleuriville' ? ' hidden' : '') . '>';
@@ -168,8 +169,8 @@ final class Celestin_Home {
         if (!current_user_can('manage_options')) wp_die('Accès refusé.');
         check_admin_referer('celestin_save_design');
         $raw=isset($_POST['design'])&&is_array($_POST['design'])?wp_unslash($_POST['design']):[];
-        $out=self::defaults();
-        foreach(['logo','footer_logo','hero','footer','story','book','character','city','activity'] as $key) $out[$key]=absint($raw[$key]??0);
+        $out=self::options();
+        foreach(['logo','footer_logo','hero','footer','story','book','character','city','activity'] as $key) $out[$key]=absint($raw[$key]??$out[$key]??0);
         foreach(['headline','welcome','hero_intro','hero_description','hero_button'] as $key) $out[$key]=sanitize_textarea_field($raw[$key]??$out[$key]);
         $out['hero_link']=esc_url_raw($raw['hero_link']??'#cel-decouvrir');
         foreach(['hero_title_size'=>[24,100],'hero_text_size'=>[12,32],'hero_x'=>[0,100],'hero_y'=>[0,100],'hero_width'=>[240,1100]] as $key=>[$min,$max]){
@@ -193,7 +194,8 @@ final class Celestin_Home {
             }
         }
         update_option(self::OPTION,$out);
-        $allowed_tabs = ['identite', 'accueil', 'rubriques', 'fleuriville', 'newsletter'];
+        if(isset($_POST['cel_news_present']))Celestin_News::save_selection((array)($_POST['cel_news_ids']??[]));
+        $allowed_tabs = ['identite', 'accueil', 'rubriques', 'nouveautes', 'fleuriville', 'newsletter'];
         $active = isset($_POST['cel_active_tab']) ? sanitize_key(wp_unslash($_POST['cel_active_tab'])) : 'identite';
         if (!in_array($active, $allowed_tabs, true)) $active = 'identite';
         wp_safe_redirect(add_query_arg(['saved' => '1', 'tab' => $active], admin_url('admin.php?page=celestin-design')));

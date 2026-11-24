@@ -199,6 +199,7 @@ final class Celestin_Fields {
           $i++;
         }
         if($post->post_type==='cel_personnage') echo '<button type="button" role="tab" data-tab="extras" class="cel-form-tab" aria-selected="false">Attributs personnalisés</button>';
+        if($post->post_type==='cel_personnage')echo '<button type="button" role="tab" data-tab="album" class="cel-form-tab" aria-selected="false">Album photo</button>';
         if($post->post_type==='cel_personnage')echo '<button type="button" role="tab" data-tab="family" class="cel-form-tab" aria-selected="false">Famille et relations</button>';
         echo '<button type="button" role="tab" data-tab="relations" class="cel-form-tab" aria-selected="false">'.($post->post_type==='cel_livre'?'Contenus associés':'Associations').'</button>';
         echo '</div>';
@@ -247,6 +248,7 @@ final class Celestin_Fields {
         }
         if($post->post_type==='cel_personnage') self::extras($post);
         if(in_array($post->post_type,['cel_livre','cel_histoire','cel_coloriage'],true))Celestin_Library::categories($post);
+        if($post->post_type==='cel_personnage'){echo '<section class="cel-form-panel" data-panel="album" hidden><h3>Album photo du personnage</h3>';Celestin_Town::album_box($post);echo '</section>';}
         if($post->post_type==='cel_personnage')self::family_panel($post);
         self::relations($post);
         if($post->post_type==='cel_personnage')echo '</div></div>';

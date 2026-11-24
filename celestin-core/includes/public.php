@@ -116,8 +116,7 @@ final class Celestin_Public {
             echo '<section class="cel-reader-section" aria-label="Visionneuse du livre"><div class="cel-book-reader" data-pdf="'.esc_url($pdf).'"><div class="cel-reader-layout"><div class="cel-reader-thumbs" aria-label="Miniatures des pages"></div><div class="cel-reader-center"><div class="cel-reader-viewport"><div class="cel-reader-spread"><canvas class="cel-reader-left" aria-label="Page de gauche"></canvas><canvas class="cel-reader-right" aria-label="Page de droite"></canvas><canvas class="cel-reader-flip" aria-hidden="true"></canvas></div></div></div></div>';
             echo '<div class="cel-reader-controls"><button type="button" class="cel-reader-prev" aria-label="Page précédente">❮</button><span class="cel-reader-counter">Chargement…</span><input class="cel-reader-progress" type="range" min="1" max="1" value="1" aria-label="Aller à une page"><button type="button" class="cel-reader-next" aria-label="Page suivante">❯</button><button type="button" class="cel-reader-zoom-out" aria-label="Dézoomer">−</button><button type="button" class="cel-reader-zoom-in" aria-label="Zoomer">+</button><button type="button" class="cel-reader-full" aria-label="Plein écran">⛶</button></div><p class="cel-reader-error" hidden></p><a class="cel-reader-fallback" href="'.esc_url($pdf).'" target="_blank" rel="noopener">Ouvrir le PDF</a></div></section>';
         }else echo '<p class="cel-empty-info">Ce livre sera bientôt disponible à la lecture.</p>';
-        $back=Celestin_Fields::value($id,'couverture_arriere');
-        if($back)echo '<p><a class="cel-action-link" href="'.esc_url($back).'" target="_blank" rel="noopener">Voir la quatrième de couverture</a></p>';
+
         echo self::related($id,'cel_coloriage','Les activités de ce livre');
         echo self::related($id,'cel_personnage','Les personnages de ce livre');
         echo self::related($id,'cel_histoire','Mini-histoires associées');

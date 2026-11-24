@@ -405,3 +405,7 @@ body.cel-page .cel-audio-feature .cel-audio-fox-ears{height:clamp(105px,12vw,205
 body.cel-page .cel-audio-feature .cel-section-title,body.cel-page .cel-audio-feature .cel-audio-intro{color:#fff!important}
 body.cel-page .cel-audio-feature .cel-audio-cta>.cel-audio-all:hover,body.cel-page .cel-audio-feature .cel-audio-cta>.cel-audio-all:focus-visible{background:#633619!important;color:#fff!important;border-color:#fff;box-shadow:0 5px 14px #63361955}
 @media(max-width:600px){body.cel-page .cel-audio-feature .cel-audio-fox-ears{height:100px}}
+
+/* Oreilles complètes, sans recadrage ni dégradé. */
+body.cel-page .cel-audio-feature{background:#e98932!important;background-image:none!important}
+body.cel-page .cel-audio-feature .cel-audio-fox-ears{display:block;width:100%;height:clamp(100px,15.28vw,220px);max-height:none;overflow:visible}

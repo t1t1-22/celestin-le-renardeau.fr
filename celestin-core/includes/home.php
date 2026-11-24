@@ -22,7 +22,7 @@ final class Celestin_Home {
             'hero_title_size'=>64, 'hero_text_size'=>18, 'hero_x'=>50, 'hero_y'=>50, 'hero_width'=>680, 'hero_text_location'=>'overlay',
             'hero_intro'=>'Bienvenue dans l’univers de Célestin', 'hero_description'=>'Des histoires à lire, des aventures à écouter et plein de petites activités à découvrir.', 'hero_button'=>'Découvrir l’univers', 'hero_link'=>'#cel-decouvrir',
             'welcome'=>'Un petit coin de nature plein de charme où Célestin vit de grandes et de petites aventures avec Octet, son fidèle compagnon.',
-            'newsletter'=>''
+            'newsletter'=>'','facebook'=>'','instagram'=>'','pinterest'=>''
         ];
     }
     static function options(): array {
@@ -45,8 +45,8 @@ final class Celestin_Home {
     static function admin_assets($hook): void {
         if ($hook !== 'celestin-core_page_celestin-design') return;
         wp_enqueue_media();
-        wp_enqueue_script('celestin-media', plugins_url('../assets/admin.js',__FILE__), ['jquery'], '0.4.12', true);
-        wp_enqueue_style('celestin-admin', plugins_url('../assets/admin.css',__FILE__), [], '0.4.12');
+        wp_enqueue_script('celestin-media', plugins_url('../assets/admin.js',__FILE__), ['jquery'], '0.4.15', true);
+        wp_enqueue_style('celestin-admin', plugins_url('../assets/admin.css',__FILE__), [], '0.4.15');
     }
     static function image_setting(string $key, string $label, array $options): void {
         $id = absint($options[$key] ?? 0);
@@ -118,6 +118,8 @@ final class Celestin_Home {
         echo '<h2>Identité visuelle</h2><p>Le logo en haut du site est aussi utilisé dans le pied de page si aucun autre n’est sélectionné.</p>';
         self::image_setting('logo', 'Logo principal (haut du site)', $o);
         self::image_setting('footer_logo', 'Logo alternatif pour le pied de page (facultatif)', $o);
+        echo '<h2>Réseaux sociaux</h2><p>Les icônes apparaissent dans le header des pages intérieures lorsque leur lien est renseigné.</p>';
+        foreach(['facebook'=>'Facebook','instagram'=>'Instagram','pinterest'=>'Pinterest'] as $key=>$label)self::text_setting($key,'Lien '.$label,$o);
         echo '</section>';
 
         echo '<section id="cel-panel-accueil" class="cel-design-panel" role="tabpanel" aria-labelledby="cel-tab-accueil"' . ($active !== 'accueil' ? ' hidden' : '') . '>';
@@ -176,6 +178,7 @@ final class Celestin_Home {
         $out['hero_text_location']=($raw['hero_text_location']??'overlay')==='below'?'below':'overlay';
 
         $out['newsletter']=esc_url_raw($raw['newsletter']??'');
+        foreach(['facebook','instagram','pinterest'] as $key)$out[$key]=esc_url_raw($raw[$key]??'',['http','https']);
         $previous=get_option(self::OPTION,[]);
         $out['featured']=is_array($previous)?($previous['featured']??[]):[];
         if(isset($raw['featured'])&&is_array($raw['featured'])){
@@ -198,8 +201,8 @@ final class Celestin_Home {
     }
     static function assets(): void {
         if (!is_front_page()) return;
-        wp_enqueue_style('celestin-home', plugins_url('../assets/home.css',__FILE__), [], '0.4.12');
-        wp_enqueue_script('celestin-home', plugins_url('../assets/home.js',__FILE__), [], '0.4.12', true);
+        wp_enqueue_style('celestin-home', plugins_url('../assets/home.css',__FILE__), [], '0.4.15');
+        wp_enqueue_script('celestin-home', plugins_url('../assets/home.js',__FILE__), [], '0.4.15', true);
     }
     static function template(string $template): string {
         if (is_front_page() && !is_admin() && !is_feed() && !is_embed() && !is_preview()) return __DIR__.'/front-page.php';

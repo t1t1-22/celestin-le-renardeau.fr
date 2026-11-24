@@ -564,7 +564,7 @@ body.cel-page .cel-feature-slider .cel-feature-layout article.cel-news-card>.cel
 body.cel-page .cel-feature-slider .cel-feature-layout article.cel-news-card>.cel-news-badge{position:absolute!important;z-index:999!important;top:15px!important;left:-12px!important;right:auto!important;bottom:auto!important;border-radius:3px 6px 6px 0!important;transform:none!important;opacity:1!important;background:#e98932!important;box-shadow:1px 3px 5px #542b1933!important}
 
 /* Palette fixe par type, illustration imprimée sur les feuilles arrière. */
-body.cel-page .cel-feature-slide:has(.cel-news-cel_coloriage){--cel-slide-light:#fff5cb;--cel-slide-mid:#f6d46c;--cel-slide-dark:#a57a14}
+body.cel-page .cel-feature-slide:has(.cel-news-cel_coloriage){--cel-slide-light:#ffead6;--cel-slide-mid:#f4ad63;--cel-slide-dark:#b65c19}
 body.cel-page .cel-feature-slide:has(.cel-news-cel_personnage){--cel-slide-light:#ffead6;--cel-slide-mid:#f4ad63;--cel-slide-dark:#b65c19}
 body.cel-page .cel-feature-slide:has(.cel-news-cel_coloriage) .cel-feature-backdrop::after,body.cel-page .cel-feature-slide:has(.cel-news-cel_personnage) .cel-feature-backdrop::after{background:linear-gradient(110deg,var(--cel-slide-mid),var(--cel-slide-light));opacity:.55}
 body.cel-page .cel-feature-layout .cel-news-cel_coloriage .cel-card-image::before,body.cel-page .cel-feature-layout .cel-news-cel_coloriage .cel-card-image::after{content:none!important}

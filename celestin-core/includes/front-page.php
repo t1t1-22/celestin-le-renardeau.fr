@@ -44,6 +44,7 @@ $hero_style='--cel-hero-title-size:'.max(24,min(100,(int)$options['hero_title_si
       $img = get_the_post_thumbnail_url($item->ID, 'medium_large');
       $preview=$item->post_type==='cel_histoire'?(Celestin_Fields::value($item->ID,'resume_audio')?:Celestin_Fields::value($item->ID,'audio')):'';
       $title=get_the_title($item);
+      $new_label=['cel_coloriage'=>'Nouvelle activité','cel_personnage'=>'Nouveau personnage','cel_livre'=>'Nouveau livre','cel_histoire'=>'Nouvelle mini-histoire audio'][$item->post_type]??'Nouvelle découverte';
     ?>
 
 <?php
@@ -60,7 +61,7 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
          <a class="cel-news-image-link" href="<?php echo esc_url(get_permalink($item)); ?>" aria-label="<?php echo esc_attr($title); ?>">
          <?php if($img): ?><img src="<?php echo esc_url($img); ?>" alt="" loading="lazy"><?php else: ?><div class="cel-card-placeholder" aria-hidden="true">✦</div><?php endif; ?>
          </a>
-         <span class="cel-card-type cel-news-badge">Nouveauté</span>
+         <span class="cel-card-type cel-news-badge"><?php echo esc_html($new_label); ?></span>
          <?php if($preview): ?>
          <audio preload="metadata" src="<?php echo esc_url($preview); ?>"></audio>
          <button type="button" class="cel-audio-toggle" aria-label="<?php echo esc_attr('Écouter '.$title); ?>" data-title="<?php echo esc_attr($title); ?>" aria-pressed="false">
@@ -68,9 +69,9 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
          </button><span class="cel-audio-error" role="status" hidden>Audio indisponible.</span>
          <?php endif; ?>
         </div>
-        <div class="cel-card-body"><span class="cel-news-kind"><?php echo esc_html($kind); ?></span><?php if($preview): ?><div class="cel-feature-audio-progress"><input type="range" min="0" max="1000" value="0" aria-label="Progression audio" disabled><div class="cel-feature-audio-times"><span class="cel-time-current">0:00</span><span class="cel-time-total">--:--</span></div></div><?php elseif($item->post_type==='cel_histoire'): ?><span>Audio bientôt disponible</span><?php endif; ?></div>
+        <?php if($item->post_type==='cel_histoire'): ?><div class="cel-card-body"><?php if($preview): ?><div class="cel-feature-audio-progress"><input type="range" min="0" max="1000" value="0" aria-label="Progression audio" disabled><div class="cel-feature-audio-times"><span class="cel-time-current">0:00</span><span class="cel-time-total">--:--</span></div></div><?php elseif($item->post_type==='cel_histoire'): ?><span>Audio bientôt disponible</span><?php endif; ?></div><?php endif; ?>
       </article>
- <div class="cel-feature-copy"><p class="cel-feature-kicker"><?php echo esc_html($kind); ?> · Nouveauté</p><h2><?php echo esc_html($title); ?></h2>
+ <div class="cel-feature-copy"><p class="cel-feature-kicker"><?php echo esc_html($new_label); ?></p><h2><?php echo esc_html($title); ?></h2>
  <?php if($summary): ?><p class="cel-feature-summary"><?php echo esc_html(wp_trim_words(wp_strip_all_tags($summary),65,'…')); ?></p><?php endif; ?>
  <a class="cel-feature-link" href="<?php echo esc_url(get_permalink($item)); ?>"><?php echo esc_html($cta); ?> →</a></div>
  </div>

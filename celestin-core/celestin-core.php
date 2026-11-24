@@ -24,6 +24,10 @@ final class Celestin_Core {
         add_filter('manage_cel_coloriage_posts_columns', [__CLASS__, 'activity_columns']);
         add_action('manage_cel_coloriage_posts_custom_column', [__CLASS__, 'activity_column'], 10, 2);
         add_action('manage_cel_histoire_posts_custom_column', [__CLASS__, 'story_column'], 10, 2);
+        foreach(['cel_lieu','cel_personnage','cel_livre'] as $type){
+            add_filter('manage_'.$type.'_posts_columns',[__CLASS__,'universe_columns']);
+            add_action('manage_'.$type.'_posts_custom_column',[__CLASS__,'universe_column'],10,2);
+        }
         add_filter('post_row_actions', [__CLASS__, 'story_actions'], 10, 2);
         add_action('admin_post_cel_duplicate_story', [__CLASS__, 'duplicate_story']);
         add_action('add_meta_boxes', [__CLASS__, 'meta_boxes']);
@@ -46,6 +50,30 @@ final class Celestin_Core {
         }
         echo '<p>'.(Celestin_Fields::value($id,'pdf')?'✓ Fichier à imprimer':'Fichier à ajouter').'</p>';
         echo '<p>'.(get_post_meta($id,'_cel_section_image_modele_colore',true)?'✓ Modèle colorié':'Modèle colorié à ajouter').'</p>';
+    }
+    static function universe_columns($columns): array {
+        $screen=get_current_screen();
+        $type=$screen?$screen->post_type:'';
+        $labels=['cel_lieu'=>'Lieu','cel_personnage'=>'Personnage','cel_livre'=>'Livre'];
+        return ['cb'=>$columns['cb']??'<input type="checkbox">','cel_story_cover'=>'Illustration','title'=>$labels[$type]??'Titre','cel_story_info'=>'Informations','date'=>'Date'];
+    }
+    static function universe_column($column,$id): void {
+        if($column==='cel_story_cover'){self::story_column($column,$id);return;}
+        if($column!=='cel_story_info')return;
+        $type=get_post_type($id);
+        $fields=$type==='cel_livre'?['collection'=>'Collection','nombre_pages'=>'Pages','mois'=>'Sortie','saison'=>'Saison']:($type==='cel_personnage'?['espece'=>'Espèce','age'=>'Âge','role'=>'Rôle']:['adresse'=>'Emplacement']);
+        foreach($fields as $key=>$label){
+            $value=Celestin_Fields::value($id,$key);
+            if($value!=='')echo '<p><strong>'.esc_html($label).' :</strong> '.esc_html($value).'</p>';
+        }
+        if($type==='cel_livre'){
+            echo '<p>'.(Celestin_Fields::value($id,'pdf')?'✓ PDF du livre':'PDF à ajouter').'</p>';
+            if(get_post_meta($id,'_cel_en_nouveaute',true)==='1')echo '<span class="cel-list-tag">Nouveauté</span>';
+        }
+        if($type==='cel_lieu'){
+            $position=get_post_meta($id,'_cel_map_x',true)!==''&&get_post_meta($id,'_cel_map_y',true)!=='';
+            echo '<p>'.($position?'✓ Position sur la carte':'Position à définir').'</p>';
+        }
     }
     static function story_columns($columns): array {
         return ['cb'=>$columns['cb']??'<input type="checkbox">','cel_story_cover'=>'Illustration','title'=>'Mini-histoire','cel_story_info'=>'Informations','date'=>'Date'];
@@ -83,43 +111,50 @@ final class Celestin_Core {
         wp_safe_redirect(admin_url('post.php?post='.$copy.'&action=edit'));exit;
     }
     static function story_cards_style(): void {
-        $screen=get_current_screen();if(!$screen||!in_array($screen->post_type,['cel_histoire','cel_coloriage'],true))return;
+        $screen=get_current_screen();if(!$screen||!in_array($screen->post_type,['cel_histoire','cel_coloriage','cel_lieu','cel_personnage','cel_livre'],true))return;
         echo '<style>
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) #wpbody-content .wrap{color:#633619}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .wp-list-table{display:block;background:transparent;border:0;box-shadow:none}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .wp-list-table thead,body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .wp-list-table tfoot{display:none}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .wp-list-table tbody{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:20px;padding:16px 0}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .wp-list-table tbody tr{display:flex;flex-direction:column;position:relative;background:#fffdfa;border:1px solid #ead5bb;border-radius:15px;padding:14px;box-shadow:0 3px 12px #6336190c}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .wp-list-table tbody td,body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .wp-list-table tbody th{display:block;width:auto!important;padding:5px 0;border:0}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .wp-list-table .check-column{position:absolute;top:20px;left:20px;z-index:2;padding:0}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .wp-list-table .check-column input{margin:0}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .wp-list-table .row-title{font-size:17px;color:#633619}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .wp-list-table .row-actions{position:static;display:flex;flex-wrap:wrap;gap:5px;padding:8px 0}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .wp-list-table .row-actions a{display:inline-block;border:1px solid #ead5bb;border-radius:6px;padding:4px 8px;color:#633619;text-decoration:none;background:#fff7eb}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .wp-list-table .row-actions .cel_duplicate a{background:#e98932;color:#fff;border-color:#e98932}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .cel-list-cover{width:100%;aspect-ratio:1;object-fit:contain;background:#f6e0d3;border-radius:10px;margin-bottom:10px}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .cel-list-tag{display:inline-block;background:#f6e0d3;padding:3px 8px;border-radius:20px;margin:2px}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .column-cel_story_info p{margin:4px 0;font-size:12px}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .column-date{font-size:12px;color:#80532b}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .toggle-row{display:none}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) #wpbody-content .wrap h1.wp-heading-inline{font-size:26px;font-weight:700;color:#633619}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) #wpbody-content .wrap .page-title-action{background:#e98932;color:#fff;border:1px solid #e98932;border-radius:8px;padding:7px 13px;font-weight:600}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .tablenav .button,body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .search-box .button{border-color:#d6b18c;color:#87481e;background:#fff8ef;border-radius:7px}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .tablenav select{border-color:#d6c2ac;border-radius:7px;color:#633619;background-color:#fffdfa}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .subsubsub a{color:#a95b26}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .wp-list-table tbody{grid-template-columns:repeat(auto-fill,minmax(225px,270px));align-items:start}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .wp-list-table tbody tr{min-height:0;padding:12px;box-sizing:border-box}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .wp-list-table td.column-cel_story_cover{width:100%!important;max-width:100%;padding:0!important;flex:none;min-height:0}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .wp-list-table .cel-list-cover{display:block;position:relative;width:100%!important;height:auto!important;aspect-ratio:1/1;max-height:246px;overflow:hidden;padding:0;margin:0 0 8px;box-sizing:border-box}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .wp-list-table .cel-list-cover img{display:block;position:absolute;inset:0;width:100%!important;height:100%!important;max-height:100%!important;object-fit:contain;margin:0!important}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .wp-list-table .row-title{font-size:17px;line-height:1.35;font-weight:700;color:#633619!important}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .wp-list-table .row-actions{left:auto!important;position:static!important;visibility:visible!important;font-size:0;gap:5px}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .wp-list-table .row-actions span{font-size:0}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .wp-list-table .row-actions a,body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .wp-list-table .row-actions button{display:inline-block;font-size:12px;line-height:1.4;padding:5px 8px;border:1px solid #ead5bb;border-radius:6px;background:#fff7eb;color:#633619;text-decoration:none}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .wp-list-table .row-actions .cel_duplicate a{background:#e98932;color:#fff;border-color:#e98932}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .wp-list-table .row-actions .trash a{color:#a63b32;background:#fff4ef}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .wp-list-table .row-actions .inline{display:none}
-        body:is(.post-type-cel_histoire,.post-type-cel_coloriage) .wp-list-table .row-actions a:hover{border-color:#e98932}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) #wpbody-content .wrap{color:#633619}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .wp-list-table{display:block;background:transparent;border:0;box-shadow:none}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .wp-list-table thead,body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .wp-list-table tfoot{display:none}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .wp-list-table tbody{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:20px;padding:16px 0}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .wp-list-table tbody tr{display:flex;flex-direction:column;position:relative;background:#fffdfa;border:1px solid #ead5bb;border-radius:15px;padding:14px;box-shadow:0 3px 12px #6336190c}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .wp-list-table tbody td,body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .wp-list-table tbody th{display:block;width:auto!important;padding:5px 0;border:0}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .wp-list-table .check-column{position:absolute;top:20px;left:20px;z-index:2;padding:0}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .wp-list-table .check-column input{margin:0}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .wp-list-table .row-title{font-size:17px;color:#633619}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .wp-list-table .row-actions{position:static;display:flex;flex-wrap:wrap;gap:5px;padding:8px 0}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .wp-list-table .row-actions a{display:inline-block;border:1px solid #ead5bb;border-radius:6px;padding:4px 8px;color:#633619;text-decoration:none;background:#fff7eb}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .wp-list-table .row-actions .cel_duplicate a{background:#e98932;color:#fff;border-color:#e98932}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .cel-list-cover{width:100%;aspect-ratio:1;object-fit:contain;background:#f6e0d3;border-radius:10px;margin-bottom:10px}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .cel-list-tag{display:inline-block;background:#f6e0d3;padding:3px 8px;border-radius:20px;margin:2px}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .column-cel_story_info p{margin:4px 0;font-size:12px}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .column-date{font-size:12px;color:#80532b}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .toggle-row{display:none}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) #wpbody-content .wrap h1.wp-heading-inline{font-size:26px;font-weight:700;color:#633619}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) #wpbody-content .wrap .page-title-action{background:#e98932;color:#fff;border:1px solid #e98932;border-radius:8px;padding:7px 13px;font-weight:600}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .tablenav .button,body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .search-box .button{border-color:#d6b18c;color:#87481e;background:#fff8ef;border-radius:7px}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .tablenav select{border-color:#d6c2ac;border-radius:7px;color:#633619;background-color:#fffdfa}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .subsubsub a{color:#a95b26}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .wp-list-table tbody{grid-template-columns:repeat(auto-fill,minmax(225px,270px));align-items:start}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .wp-list-table tbody tr{min-height:0;padding:12px;box-sizing:border-box}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .wp-list-table td.column-cel_story_cover{width:100%!important;max-width:100%;padding:0!important;flex:none;min-height:0}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .wp-list-table .cel-list-cover{display:block;position:relative;width:100%!important;height:auto!important;aspect-ratio:1/1;max-height:246px;overflow:hidden;padding:0;margin:0 0 8px;box-sizing:border-box}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .wp-list-table .cel-list-cover img{display:block;position:absolute;inset:0;width:100%!important;height:100%!important;max-height:100%!important;object-fit:contain;margin:0!important}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .wp-list-table .row-title{font-size:17px;line-height:1.35;font-weight:700;color:#633619!important}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .wp-list-table .row-actions{left:auto!important;position:static!important;visibility:visible!important;font-size:0;gap:5px}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .wp-list-table .row-actions span{font-size:0}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .wp-list-table .row-actions a,body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .wp-list-table .row-actions button{display:inline-block;font-size:12px;line-height:1.4;padding:5px 8px;border:1px solid #ead5bb;border-radius:6px;background:#fff7eb;color:#633619;text-decoration:none}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .wp-list-table .row-actions .cel_duplicate a{background:#e98932;color:#fff;border-color:#e98932}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .wp-list-table .row-actions .trash a{color:#a63b32;background:#fff4ef}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .wp-list-table .row-actions .inline{display:none}
+        body:is(.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .wp-list-table .row-actions a:hover{border-color:#e98932}
+        
+        body:is(.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) #wpcontent{background:#fcf7ef}
+        body:is(.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) #screen-meta-links{display:none}
+        body:is(.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .tablenav.bottom .bulkactions{display:none}
+        body:is(.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .wp-list-table tbody tr.no-items{grid-column:1/-1}
+        body:is(.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .wp-list-table .row-actions .edit a{background:#e98932;color:#fff;border-color:#e98932}
+        body:is(.post-type-cel_lieu,.post-type-cel_personnage,.post-type-cel_livre) .wp-list-table .check-column input{background:white}
         </style>';
     }
     static function register(): void {

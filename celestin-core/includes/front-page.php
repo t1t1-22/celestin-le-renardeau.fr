@@ -176,6 +176,10 @@ body.cel-page .cel-audio-feature{padding-top:clamp(24px,3.5vw,50px)!important}
 body.cel-page .cel-audio-feature .cel-audio-inner{padding-top:8px;padding-bottom:24px}
 body.cel-page .cel-audio-feature .cel-section-title{margin-top:0;margin-bottom:7px}
 body.cel-page .cel-audio-feature .cel-audio-intro{margin-bottom:clamp(24px,3vw,42px)}
+
+/* Ombre chaude et douce sous les cartes, même sans survol. */
+body.cel-page .cel-audio-feature .cel-audio-grid>.cel-audio-card{box-shadow:0 5px 10px rgba(99,54,25,.16),0 12px 25px rgba(99,54,25,.22)}
+body.cel-page .cel-audio-feature .cel-audio-grid>.cel-audio-card:hover,body.cel-page .cel-audio-feature .cel-audio-grid>.cel-audio-card:focus-within{box-shadow:0 0 0 3px #ffd08a,0 8px 14px rgba(99,54,25,.20),0 18px 30px rgba(99,54,25,.30)!important}
 </style>
 
 </head>

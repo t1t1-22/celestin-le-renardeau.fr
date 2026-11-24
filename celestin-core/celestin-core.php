@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Célestin Core
  * Description: Gestion des contenus de l'univers Célestin le renardeau.
- * Version: 0.4.31
+ * Version: 0.4.32
  * Requires PHP: 8.0
  * Text Domain: celestin-core
  */

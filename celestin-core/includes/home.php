@@ -45,8 +45,8 @@ final class Celestin_Home {
     static function admin_assets($hook): void {
         if ($hook !== 'celestin-core_page_celestin-design') return;
         wp_enqueue_media();
-        wp_enqueue_script('celestin-media', plugins_url('../assets/admin.js',__FILE__), ['jquery'], '0.2.2', true);
-        wp_enqueue_style('celestin-admin', plugins_url('../assets/admin.css',__FILE__), [], '0.2.2');
+        wp_enqueue_script('celestin-media', plugins_url('../assets/admin.js',__FILE__), ['jquery'], '0.4.11', true);
+        wp_enqueue_style('celestin-admin', plugins_url('../assets/admin.css',__FILE__), [], '0.4.11');
     }
     static function image_setting(string $key, string $label, array $options): void {
         $id = absint($options[$key] ?? 0);
@@ -60,6 +60,20 @@ final class Celestin_Home {
         echo '<div class="cel-text-setting"><label for="cel_' . esc_attr($key) . '"><strong>' . esc_html($label) . '</strong></label>';
         if ($multiline) echo '<textarea rows="4" name="design[' . esc_attr($key) . ']" id="cel_' . esc_attr($key) . '">' . esc_textarea($options[$key] ?? '') . '</textarea>';
         else echo '<input type="text" name="design[' . esc_attr($key) . ']" id="cel_' . esc_attr($key) . '" value="' . esc_attr($options[$key] ?? '') . '">';
+        echo '</div>';
+    }
+    static function featured_settings(): void {
+        echo '<h2 style="margin-top:32px">Contenus mis en avant</h2><p>Choisis un contenu publié par rubrique. Les nouveautés sont gérées séparément.</p><div class="cel-feature-settings">';
+        foreach(Celestin_Core::TYPES as $type=>$config){
+            $current=self::featured($type,1);
+            $id=$current?(int)$current[0]->ID:0;
+            $posts=get_posts(['post_type'=>$type,'post_status'=>'publish','posts_per_page'=>-1,'orderby'=>'title','order'=>'ASC']);
+            echo '<div class="cel-feature-setting"><label for="featured_'.esc_attr($type).'"><strong>'.esc_html($config[0]).'</strong></label>';
+            if($id&&has_post_thumbnail($id))echo get_the_post_thumbnail($id,'thumbnail',['class'=>'cel-feature-thumb']);
+            echo '<select id="featured_'.esc_attr($type).'" name="design[featured]['.esc_attr($type).']"><option value="0">Aucun contenu</option>';
+            foreach($posts as $p)echo '<option value="'.(int)$p->ID.'"'.selected($id,$p->ID,false).'>'.esc_html($p->post_title).'</option>';
+            echo '</select></div>';
+        }
         echo '</div>';
     }
     static function settings(): void {
@@ -111,6 +125,7 @@ final class Celestin_Home {
         }
         echo '<div class="cel-text-setting"><label for="cel_hero_text_location"><strong>Emplacement du texte</strong></label><select id="cel_hero_text_location" name="design[hero_text_location]"><option value="overlay"'.selected($o['hero_text_location'],'overlay',false).'>Sur l’image</option><option value="below"'.selected($o['hero_text_location'],'below',false).'>Sous l’image</option></select></div>';
 
+        self::featured_settings();
         echo '</section>';
 
         echo '<section id="cel-panel-rubriques" class="cel-design-panel" role="tabpanel" aria-labelledby="cel-tab-rubriques"' . ($active !== 'rubriques' ? ' hidden' : '') . '>';
@@ -152,6 +167,14 @@ final class Celestin_Home {
         $out['hero_text_location']=($raw['hero_text_location']??'overlay')==='below'?'below':'overlay';
 
         $out['newsletter']=esc_url_raw($raw['newsletter']??'');
+        $previous=get_option(self::OPTION,[]);
+        $out['featured']=is_array($previous)?($previous['featured']??[]):[];
+        if(isset($raw['featured'])&&is_array($raw['featured'])){
+            foreach(Celestin_Core::TYPES as $type=>$config){
+                $id=absint($raw['featured'][$type]??0);
+                $out['featured'][$type]=$id&&get_post_type($id)===$type&&get_post_status($id)==='publish'?$id:0;
+            }
+        }
         update_option(self::OPTION,$out);
         $allowed_tabs = ['identite', 'accueil', 'rubriques', 'fleuriville', 'newsletter'];
         $active = isset($_POST['cel_active_tab']) ? sanitize_key(wp_unslash($_POST['cel_active_tab'])) : 'identite';
@@ -172,10 +195,15 @@ final class Celestin_Home {
     // « Afficher cette fiche sur la page d’accueil ».
     static function featured(string $type, int $limit=8): array {
         if (!in_array($type, array_keys(Celestin_Core::TYPES), true)) return [];
+        $saved=self::options()['featured']??[];
+        if(is_array($saved)&&array_key_exists($type,$saved)){
+            $id=absint($saved[$type]);$p=$id?get_post($id):null;
+            return $p&&$p->post_type===$type&&$p->post_status==='publish'?[$p]:[];
+        }
         return get_posts([
             'post_type' => $type,
             'post_status' => 'publish',
-            'posts_per_page' => max(1, min(24, $limit)),
+            'posts_per_page' => 1,
             'meta_key' => '_cel_feature_home',
             'meta_value' => '1',
             'orderby' => 'date',

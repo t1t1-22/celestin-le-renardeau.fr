@@ -47,11 +47,13 @@ jQuery(function($){
 });
 
 jQuery(function($){
- if(!$('body').is('.post-type-cel_livre,.post-type-cel_histoire,.post-type-cel_coloriage'))return;
+ if(!$('body').is('.post-type-cel_livre,.post-type-cel_histoire,.post-type-cel_coloriage,.post-type-cel_personnage'))return;
  const field=$('#cel-book-title'),title=$('#title'),bar=$('.cel-book-savebar');
- if(!field.length||!bar.length)return;
- field.on('input change',()=>title.val(field.val()));
- title.val(field.val());
+ if(!bar.length)return;
+ if($('body').is('.post-type-cel_personnage')){
+   const sync=()=>{const name=[$('#cel_f_prenom').val(),$('#cel_f_nom').val()].map(v=>(v||'').trim()).filter(Boolean).join(' ');title.val(name);$('.cel-person-live-name').text(name||'Nouveau personnage');};
+   $('#cel_f_prenom,#cel_f_nom').on('input change',sync);sync();
+ }else{if(!field.length)return;field.on('input change',()=>title.val(field.val()));title.val(field.val());}
  // Preserve WordPress' native submit actions, nonce, draft and preview logic.
  const publish=$('#publish'),draft=$('#save-post'),preview=$('#post-preview');
  if(!publish.length)return;

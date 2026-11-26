@@ -131,3 +131,53 @@ body.cel-content-page .cel-story-recs h2{font:700 23px/1.3 'Baloo 2','DM Sans',s
 
 /* Typographie commune des titres sur toutes les pages de contenu. */
 body.cel-content-page .cel-content-container :is(h1,h2,h3,h4,h5,h6){font-family:'Baloo 2',sans-serif!important;font-style:normal;font-weight:700}
+
+/* Liseuse des mini-histoires : une page à la fois, sans défilement du récit. */
+.cel-story-actions .cel-story-read-link{border-color:transparent;background:transparent;padding-inline:8px;font-weight:600;color:#96603c}
+.cel-story-actions .cel-story-read-link:hover{background:#fff1df;text-decoration:underline}
+body.cel-ereader-open{overflow:hidden!important}
+dialog.cel-ereader{--paper:#fcf3e5;--ink:#633619;--muted:#956e50;--rule:#e4d1ba;--accent:#b96527;--reader-size:19px;--reader-font:Georgia,serif;box-sizing:border-box;position:fixed;inset:0;margin:0;width:100%;height:100%;height:100dvh;max-width:none;max-height:none;border:0;padding:0;background:var(--paper);color:var(--ink);z-index:99999;overflow:hidden;font-family:Nunito,sans-serif}
+dialog.cel-ereader:not([open]){display:none!important}
+.cel-ereader::backdrop{background:var(--paper)}
+.cel-ereader[data-theme=white]{--paper:#fff;--ink:#382d26;--muted:#6d625a;--rule:#e2ded9;--accent:#b96527}
+.cel-ereader[data-theme=dark]{--paper:#292521;--ink:#f4e3d0;--muted:#cbb59f;--rule:#615146;--accent:#f4ad70;color-scheme:dark}
+.cel-ereader[data-font=sans]{--reader-font:Nunito,Arial,sans-serif}
+.cel-ereader[data-font=rounded]{--reader-font:'Baloo 2',Nunito,sans-serif}
+.cel-ereader *{box-sizing:border-box}
+.cel-ereader-shell{width:min(840px,100%);height:100%;margin:auto;display:flex;flex-direction:column;min-height:0;padding:clamp(10px,2vw,24px) clamp(14px,4vw,38px);padding-top:max(12px,env(safe-area-inset-top));padding-bottom:max(12px,env(safe-area-inset-bottom))}
+.cel-ereader-top,.cel-ereader-tools,.cel-ereader-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0}
+.cel-ereader-brand{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:14px;font-weight:700}
+.cel-ereader button,.cel-ereader select{font:600 14px Nunito,sans-serif;background:transparent;border:1px solid var(--rule);border-radius:10px;padding:8px 12px;color:var(--ink);cursor:pointer;min-height:38px;line-height:1.2}
+.cel-ereader button:hover{border-color:var(--accent)}
+.cel-ereader button:focus-visible,.cel-ereader select:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.cel-ereader button:disabled{opacity:.35;cursor:default}
+.cel-ereader .cel-ereader-close{font-size:26px;line-height:1;width:40px;height:40px;padding:0;border-radius:50%}
+.cel-ereader-tools{padding:10px 0;border-bottom:1px solid var(--rule);justify-content:flex-start;flex-wrap:wrap;gap:8px 12px}
+.cel-ereader-font,.cel-ereader-size,.cel-ereader-themes{display:flex;align-items:center;gap:7px}
+.cel-ereader-font label{font-size:12px;color:var(--muted)}
+.cel-ereader-themes{margin-left:auto}
+.cel-ereader-themes button{width:29px;height:29px;min-height:29px;padding:0;border-radius:50%;border:1px solid #bcae9e}
+.cel-ereader-themes button[data-reader-theme=white]{background:#fff}
+.cel-ereader-themes button[data-reader-theme=cream]{background:#f4e1c7}
+.cel-ereader-themes button[data-reader-theme=dark]{background:#292521}
+.cel-ereader-themes button[aria-pressed=true]{outline:2px solid var(--accent);outline-offset:2px}
+.cel-ereader-heading{text-align:center;flex:none;padding:clamp(8px,2vh,20px) 0}
+.cel-ereader-heading>span{display:block;color:var(--muted);font-size:10px;letter-spacing:.11em;text-transform:uppercase}
+body.cel-content-page .cel-ereader-heading h2{color:var(--ink)!important;font:700 clamp(19px,3vw,30px)/1.2 'Baloo 2',sans-serif!important;margin:5px 0 0!important}
+.cel-ereader-viewport{flex:1;min-height:0;position:relative;overflow:hidden;width:100%;touch-action:pan-y}
+.cel-ereader-paper{width:min(660px,100%);height:100%;margin:0 auto;overflow:hidden;display:flow-root;color:var(--ink);font-family:var(--reader-font);font-size:var(--reader-size);font-weight:400;line-height:1.65;overflow-wrap:anywhere;-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none;cursor:default}
+.cel-ereader-paper *{-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none}
+.cel-ereader-paper p{font:inherit;color:inherit;margin:0 0 .85em!important;padding:0!important}
+.cel-ereader-paper p:last-child{margin-bottom:0!important}
+.cel-ereader-paper[data-first=true] p:first-child::first-letter{float:left;font-size:3.1em;line-height:.95;padding:.07em .12em 0 0;color:var(--accent);font-weight:700}
+.cel-ereader-footer{flex:none;padding-top:10px;border-top:1px solid var(--rule);display:flex;flex-direction:column;gap:8px}
+.cel-ereader-nav button{display:inline-flex;align-items:center;gap:8px;min-width:44px}
+.cel-ereader-nav button span[aria-hidden]{font-size:24px;line-height:1}
+.cel-ereader-nav [data-reader-count]{font-size:13px;font-variant-numeric:tabular-nums;color:var(--muted);white-space:nowrap}
+.cel-ereader-progress{height:3px;border-radius:8px;background:var(--rule);overflow:hidden}
+.cel-ereader-progress span{display:block;width:0;height:100%;background:var(--accent);transition:width .18s}
+.cel-ereader .cel-ereader-audio{align-self:center;display:flex;align-items:center;gap:6px;border:0;min-height:28px;padding:3px 8px;font-size:13px;color:var(--muted)}
+.cel-ereader-audio svg{width:18px;height:18px}
+@media(max-width:480px){.cel-ereader-shell{padding-inline:16px}.cel-ereader-font label{display:none}.cel-ereader-tools{gap:7px}.cel-ereader-tools select,.cel-ereader-tools .cel-ereader-size button{padding:6px 8px;min-height:34px}.cel-ereader-themes{gap:5px}.cel-ereader-themes button{width:24px;height:24px;min-height:24px}.cel-ereader-heading>span{font-size:9px}.cel-ereader-nav-label{font-size:12px}}
+@media(max-height:430px){.cel-ereader-heading{padding:3px 0}.cel-ereader-heading>span{display:none}.cel-ereader-heading h2{font-size:17px!important}.cel-ereader-tools{padding:4px 0}.cel-ereader-footer{padding-top:4px;gap:4px}.cel-ereader-top .cel-ereader-close{width:32px;height:32px;min-height:32px}}
+@media print{dialog.cel-ereader,.cel-ereader-paper{display:none!important}}

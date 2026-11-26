@@ -26,7 +26,10 @@ final class Celestin_Public {
             wp_enqueue_script('cel-pdfjs','https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',[],'3.11.174',true);
             wp_enqueue_script('cel-reader',plugins_url('../assets/reader.js',__FILE__),['cel-pdfjs'],'0.4.83',true);
         }
-        if(is_singular('cel_histoire'))wp_enqueue_script('cel-story',plugins_url('../assets/story.js',__FILE__),[],(string)filemtime(__DIR__.'/../assets/story.js'),true);
+        if(is_singular('cel_histoire')){
+            wp_enqueue_script('cel-story',plugins_url('../assets/story.js',__FILE__),[],(string)filemtime(__DIR__.'/../assets/story.js'),true);
+            wp_enqueue_script('cel-story-reader',plugins_url('../assets/story-reader.js',__FILE__),['cel-story'],(string)filemtime(__DIR__.'/../assets/story-reader.js'),true);
+        }
     }
     static function title(string $type): string {
         return ['cel_personnage'=>'Les personnages','cel_livre'=>'Les livres','cel_histoire'=>'Mini-histoires audio','cel_coloriage'=>'Mes petites activités','cel_lieu'=>'Les lieux de Fleuriville'][$type]??'Découvertes';
@@ -183,22 +186,17 @@ final class Celestin_Public {
         if($resume)echo '<div class="cel-story-resume">'.wpautop(esc_html($resume)).'</div>';
         echo '<div class="cel-story-actions">';
         if($audio)echo '<button type="button" data-story-start class="cel-story-primary" hidden>'.self::story_icon('play').'<span>Écouter l’histoire</span></button>';
-        if($texte)echo '<a class="cel-story-action" data-story-read href="#cel-story-reading">'.self::story_icon('book').'<span>Lire l’histoire</span></a>';
+        if(trim($texte)!=='')echo '<button type="button" class="cel-story-action cel-story-read-link" data-story-read aria-haspopup="dialog" aria-controls="cel-story-reading" hidden>'.self::story_icon('book').'<span>Lire le texte de l’histoire</span></button>';
         echo '<button type="button" class="cel-story-action" data-story-share hidden>'.self::story_icon('share').'<span>Partager</span></button></div><p data-story-status role="status" class="cel-story-status" hidden></p></div></div>';
-        if($texte){
-            $timings=[];
-            foreach(preg_split('/\R/u',$sync) as $line)if(preg_match('/^\s*(\d+(?:[.,]\d+)?)\s*\|(.*)$/u',trim($line),$m))$timings[]=floatval(str_replace(',','.',$m[1]));
-            echo '<details id="cel-story-reading" class="cel-story-reading cel-story-reading-new"><summary>Lire l’histoire</summary><div class="cel-story-transcript" data-cel-story-transcript aria-label="Texte de la mini-histoire">';
-            $idx=0;
-            foreach(preg_split('/\R+/u',trim($texte),-1,PREG_SPLIT_NO_EMPTY) as $paragraph){
-                echo '<p>';
-                foreach(preg_split('/(?<=[.!?…])\s+/u',trim($paragraph),-1,PREG_SPLIT_NO_EMPTY) as $line){
-                    $time=isset($timings[$idx])?' data-start="'.esc_attr((string)$timings[$idx]).'"':'';
-                    echo '<span class="cel-story-sentence"'.$time.'>'.esc_html(trim($line)).' </span>';$idx++;
-                }
-                echo '</p>';
-            }
-            echo '</div></details>';
+        if(trim($texte)!==''){
+            echo '<dialog id="cel-story-reading" class="cel-ereader" data-ereader aria-labelledby="cel-ereader-title"><div class="cel-ereader-shell"><header class="cel-ereader-top"><span class="cel-ereader-brand">'.self::story_icon('book').' Mode lecture</span><button type="button" class="cel-ereader-close" data-reader-close aria-label="Fermer la lecture">×</button></header>';
+            echo '<div class="cel-ereader-tools"><div class="cel-ereader-font"><label for="cel-reader-font">Police</label><select id="cel-reader-font" data-reader-font><option value="serif">Classique</option><option value="sans">Sans serif</option><option value="rounded">Arrondie</option></select></div><div class="cel-ereader-size" role="group" aria-label="Taille du texte"><button type="button" data-reader-smaller aria-label="Réduire le texte">A−</button><button type="button" data-reader-larger aria-label="Agrandir le texte">A+</button></div><div class="cel-ereader-themes" role="group" aria-label="Couleur du fond"><button type="button" data-reader-theme="white" aria-label="Fond blanc" title="Blanc"></button><button type="button" data-reader-theme="cream" aria-label="Fond crème" title="Crème"></button><button type="button" data-reader-theme="dark" aria-label="Mode nuit" title="Nuit"></button></div></div>';
+            echo '<div class="cel-ereader-heading"><span>Les mini-histoires de Célestin</span><h2 id="cel-ereader-title">'.esc_html($title).'</h2></div><div class="cel-ereader-viewport" data-reader-viewport><div class="cel-ereader-paper" data-reader-paper role="document" aria-label="Page de l’histoire"></div></div>';
+            echo '<footer class="cel-ereader-footer"><div class="cel-ereader-nav"><button type="button" data-reader-prev aria-label="Page précédente"><span aria-hidden="true">‹</span><span class="cel-ereader-nav-label">Précédente</span></button><span data-reader-count role="status" aria-live="polite">Page 1</span><button type="button" data-reader-next aria-label="Page suivante"><span class="cel-ereader-nav-label">Suivante</span><span aria-hidden="true">›</span></button></div><div class="cel-ereader-progress" role="progressbar" aria-label="Progression de lecture" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-reader-progress><span></span></div>';
+            if($audio)echo '<button type="button" class="cel-ereader-audio" data-reader-audio>'.self::story_icon('play').'<span>Écouter l’histoire</span></button>';
+            echo '</footer></div><template data-reader-source>';
+            foreach(preg_split('/\R+/u',trim($texte),-1,PREG_SPLIT_NO_EMPTY) as $paragraph)echo '<p>'.esc_html(trim($paragraph)).'</p>';
+            echo '</template></dialog>';
         }
         $collection=wp_get_object_terms($id,Celestin_Library::TAX['collection'],['fields'=>'ids']);
         $themes=wp_get_object_terms($id,Celestin_Library::TAX['categorie'],['fields'=>'ids']);

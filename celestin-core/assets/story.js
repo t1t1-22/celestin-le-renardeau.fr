@@ -54,19 +54,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(navigator.share){try{await navigator.share({title:page.dataset.storyTitle,url});return;}catch(e){if(e.name==='AbortError')return;}}
   try{await navigator.clipboard.writeText(url);announce('Lien de l’histoire copié !');}catch(e){window.prompt('Copier le lien de l’histoire :',url);}
  };
- const reading=document.getElementById('cel-story-reading'),read=page.querySelector('[data-story-read]');
- if(read&&reading)read.addEventListener('click',()=>{reading.open=true;});
- if(reading&&location.hash==='#cel-story-reading')reading.open=true;
- const transcript=document.querySelector('[data-cel-story-transcript]');
- if(audio&&transcript){
-  const sentences=Array.from(transcript.querySelectorAll('.cel-story-sentence')),timings=sentences.map(s=>parseFloat(s.dataset.start));
-  if(sentences.length&&timings.every(Number.isFinite)){
-   let index=-1;
-   const highlight=()=>{let i=-1;for(let j=0;j<timings.length;j++)if(audio.currentTime>=timings[j])i=j;if(i===index)return;sentences.forEach((s,k)=>s.classList.toggle('is-current',k===i));index=i;};
-   ['timeupdate','seeked','play'].forEach(e=>audio.addEventListener(e,highlight));
-   audio.addEventListener('ended',()=>{sentences.forEach(s=>s.classList.remove('is-current'));index=-1;});
-  }
- }
  document.querySelectorAll('[data-story-recs]').forEach(root=>{
   const track=root.querySelector('.cel-story-recs-track'),nav=root.querySelector('.cel-story-recs-nav'),prev=root.querySelector('[data-rec-prev]'),next=root.querySelector('[data-rec-next]');
   const sync=()=>{const max=track.scrollWidth-track.clientWidth;nav.hidden=max<=2;prev.disabled=track.scrollLeft<=2;next.disabled=track.scrollLeft>=max-2;};

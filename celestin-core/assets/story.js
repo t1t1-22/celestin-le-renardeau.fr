@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded',()=>{
    page.querySelector('[data-story-duration]').textContent=format(audio.duration);
    const valid=Number.isFinite(audio.duration)&&audio.duration>0;seek.disabled=!valid;
    seek.value=valid?Math.round(1000*audio.currentTime/audio.duration):0;
+   seek.style.setProperty('--cel-audio-progress',(Number(seek.value)/10)+'%');
    if(valid){page.querySelector('[data-story-duration-meta]').hidden=false;page.querySelector('[data-story-duration-label]').textContent=Math.floor(audio.duration/60)+' min '+Math.floor(audio.duration%60)+' s';}
    mute.setAttribute('aria-pressed',String(audio.muted));mute.setAttribute('aria-label',audio.muted?'Rétablir le son':'Couper le son');
   }
@@ -39,7 +40,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  }
  if(audio){
   play.onclick=()=>toggle(audio);start.onclick=()=>toggle(audio);mute.onclick=()=>{audio.muted=!audio.muted;};
-  seek.addEventListener('input',()=>{if(Number.isFinite(audio.duration))audio.currentTime=audio.duration*Number(seek.value)/1000;});
+  seek.addEventListener('input',()=>{seek.style.setProperty('--cel-audio-progress',(Number(seek.value)/10)+'%');if(Number.isFinite(audio.duration))audio.currentTime=audio.duration*Number(seek.value)/1000;});
   audio.controls=false;audio.hidden=true;page.querySelector('.cel-story-player-ui').hidden=false;start.hidden=false;
  }
  if(preview){teaser.onclick=()=>toggle(preview);preview.controls=false;preview.hidden=true;teaser.hidden=false;}

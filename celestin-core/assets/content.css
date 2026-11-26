@@ -189,3 +189,31 @@ body.cel-content-page .cel-ereader-heading h2{color:var(--ink)!important;font:70
  .cel-ereader::backdrop{background:rgba(38,25,17,.48);backdrop-filter:blur(3px)}
  .cel-ereader-shell{padding:24px 34px 20px}
 }
+
+/* Curseur audio personnalisé, sans l'apparence native bleue d'Astra. */
+body.cel-content-page .cel-story-player-progress input[data-story-seek]{
+ --cel-audio-progress:0%;display:block;box-sizing:border-box;width:100%;height:24px;
+ margin:0;padding:0;border:0;border-radius:0;box-shadow:none;background:transparent;
+ -webkit-appearance:none;appearance:none;accent-color:#e98932;cursor:pointer;touch-action:pan-y;
+}
+body.cel-content-page .cel-story-player-progress input[data-story-seek]::-webkit-slider-runnable-track{
+ height:6px;border:0;border-radius:99px;box-shadow:none;
+ background:linear-gradient(to right,#e98932 0%,#e98932 var(--cel-audio-progress),#e8d8c6 var(--cel-audio-progress),#e8d8c6 100%);
+}
+body.cel-content-page .cel-story-player-progress input[data-story-seek]::-webkit-slider-thumb{
+ -webkit-appearance:none;appearance:none;box-sizing:border-box;width:16px;height:16px;margin-top:-5px;
+ border:2px solid #fff9f0;border-radius:50%;background:#e98932;box-shadow:0 1px 4px #a95f3445;
+}
+body.cel-content-page .cel-story-player-progress input[data-story-seek]::-moz-range-track{
+ height:6px;border:0;border-radius:99px;box-shadow:none;background:#e8d8c6;
+}
+body.cel-content-page .cel-story-player-progress input[data-story-seek]::-moz-range-progress{
+ height:6px;border:0;border-radius:99px;background:#e98932;
+}
+body.cel-content-page .cel-story-player-progress input[data-story-seek]::-moz-range-thumb{
+ box-sizing:border-box;width:16px;height:16px;border:2px solid #fff9f0;border-radius:50%;
+ background:#e98932;box-shadow:0 1px 4px #a95f3445;
+}
+body.cel-content-page .cel-story-player-progress input[data-story-seek]:focus-visible{outline:2px solid #a85e20;outline-offset:3px;border-radius:8px}
+body.cel-content-page .cel-story-player-progress input[data-story-seek]:disabled{opacity:.6;cursor:default}
+.cel-story-player-progress .cel-story-times{color:#7a4a2a;margin-top:0;font-size:12px}

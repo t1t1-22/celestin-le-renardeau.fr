@@ -65,6 +65,21 @@ final class Celestin_Library {
   if(!$id||!$t||is_wp_error($t))wp_send_json_error('Création impossible.',400);
   wp_send_json_success(['id'=>$id,'name'=>$t->name]);
  }
+ static function ordered_theme_ids($id): array {
+  $ids=wp_get_object_terms($id,self::TAX['categorie'],['fields'=>'ids']);
+  if(is_wp_error($ids)||!$ids)return [];
+  $ids=array_map('intval',$ids);
+  $saved=array_map('absint',(array)get_post_meta($id,'_cel_theme_order',true));
+  return array_values(array_unique(array_merge(array_intersect($saved,$ids),$ids)));
+ }
+ static function ordered_themes($id): array {
+  $names=[];
+  foreach(self::ordered_theme_ids($id) as $term_id){
+   $term=get_term($term_id,self::TAX['categorie']);
+   if($term&&!is_wp_error($term))$names[]=$term->name;
+  }
+  return $names;
+ }
  static function choices($id,$key){
   $tax=self::TAX[$key];$terms=get_terms(['taxonomy'=>$tax,'hide_empty'=>false]);$selected=wp_get_object_terms($id,$tax,['fields'=>'ids']);
   if(is_wp_error($terms))$terms=[];if(is_wp_error($selected))$selected=[];
@@ -73,6 +88,7 @@ final class Celestin_Library {
   }
   $compact=in_array($key,['categorie','collection','evenement'],true);
   echo '<div class="cel-field cel-tax-picker" data-key="'.esc_attr($key).'" data-nonce="'.esc_attr(wp_create_nonce('cel_library_term')).'"><label>'.esc_html(self::LABELS[$key]).'</label>';
+  if($key==='categorie')echo '<input type="hidden" name="cel_theme_order" class="cel-theme-order" value="'.esc_attr(implode(',',self::ordered_theme_ids($id))).'"><p class="description cel-theme-order-help">Déplace les thèmes pour définir leur ordre. Le premier est affiché sur la carte de l’accueil.</p>';
   if($compact)echo '<div class="cel-tax-selected"></div><details class="cel-tax-details"><summary>Rechercher et sélectionner <span class="cel-tax-count"></span></summary><input type="search" class="cel-tax-search" maxlength="150" placeholder="Rechercher ou créer…" aria-label="Rechercher dans '.esc_attr(self::LABELS[$key]).'">';
   echo '<div class="cel-lib-choices">';
   foreach($terms as $t)echo '<label><input type="checkbox" name="cel_lib['.esc_attr($key).'][]" value="'.(int)$t->term_id.'"'.checked(in_array((int)$t->term_id,array_map('intval',$selected),true),true,false).'> <span>'.esc_html($t->name).'</span></label>';
@@ -95,11 +111,15 @@ final class Celestin_Library {
   foreach(self::TAX as $key=>$tax){
    $ids=array_map('absint',(array)($_POST['cel_lib'][$key]??[]));
    $ids=array_values(array_filter($ids,fn($i)=>term_exists($i,$tax)));
-   wp_set_object_terms($id,array_unique($ids),$tax);
+   $result=wp_set_object_terms($id,array_unique($ids),$tax);
+   if($key==='categorie'&&!is_wp_error($result)&&isset($_POST['cel_theme_order'])&&is_string($_POST['cel_theme_order'])){
+    $order=array_map('absint',explode(',',wp_unslash($_POST['cel_theme_order'])));
+    update_post_meta($id,'_cel_theme_order',array_values(array_unique(array_merge(array_intersect($order,$ids),$ids))));
+   }
   }
  }
  static function display($id,$key){
-  $terms=wp_get_object_terms($id,self::TAX[$key],['fields'=>'names']);if(is_wp_error($terms)||!$terms)return (string)get_post_meta($id,'_cel_f_'.$key,true);
+  $terms=$key==='categorie'?self::ordered_themes($id):wp_get_object_terms($id,self::TAX[$key],['fields'=>'names']);if(is_wp_error($terms)||!$terms)return (string)get_post_meta($id,'_cel_f_'.$key,true);
   if($key!=='age_lecture')return implode(', ',$terms);
   $ranges=[];$others=[];foreach($terms as $t){if(preg_match('/^(\d+)\s*[-–]\s*(\d+)$/u',$t,$m))$ranges[]=[(int)$m[1],(int)$m[2]];else $others[]=$t;}
   usort($ranges,fn($a,$b)=>$a[0]<=>$b[0]);$merged=[];foreach($ranges as $r){$i=count($merged)-1;if($i>=0&&$r[0]<=$merged[$i][1])$merged[$i][1]=max($merged[$i][1],$r[1]);else $merged[]=$r;}

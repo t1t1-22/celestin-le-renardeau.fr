@@ -386,7 +386,7 @@ $summary=$summary?:$item->post_excerpt;
 $kicker=$item->post_type==='cel_coloriage'?(Celestin_Fields::value($item->ID,'type')?:'Activité'):($item->post_type==='cel_personnage'?'':$new_label);
 $story_tags=[];$story_under_image=[];$themes=[];
 if(in_array($item->post_type,['cel_histoire','cel_coloriage'],true)){
- $themes=wp_get_object_terms($item->ID,Celestin_Library::TAX['categorie'],['fields'=>'names']);
+ $themes=Celestin_Library::ordered_themes($item->ID);
  if($item->post_type==='cel_coloriage'&&(is_wp_error($themes)||!$themes))$themes=wp_get_object_terms($item->ID,'cel_theme_cel_coloriage',['fields'=>'names']);
  if($item->post_type==='cel_histoire')$kicker=(!is_wp_error($themes)&&$themes)?implode(' · ',$themes):'Mini-histoire audio';
  $labels=['collection'=>'Collection','saison'=>'Saison','mois'=>'Date de sortie','age_lecture'=>'Âge','evenement'=>'Événement'];
@@ -406,7 +406,7 @@ if(in_array($item->post_type,['cel_histoire','cel_coloriage'],true)){
  if(!$summary&&$item->post_type==='cel_histoire')$summary=Celestin_Fields::value($item->ID,'texte');
 }
 if($item->post_type==='cel_livre'){
- $themes=wp_get_object_terms($item->ID,Celestin_Library::TAX['categorie'],['fields'=>'names']);
+ $themes=Celestin_Library::ordered_themes($item->ID);
  if(is_wp_error($themes)||!$themes){$theme_value=Celestin_Fields::value($item->ID,'categorie');$themes=$theme_value?[$theme_value]:[];}
  foreach(['collection'=>'Collection','mois'=>'Date de sortie','saison'=>'Saison','age_lecture'=>'Âge','evenement'=>'Événement'] as $key=>$label){
   $terms=wp_get_object_terms($item->ID,Celestin_Library::TAX[$key],['fields'=>'names']);
@@ -522,7 +522,7 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
  <div class="cel-audio-grid cel-story-track" tabindex="0" aria-label="Cartes des mini-histoires">
  <?php foreach($stories as $story):
  $title=get_the_title($story);$mp3=Celestin_Fields::value($story->ID,'resume_audio')?:Celestin_Fields::value($story->ID,'audio');
- $terms=get_the_terms($story->ID,Celestin_Library::TAX['categorie']);$theme=($terms&&!is_wp_error($terms))?$terms[0]->name:'';
+ $terms=Celestin_Library::ordered_themes($story->ID);$theme=$terms[0]??'';
  ?>
  <article class="cel-audio-card">
  <div class="cel-audio-art">
@@ -582,7 +582,7 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
    <?php if($activities): ?>
    <div class="cel-play-grid<?php echo count($activities)===1?' cel-play-single':''; ?>">
    <?php foreach($activities as $act): $kind=Celestin_Fields::value($act->ID,'type');
-    $themes=wp_get_object_terms($act->ID,Celestin_Library::TAX['categorie'],['fields'=>'names']);
+    $themes=Celestin_Library::ordered_themes($act->ID);
     $events=wp_get_object_terms($act->ID,Celestin_Library::TAX['evenement'],['fields'=>'names']);
     if(is_wp_error($themes)||!$themes)$themes=wp_get_object_terms($act->ID,'cel_theme_cel_coloriage',['fields'=>'names']);
     $details=array_unique(array_merge(is_array($themes)?$themes:[],is_array($events)?$events:[])); ?>

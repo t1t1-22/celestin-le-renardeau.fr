@@ -142,8 +142,8 @@ final class Celestin_Fields {
             wp_enqueue_script('cel-admin-pdfjs','https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',[],'3.11.174',true);
             wp_enqueue_script('cel-pdf-preview',plugins_url('../assets/pdf-preview.js',__FILE__),['jquery','cel-admin-pdfjs'],'0.4.30',true);
         }
-        wp_enqueue_style('cel-fields',plugins_url('../assets/fields.css',__FILE__),[],'0.4.32');
-        wp_enqueue_script('cel-fields',plugins_url('../assets/fields.js',__FILE__),['jquery'],'0.4.32',true);
+        wp_enqueue_style('cel-fields',plugins_url('../assets/fields.css',__FILE__),[],(string)filemtime(__DIR__.'/../assets/fields.css'));
+        wp_enqueue_script('cel-fields',plugins_url('../assets/fields.js',__FILE__),['jquery'],(string)filemtime(__DIR__.'/../assets/fields.js'),true);
         if($screen->post_type==='cel_coloriage'){
             wp_add_inline_style('cel-fields','
 .post-type-cel_coloriage #wpcontent{background:#fcf7ef}

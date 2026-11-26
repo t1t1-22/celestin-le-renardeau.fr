@@ -72,9 +72,34 @@ jQuery(function($){
  $('.cel-tax-picker').each(function(){
    const root=$(this),list=root.find('.cel-lib-choices'),selected=root.find('.cel-tax-selected'),search=root.find('.cel-tax-search');
    if(!selected.length)return;
+   const orderField=root.find('.cel-theme-order'),ordered=orderField.length>0;
+   let order=ordered?String(orderField.val()||'').split(',').filter(Boolean):[],dragged=null;
+   function move(id,to){
+     const from=order.indexOf(id);if(from<0||to<0||to>=order.length||from===to)return;
+     order.splice(from,1);order.splice(to,0,id);refresh();
+   }
    function refresh(){
      selected.empty();const checked=list.find('input:checked');
-     checked.each(function(){const input=$(this),name=input.closest('label').find('span').text();$('<button>',{type:'button',class:'cel-tax-chip',text:name+' ×','aria-label':'Retirer '+name}).on('click',()=>{input.prop('checked',false).trigger('change')}).appendTo(selected)});
+     const byId=new Map(checked.toArray().map(el=>[String(el.value),$(el)]));
+     if(ordered){order=order.filter(id=>byId.has(id));byId.forEach((input,id)=>{if(!order.includes(id))order.push(id)});orderField.val(order.join(','));}
+     const ids=ordered?order:[...byId.keys()];
+     ids.forEach((id,index)=>{
+       const input=byId.get(id),name=input.closest('label').find('span').text();
+       if(!ordered){$('<button>',{type:'button',class:'cel-tax-chip',text:name+' ×','aria-label':'Retirer '+name}).on('click',()=>{input.prop('checked',false).trigger('change')}).appendTo(selected);return;}
+       const chip=$('<span>',{class:'cel-tax-chip cel-theme-chip'+(index===0?' is-primary':''),draggable:'true'});
+       chip.append($('<span>',{class:'cel-theme-grip',text:'⠿','aria-hidden':'true'}),$('<span>',{class:'cel-theme-name',text:name}));
+       if(index===0)chip.append($('<small>',{class:'cel-theme-primary',text:'Principal'}));
+       [-1,1].forEach(step=>{
+         $('<button>',{type:'button',class:'cel-theme-move',text:step<0?'←':'→','aria-label':(step<0?'Avancer ':'Reculer ')+name,disabled:index+step<0||index+step>=order.length}).on('click',()=>{move(id,index+step);selected.children().eq(index+step).find('.cel-theme-move').filter(function(){return !this.disabled}).first().trigger('focus');}).appendTo(chip);
+       });
+       $('<button>',{type:'button',class:'cel-theme-remove',text:'×','aria-label':'Retirer '+name}).on('click',()=>input.prop('checked',false).trigger('change')).appendTo(chip);
+       chip.on('dragstart',e=>{dragged=id;const dt=e.originalEvent.dataTransfer;dt.effectAllowed='move';dt.setData('text/plain',id);chip.addClass('is-dragging');});
+       chip.on('dragend',()=>{dragged=null;selected.find('.is-dragging,.is-drop-target').removeClass('is-dragging is-drop-target');});
+       chip.on('dragover',e=>{if(dragged&&dragged!==id){e.preventDefault();e.originalEvent.dataTransfer.dropEffect='move';chip.addClass('is-drop-target');}});
+       chip.on('dragleave',()=>chip.removeClass('is-drop-target'));
+       chip.on('drop',e=>{if(!dragged)return;e.preventDefault();const source=dragged;dragged=null;move(source,order.indexOf(id));});
+       chip.appendTo(selected);
+     });
      if(!checked.length)selected.append($('<span>',{class:'description',text:'Aucune sélection'}));
      root.find('.cel-tax-count').text('('+checked.length+' sélectionné'+(checked.length>1?'s':'')+')');
    }

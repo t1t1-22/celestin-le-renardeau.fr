@@ -354,8 +354,8 @@ final class Celestin_Home {
     }
     static function assets(): void {
         if (!is_front_page()) return;
-        wp_enqueue_style('celestin-home', plugins_url('../assets/home.css',__FILE__), [], '0.4.83');
-        wp_enqueue_script('celestin-home', plugins_url('../assets/home.js',__FILE__), [], '0.4.83', true);
+        wp_enqueue_style('celestin-home', plugins_url('../assets/home.css',__FILE__), [], '0.4.85');
+        wp_enqueue_script('celestin-home', plugins_url('../assets/home.js',__FILE__), [], '0.4.85', true);
     }
     static function template(string $template): string {
         if (is_front_page() && !is_admin() && !is_feed() && !is_embed() && !is_preview()) return __DIR__.'/front-page.php';

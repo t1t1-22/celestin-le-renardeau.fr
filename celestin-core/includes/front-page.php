@@ -431,7 +431,7 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
          
          <?php if($preview): ?>
          <audio preload="metadata" src="<?php echo esc_url($preview); ?>"></audio>
-         <button type="button" class="cel-audio-toggle" aria-label="<?php echo esc_attr(($item->post_type==='cel_personnage'?'Écouter la présentation de ':'Écouter ').$title); ?>" data-title="<?php echo esc_attr($title); ?>" aria-pressed="false">
+         <button type="button" class="cel-audio-toggle"<?php if($item->post_type==='cel_histoire'): $has_teaser=(bool)Celestin_Fields::value($item->ID,'resume_audio'); ?> data-tooltip-play="<?php echo esc_attr($has_teaser?'Écouter le teaser':'Écouter l’histoire'); ?>" data-tooltip-stop="<?php echo esc_attr($has_teaser?'Arrêter le teaser':'Arrêter l’histoire'); ?>"<?php endif; ?> aria-label="<?php echo esc_attr(($item->post_type==='cel_personnage'?'Écouter la présentation de ':'Écouter ').$title); ?>" data-title="<?php echo esc_attr($title); ?>" aria-pressed="false">
          <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="30" fill="#fffaf3"/><circle cx="32" cy="32" r="26" fill="none" stroke="#e9d3bb" stroke-width="4"/><circle class="cel-audio-ring" cx="32" cy="32" r="26" fill="none" stroke="#e98932" stroke-width="4" pathLength="100" stroke-dasharray="0 100" stroke-linecap="round" transform="rotate(-90 32 32)"/><path class="cel-audio-play" d="M25 20L44 32L25 44Z" fill="#a45b2c"/><rect class="cel-audio-stop" x="23" y="23" width="18" height="18" rx="3" fill="#a45b2c"/></svg>
          </button><span class="cel-audio-error" role="status" hidden>Audio indisponible.</span>
          <?php endif; ?>
@@ -532,7 +532,7 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
  <?php if($theme): ?><span class="cel-audio-theme"><?php echo esc_html($theme); ?></span><?php endif; ?>
  <?php if($mp3): ?>
  <audio preload="none" src="<?php echo esc_url($mp3); ?>"></audio>
- <button type="button" class="cel-audio-toggle" aria-label="<?php echo esc_attr('Écouter '.$title); ?>" data-title="<?php echo esc_attr($title); ?>" aria-pressed="false">
+ <button type="button" class="cel-audio-toggle" data-tooltip-play="<?php echo esc_attr(Celestin_Fields::value($story->ID,'resume_audio')?'Écouter le teaser':'Écouter l’histoire'); ?>" data-tooltip-stop="<?php echo esc_attr(Celestin_Fields::value($story->ID,'resume_audio')?'Arrêter le teaser':'Arrêter l’histoire'); ?>" aria-label="<?php echo esc_attr('Écouter '.$title); ?>" data-title="<?php echo esc_attr($title); ?>" aria-pressed="false">
  <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="30" fill="#fffaf3"/><circle cx="32" cy="32" r="26" fill="none" stroke="#e9d3bb" stroke-width="4"/><circle class="cel-audio-ring" cx="32" cy="32" r="26" fill="none" stroke="#e98932" stroke-width="4" pathLength="100" stroke-dasharray="0 100" stroke-linecap="round" transform="rotate(-90 32 32)"/><path class="cel-audio-play" d="M25 20L44 32L25 44Z" fill="#a45b2c"/><rect class="cel-audio-stop" x="23" y="23" width="18" height="18" rx="3" fill="#a45b2c"/></svg>
  </button><span class="cel-audio-error" role="status" hidden>Audio indisponible.</span>
  <?php endif; ?>

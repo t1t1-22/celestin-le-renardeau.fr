@@ -24,7 +24,7 @@ final class Celestin_Public {
         wp_enqueue_style('cel-content',plugins_url('../assets/content.css',__FILE__),['celestin-home'],(string)filemtime(__DIR__.'/../assets/content.css'));
         if(is_front_page()||is_singular('cel_livre')){
             wp_enqueue_script('cel-pdfjs','https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',[],'3.11.174',true);
-            wp_enqueue_script('cel-reader',plugins_url('../assets/reader.js',__FILE__),['cel-pdfjs'],'0.4.83',true);
+            wp_enqueue_script('cel-reader',plugins_url('../assets/reader.js',__FILE__),['cel-pdfjs'],(string)filemtime(__DIR__.'/../assets/reader.js'),true);
         }
         if(is_singular('cel_histoire')){
             wp_enqueue_script('cel-story',plugins_url('../assets/story.js',__FILE__),[],(string)filemtime(__DIR__.'/../assets/story.js'),true);

@@ -11,18 +11,22 @@ document.querySelectorAll('.cel-book-reader').forEach(reader=>{
  function layout(){
    const full=document.fullscreenElement===controlsRoot;
    const header=document.querySelector('.cel-interior-header');
-   const headerBottom=full?0:Math.max(0,header?.getBoundingClientRect().bottom||0);
+   const headerHeight=full?0:(header?.offsetHeight||0);
    const compact=controlsRoot.classList.contains('cel-reader-compact');
    const controls=controlsRoot.querySelector('.cel-reader-controls');
-   const controlsHeight=Math.max(65,controls?.getBoundingClientRect().height||0);
-   const overhead=controlsHeight+(single()&&!compact?190:110);
+   const controlsHeight=Math.min(120,Math.max(52,controls?.offsetHeight||0));
+   const overhead=controlsHeight+85;
    const cap=full?Infinity:compact?340:480;
-   const available=Math.min(cap,Math.max(100,window.innerHeight-headerBottom-overhead));
+   const available=Math.min(cap,Math.max(220,window.innerHeight-headerHeight-overhead));
    const width=Math.max(1,viewport.clientWidth-10);
-   const base=Math.min(width,available*(single()?1:2));
-   spread.style.width=(base*zoom)+'px';
-   viewport.style.maxHeight=(available+22)+'px';
-   reader.style.setProperty('--cel-reader-height',available+'px');
+   const sides=single()?1:2;
+   const pageSize=Math.min(width/sides,available);
+   const size=Math.round(pageSize*zoom);
+   spread.style.width=(size*sides)+'px';
+   spread.style.height=size+'px';
+   spread.style.setProperty('--cel-page-size',size+'px');
+   viewport.style.maxHeight=(pageSize+26)+'px';
+   reader.style.setProperty('--cel-reader-height',pageSize+'px');
  }
  function fail(){counter.textContent='Lecture indisponible';error.hidden=false;error.textContent='Impossible de charger le PDF. Tu peux l’ouvrir avec le lien ci-dessous.'}
  async function draw(canvas,n,pixels){

@@ -12,8 +12,12 @@ document.querySelectorAll('.cel-book-reader').forEach(reader=>{
    const full=document.fullscreenElement===controlsRoot;
    const header=document.querySelector('.cel-interior-header');
    const headerBottom=full?0:Math.max(0,header?.getBoundingClientRect().bottom||0);
-   const overhead=single()&&!controlsRoot.classList.contains('cel-reader-compact')?235:145;
-   const available=Math.max(140,window.innerHeight-headerBottom-overhead);
+   const compact=controlsRoot.classList.contains('cel-reader-compact');
+   const controls=controlsRoot.querySelector('.cel-reader-controls');
+   const controlsHeight=Math.max(65,controls?.getBoundingClientRect().height||0);
+   const overhead=controlsHeight+(single()&&!compact?190:110);
+   const cap=full?Infinity:compact?340:480;
+   const available=Math.min(cap,Math.max(100,window.innerHeight-headerBottom-overhead));
    const width=Math.max(1,viewport.clientWidth-10);
    const base=Math.min(width,available*(single()?1:2));
    spread.style.width=(base*zoom)+'px';
@@ -63,13 +67,21 @@ document.querySelectorAll('.cel-book-reader').forEach(reader=>{
    }catch(e){fail()}
    finally{busy=false;prev.disabled=page<=1;next.disabled=lastEnd>=pdf.numPages;range.disabled=false;if(lastMobile!==single())show(page);}
  }
- function turn(d){if(!pdf||busy)return;show(d>0?lastEnd+1:Math.max(1,page-1),d)}
+ function turn(d){if(!pdf||busy||(d>0?lastEnd>=pdf.numPages:page<=1))return;show(d>0?lastEnd+1:Math.max(1,page-1),d)}
+ let lastSwipe=0;
+ spread.addEventListener('click',e=>{
+   if(Date.now()-lastSwipe<450||busy||!pdf)return;
+   const rect=spread.getBoundingClientRect();
+   if(single()){turn(e.clientX<rect.left+rect.width/2?-1:1);return;}
+   if(e.target===left&&!left.classList.contains('cel-reader-blank'))turn(-1);
+   else if(e.target===right&&!right.classList.contains('cel-reader-blank'))turn(1);
+ });
  prev.addEventListener('click',()=>turn(-1));next.addEventListener('click',()=>turn(1));range.addEventListener('change',()=>show(Number(range.value),Math.sign(Number(range.value)-page)));
- function changeZoom(d){zoom=Math.min(2,Math.max(1,zoom+d));layout();}
+ function changeZoom(d){zoom=Math.min(2,Math.max(.5,zoom+d));layout();}
  controlsRoot.querySelector('.cel-reader-zoom-in').onclick=()=>changeZoom(.25);
  controlsRoot.querySelector('.cel-reader-zoom-out').onclick=()=>changeZoom(-.25);
  controlsRoot.querySelector('.cel-reader-full').onclick=()=>{if(document.fullscreenElement)document.exitFullscreen?.();else if(controlsRoot.requestFullscreen)controlsRoot.requestFullscreen().catch(()=>{});else reader.classList.toggle('expanded')};
- let touchX=0;spread.addEventListener('touchstart',e=>{touchX=e.changedTouches[0].clientX},{passive:true});spread.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-touchX;if(Math.abs(dx)>65&&zoom===1)turn(dx<0?1:-1)},{passive:true});
+ let touchX=0;spread.addEventListener('touchstart',e=>{touchX=e.changedTouches[0].clientX},{passive:true});spread.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-touchX;if(Math.abs(dx)>65&&zoom<=1){lastSwipe=Date.now();turn(dx<0?1:-1)}},{passive:true});
  window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{layout();if(lastMobile!==single())show(page)},120)});
  document.addEventListener('fullscreenchange',layout);
  if(window.ResizeObserver)new ResizeObserver(layout).observe(viewport.parentElement);

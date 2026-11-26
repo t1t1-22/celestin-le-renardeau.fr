@@ -181,3 +181,11 @@ body.cel-content-page .cel-ereader-heading h2{color:var(--ink)!important;font:70
 @media(max-width:480px){.cel-ereader-shell{padding-inline:16px}.cel-ereader-font label{display:none}.cel-ereader-tools{gap:7px}.cel-ereader-tools select,.cel-ereader-tools .cel-ereader-size button{padding:6px 8px;min-height:34px}.cel-ereader-themes{gap:5px}.cel-ereader-themes button{width:24px;height:24px;min-height:24px}.cel-ereader-heading>span{font-size:9px}.cel-ereader-nav-label{font-size:12px}}
 @media(max-height:430px){.cel-ereader-heading{padding:3px 0}.cel-ereader-heading>span{display:none}.cel-ereader-heading h2{font-size:17px!important}.cel-ereader-tools{padding:4px 0}.cel-ereader-footer{padding-top:4px;gap:4px}.cel-ereader-top .cel-ereader-close{width:32px;height:32px;min-height:32px}}
 @media print{dialog.cel-ereader,.cel-ereader-paper{display:none!important}}
+
+/* Sur ordinateur, la liseuse s'ouvre en fenêtre modale. Sur écran tactile
+   ou étroit, le mode plein écran reste inchangé. */
+@media (min-width:1025px) and (hover:hover) and (pointer:fine){
+ dialog.cel-ereader{inset:0;margin:auto;width:min(820px,calc(100vw - 80px));height:min(820px,calc(100vh - 64px));height:min(820px,calc(100dvh - 64px));border:1px solid var(--rule);border-radius:24px;box-shadow:0 24px 90px #22140e55}
+ .cel-ereader::backdrop{background:rgba(38,25,17,.48);backdrop-filter:blur(3px)}
+ .cel-ereader-shell{padding:24px 34px 20px}
+}

@@ -54,11 +54,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(navigator.share){try{await navigator.share({title:page.dataset.storyTitle,url});return;}catch(e){if(e.name==='AbortError')return;}}
   try{await navigator.clipboard.writeText(url);announce('Lien de l’histoire copié !');}catch(e){window.prompt('Copier le lien de l’histoire :',url);}
  };
- const fav=page.querySelector('[data-story-favorite]'),key='celestin-favorite-'+page.dataset.storyId;
- try{
-  const update=()=>{const on=localStorage.getItem(key)==='1';fav.setAttribute('aria-pressed',String(on));fav.querySelector('span').textContent=on?'Retirer des favoris':'Ajouter aux favoris';};update();fav.hidden=false;
-  fav.onclick=()=>{try{if(localStorage.getItem(key)==='1')localStorage.removeItem(key);else localStorage.setItem(key,'1');update();}catch(e){announce('Les favoris ne sont pas disponibles sur ce navigateur.');}};
- }catch(e){}
  const reading=document.getElementById('cel-story-reading'),read=page.querySelector('[data-story-read]');
  if(read&&reading)read.addEventListener('click',()=>{reading.open=true;});
  if(reading&&location.hash==='#cel-story-reading')reading.open=true;

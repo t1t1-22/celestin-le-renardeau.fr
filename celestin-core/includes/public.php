@@ -184,7 +184,7 @@ final class Celestin_Public {
         echo '<div class="cel-story-actions">';
         if($audio)echo '<button type="button" data-story-start class="cel-story-primary" hidden>'.self::story_icon('play').'<span>Écouter l’histoire</span></button>';
         if($texte)echo '<a class="cel-story-action" data-story-read href="#cel-story-reading">'.self::story_icon('book').'<span>Lire l’histoire</span></a>';
-        echo '<button type="button" class="cel-story-action" data-story-favorite hidden aria-pressed="false">'.self::story_icon('heart').'<span>Ajouter aux favoris</span></button><button type="button" class="cel-story-action" data-story-share hidden>'.self::story_icon('share').'<span>Partager</span></button></div><p data-story-status role="status" class="cel-story-status" hidden></p></div></div>';
+        echo '<button type="button" class="cel-story-action" data-story-share hidden>'.self::story_icon('share').'<span>Partager</span></button></div><p data-story-status role="status" class="cel-story-status" hidden></p></div></div>';
         if($texte){
             $timings=[];
             foreach(preg_split('/\R/u',$sync) as $line)if(preg_match('/^\s*(\d+(?:[.,]\d+)?)\s*\|(.*)$/u',trim($line),$m))$timings[]=floatval(str_replace(',','.',$m[1]));

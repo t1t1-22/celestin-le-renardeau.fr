@@ -14,12 +14,26 @@ body.cel-content-page .cel-character-archive .cel-archive-description h2{font:70
 .cel-character-role{grid-column:1/-1}
 body.cel-content-page .cel-character-archive .cel-archive-description>span{margin-top:auto;color:#a76129}
 @media(max-width:520px){body.cel-content-page .cel-character-archive{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}body.cel-content-page .cel-character-archive .cel-archive-description{padding:10px}body.cel-content-page .cel-character-archive .cel-archive-description h2{font-size:18px}.cel-character-summary{gap:6px}.cel-character-fact dd{font-size:12px}}
+</style><?php endif; ?><?php if($type==='cel_livre'): ?><style>
+body.cel-content-page .cel-bookshelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,210px),1fr));gap:36px 26px;align-items:start;padding:22px 18px 12px;background:linear-gradient(180deg,#f9efe0,#fff9f0);border:1px solid #eddbc3;border-radius:20px}
+body.cel-content-page .cel-bookshelf .cel-archive-card{display:flex;flex-direction:column;align-items:center;background:transparent;border:0;border-radius:0;box-shadow:none;overflow:visible;text-decoration:none!important;color:#633619;min-width:0}
+body.cel-content-page .cel-bookshelf .cel-archive-thumb{position:relative;isolation:isolate;width:100%;height:auto;aspect-ratio:1.04;background:transparent;overflow:visible;display:flex;align-items:flex-end;justify-content:center;padding:12px 16px 18px;box-sizing:border-box}
+body.cel-content-page .cel-bookshelf .cel-archive-thumb:before{content:"";position:absolute;z-index:-1;bottom:0;left:-9px;right:-9px;height:20px;border-radius:3px;background:linear-gradient(to bottom,#edc99b 0 42%,#c88a50 43% 85%,#b57640 86%);box-shadow:0 7px 10px #80522826}
+body.cel-content-page .cel-bookshelf .cel-archive-thumb img{display:block;width:100%;height:auto;aspect-ratio:1;object-fit:contain;max-height:100%;border-radius:3px 7px 7px 3px;box-shadow:5px 1px 0 #f1e4ce,8px 2px 0 #b88d65,11px 9px 16px #63361938;transform:perspective(900px) rotateY(-7deg);transform-origin:left center;transition:transform .25s ease,box-shadow .25s ease}
+body.cel-content-page .cel-bookshelf .cel-archive-card:is(:hover,:focus-visible) .cel-archive-thumb img{transform:perspective(900px) rotateY(0deg) translateY(-7px);box-shadow:4px 1px 0 #f1e4ce,7px 2px 0 #b88d65,12px 15px 20px #63361932}
+body.cel-content-page .cel-bookshelf .cel-archive-description{padding:14px 4px 4px;text-align:center;width:100%}
+body.cel-content-page .cel-bookshelf .cel-archive-description h2{font-size:20px;line-height:1.2;color:#633619;margin:0 0 5px;text-decoration:none!important}
+body.cel-content-page .cel-bookshelf .cel-archive-description span{color:#a76129;text-decoration:none!important}
+body.cel-content-page .cel-bookshelf .cel-archive-card:focus-visible{outline:2px solid #e98932;outline-offset:6px;border-radius:8px}
+@media(min-width:700px){body.cel-content-page .cel-bookshelf{grid-template-columns:repeat(auto-fill,minmax(210px,250px));justify-content:start;padding:26px 26px 18px}}
+@media(max-width:520px){body.cel-content-page .cel-bookshelf{grid-template-columns:repeat(2,minmax(0,1fr));padding:12px 12px 8px;gap:22px 14px}body.cel-content-page .cel-bookshelf .cel-archive-thumb{padding:8px 9px 13px}body.cel-content-page .cel-bookshelf .cel-archive-thumb:before{height:14px;left:-4px;right:-4px}body.cel-content-page .cel-bookshelf .cel-archive-description h2{font-size:16px}}
+@media(prefers-reduced-motion:reduce){body.cel-content-page .cel-bookshelf .cel-archive-thumb img{transition:none}}
 </style><?php endif; ?></head>
 <body <?php body_class('cel-content-page'); ?>><?php wp_body_open(); ?>
 <?php require __DIR__.'/interior-header.php'; ?>
 <main class="cel-content-container"><?php $view=sanitize_key($_GET['vue']??''); if($type==='cel_lieu'&&$view!=='lieux'): if($view==='galerie')Celestin_Town::gallery();else Celestin_Town::town(); else: ?><h1><?php echo esc_html($heading); ?></h1>
 <?php if(in_array($type,['cel_histoire','cel_coloriage'],true))Celestin_Library::filter_form($type); ?>
-<?php if(have_posts()): ?><div class="cel-archive-grid<?php echo $type==='cel_personnage'?' cel-character-archive':''; ?>"><?php while(have_posts()):the_post(); ?>
+<?php if(have_posts()): ?><div class="cel-archive-grid<?php echo $type==='cel_personnage'?' cel-character-archive':($type==='cel_livre'?' cel-bookshelf':''); ?>"><?php while(have_posts()):the_post(); ?>
 <a class="cel-archive-card" href="<?php the_permalink(); ?>"><div class="cel-archive-thumb"><?php echo Celestin_Public::illustration(get_the_ID(),'medium_large'); ?></div><div class="cel-archive-description"><h2><?php echo esc_html(get_the_title()); ?></h2><?php if($type==='cel_personnage'): ?><dl class="cel-character-summary"><?php foreach(['espece'=>'Espèce','age'=>'Âge','genre'=>'Genre','role'=>'Rôle'] as $key=>$label): $value=Celestin_Fields::value(get_the_ID(),$key);if($value==='')continue;if($key==='age'&&preg_match('/^\d+$/',trim($value)))$value.=' ans'; ?><div class="cel-character-fact<?php echo $key==='role'?' cel-character-role':''; ?>"><dt><?php echo esc_html($label); ?></dt><dd><?php echo esc_html($value); ?></dd></div><?php endforeach; ?></dl><?php endif; ?><span>Découvrir →</span></div></a>
 <?php endwhile; ?></div><div class="cel-pagination"><?php the_posts_pagination(); ?></div>
 <?php else: ?><p class="cel-empty-info">Aucun contenu ne correspond à cette sélection.</p><?php endif; ?><?php endif; ?></main>

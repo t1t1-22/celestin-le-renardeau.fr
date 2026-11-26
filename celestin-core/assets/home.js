@@ -108,3 +108,19 @@ document.addEventListener('DOMContentLoaded',()=>{
   prev.onclick=()=>step(-1);next.onclick=()=>step(1);track.addEventListener('scroll',sync,{passive:true});window.addEventListener('resize',resize);resize();
  });
 });
+
+document.addEventListener('DOMContentLoaded',()=>{
+ // Duration of the full narration, not the teaser. No autoplay.
+ const items=[...document.querySelectorAll('[data-cel-duration-url]')];
+ const load=el=>{
+   const media=new Audio();media.preload='metadata';
+   const cleanup=()=>{media.removeAttribute('src');media.load()};
+   media.addEventListener('loadedmetadata',()=>{
+     const d=media.duration;
+     if(Number.isFinite(d)&&d>0){const seconds=Math.round(d);el.textContent=Math.floor(seconds/60)+' min '+String(seconds%60).padStart(2,'0')+' s';el.hidden=false;}
+     cleanup();
+   },{once:true});
+   media.addEventListener('error',cleanup,{once:true});media.src=el.dataset.celDurationUrl;
+ };
+ if('IntersectionObserver' in window){const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){obs.unobserve(e.target);load(e.target)}}));items.forEach(el=>obs.observe(el));}else items.forEach(load);
+});

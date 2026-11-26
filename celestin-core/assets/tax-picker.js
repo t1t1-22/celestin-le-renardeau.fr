@@ -26,7 +26,6 @@
      const grip=node('span','cel-theme-grip','⠿');grip.setAttribute('aria-hidden','true');
      chip.append(grip,node('span','cel-theme-name',name));
      if(index===0)chip.appendChild(node('small','cel-theme-primary','Principal'));
-     [-1,1].forEach(step=>{const b=button('cel-theme-move',step<0?'←':'→',(step<0?'Avancer ':'Reculer ')+name);b.dataset.step=String(step);b.disabled=index+step<0||index+step>=order.length;chip.appendChild(b);});
      chip.appendChild(button('cel-theme-remove','×','Retirer '+name));
      fragment.appendChild(chip);
     });
@@ -41,7 +40,6 @@
    selected.addEventListener('click',e=>{
     const b=e.target.closest('button'),chip=b&&b.closest('[data-term-id]');if(!chip||!selected.contains(chip))return;
     const id=chip.dataset.termId;
-    if(b.classList.contains('cel-theme-move')){const step=Number(b.dataset.step),to=order.indexOf(id)+step;move(id,to);const next=Array.from(selected.children).find(el=>el.dataset.termId===id);if(next){const focus=next.querySelector('.cel-theme-move[data-step="'+step+'"]:not(:disabled)')||next.querySelector('.cel-theme-move:not(:disabled)');if(focus)focus.focus();}return;}
     if(!ordered||b.classList.contains('cel-theme-remove')){const input=find(id);if(input){input.checked=false;input.dispatchEvent(new Event('change',{bubbles:true}));}}
    });
    const clearDrag=()=>selected.querySelectorAll('.is-dragging,.is-drop-target').forEach(el=>el.classList.remove('is-dragging','is-drop-target'));

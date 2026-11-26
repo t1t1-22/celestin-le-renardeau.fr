@@ -99,7 +99,7 @@ final class Celestin_Library {
     if($key==='categorie'){
      echo '<span class="cel-tax-chip cel-theme-chip'.($index===0?' is-primary':'').'" data-term-id="'.(int)$term_id.'" draggable="true"><span class="cel-theme-grip" aria-hidden="true">⠿</span><span class="cel-theme-name">'.esc_html($name).'</span>';
      if($index===0)echo '<small class="cel-theme-primary">Principal</small>';
-     echo '<button type="button" class="cel-theme-move" data-step="-1" aria-label="'.esc_attr('Avancer '.$name).'"'.disabled($index===0,true,false).'>←</button><button type="button" class="cel-theme-move" data-step="1" aria-label="'.esc_attr('Reculer '.$name).'"'.disabled($index===count($chosen)-1,true,false).'>→</button><button type="button" class="cel-theme-remove" aria-label="'.esc_attr('Retirer '.$name).'">×</button></span>';
+     echo '<button type="button" class="cel-theme-remove" aria-label="'.esc_attr('Retirer '.$name).'">×</button></span>';
     }else echo '<button type="button" class="cel-tax-chip" data-term-id="'.(int)$term_id.'" aria-label="'.esc_attr('Retirer '.$name).'">'.esc_html($name).' ×</button>';
    }
    if(!$chosen)echo '<span class="description">Aucune sélection</span>';

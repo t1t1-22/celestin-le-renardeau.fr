@@ -100,7 +100,7 @@ body.cel-page{font-family:'Nunito',sans-serif!important}
 .cel-audio-toggle[aria-pressed=true] .cel-audio-stop{display:block}
 .cel-audio-card h3{font:600 20px/1.25 'Baloo 2',sans-serif;margin:12px 0 0}
 .cel-audio-card h3 a{color:#633619;text-decoration:none}
-.cel-audio-card h3 a:hover{text-decoration:underline}
+.cel-audio-card h3 a:hover{text-decoration:none}
 .cel-audio-all{display:inline-block;margin-top:30px;padding:9px 20px;border:1px solid #b97846;border-radius:30px;color:#995b30!important;font-weight:700}
 .cel-audio-error{position:absolute;bottom:12px;left:12px;background:#fffaf3;padding:6px;border-radius:8px;font-size:12px}
 @media(max-width:760px){.cel-audio-grid{gap:16px}.cel-audio-card{flex-basis:calc((100% - 32px)/3)}.cel-audio-toggle{width:48px;height:48px;right:8px;bottom:8px}.cel-audio-theme{font-size:11px;top:8px;left:8px;padding:4px 8px}.cel-audio-card h3{font-size:17px}}
@@ -224,7 +224,7 @@ body.admin-bar .cel-interior-header{top:32px}
 .cel-news-track .cel-news-card .cel-card-body{min-height:56px;padding:10px 5px 6px;display:flex;align-items:center;justify-content:center;text-align:center;flex:1}
 .cel-news-track .cel-news-card .cel-card-body h3{font:600 17px/1.22 'Baloo 2',sans-serif;margin:0}
 .cel-news-card h3 a{color:#633619;text-decoration:none}
-.cel-news-card h3 a:hover{text-decoration:underline}
+.cel-news-card h3 a:hover{text-decoration:none}
 .cel-news-card .cel-audio-toggle{width:43px;height:43px;right:7px;bottom:7px}
 .cel-news-card .cel-audio-error[hidden]{display:none}
 .cel-news-track .cel-news-card:hover{transform:translateY(-2px)}
@@ -635,3 +635,6 @@ body.cel-page .cel-audio-toggle[data-tooltip-play]:hover::after,body.cel-page .c
 
 /* Identité typographique commune, y compris les anciens blocs. */
 body.cel-page :is(h1,h2,h3,h4,h5,h6){font-family:'Baloo 2',sans-serif!important;font-style:normal}
+
+/* Keep card titles clean on hover. */
+body.cel-page :is(.cel-audio-card,.cel-news-card,.cel-book-description) a:hover,body.cel-page :is(.cel-audio-card,.cel-news-card,.cel-book-description) a:hover :is(h2,h3){text-decoration:none!important}

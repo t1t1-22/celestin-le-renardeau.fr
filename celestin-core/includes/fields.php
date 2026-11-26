@@ -431,8 +431,8 @@ final class Celestin_Fields {
         $types=[
             'cel_personnage'=>['cel_lieu'=>'Lieux associés','cel_livre'=>'Livres associés','cel_histoire'=>'Mini-histoires associées'],
             'cel_livre'=>['cel_coloriage'=>'Activités associées','cel_histoire'=>'Mini-histoires associées','cel_personnage'=>'Personnages du livre','cel_lieu'=>'Lieux du livre'],
-            'cel_histoire'=>['cel_livre'=>'Livres associés','cel_personnage'=>'Personnages associés','cel_lieu'=>'Lieux associés'],
-            'cel_coloriage'=>['cel_livre'=>'Livres associés','cel_personnage'=>'Personnages associés'],
+            'cel_histoire'=>['cel_livre'=>'Livres associés','cel_coloriage'=>'Activités associées','cel_personnage'=>'Personnages associés','cel_lieu'=>'Lieux associés'],
+            'cel_coloriage'=>['cel_livre'=>'Livres associés','cel_histoire'=>'Mini-histoires associées','cel_personnage'=>'Personnages associés'],
             'cel_lieu'=>['cel_personnage'=>'Personnages associés','cel_livre'=>'Livres associés','cel_histoire'=>'Mini-histoires associées']
         ];
         $relations=get_post_meta($post->ID,'_cel_relations',true);

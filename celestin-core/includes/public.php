@@ -21,12 +21,12 @@ final class Celestin_Public {
     static function assets(): void {
         if(is_feed()||is_embed())return;
         wp_enqueue_style('celestin-home',plugins_url('../assets/home.css',__FILE__),[],(string)filemtime(__DIR__.'/../assets/home.css'));
-        wp_enqueue_style('cel-content',plugins_url('../assets/content.css',__FILE__),['celestin-home'],'0.4.83');
+        wp_enqueue_style('cel-content',plugins_url('../assets/content.css',__FILE__),['celestin-home'],(string)filemtime(__DIR__.'/../assets/content.css'));
         if(is_front_page()||is_singular('cel_livre')){
             wp_enqueue_script('cel-pdfjs','https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',[],'3.11.174',true);
             wp_enqueue_script('cel-reader',plugins_url('../assets/reader.js',__FILE__),['cel-pdfjs'],'0.4.83',true);
         }
-        if(is_singular('cel_histoire'))wp_enqueue_script('cel-story',plugins_url('../assets/story.js',__FILE__),[],'0.4.83',true);
+        if(is_singular('cel_histoire'))wp_enqueue_script('cel-story',plugins_url('../assets/story.js',__FILE__),[],(string)filemtime(__DIR__.'/../assets/story.js'),true);
     }
     static function title(string $type): string {
         return ['cel_personnage'=>'Les personnages','cel_livre'=>'Les livres','cel_histoire'=>'Mini-histoires audio','cel_coloriage'=>'Mes petites activités','cel_lieu'=>'Les lieux de Fleuriville'][$type]??'Découvertes';
@@ -135,33 +135,90 @@ final class Celestin_Public {
         echo self::related($id,'cel_personnage','Les personnages de ce livre');
         echo self::related($id,'cel_histoire','Mini-histoires associées');
     }
+    static function story_icon(string $name): string {
+        $paths=[
+            'play'=>'<path d="M8 5v14l12-7z" fill="currentColor" stroke="none"/>',
+            'share'=>'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.7 10.5 6.6-4M8.7 13.5l6.6 4"/>',
+            'heart'=>'<path d="M20.8 8.6c0 4.1-8.8 9.5-8.8 9.5S3.2 12.7 3.2 8.6c0-4.8 6-5.9 8.8-1.7 2.8-4.2 8.8-3.1 8.8 1.7Z"/>',
+            'book'=>'<path d="M12 6c-3-2-6-2-9-1v14c3-1 6-1 9 1 3-2 6-2 9-1V5c-3-1-6-1-9 1v14"/>',
+            'volume'=>'<path d="M3 9h4l5-4v14l-5-4H3zM15 9a4 4 0 0 1 0 6m3-9a8 8 0 0 1 0 12"/>',
+            'pause'=>'<path d="M7 5h3v14H7zm7 0h3v14h-3z" fill="currentColor" stroke="none"/>',
+            'clock'=>'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'
+        ];
+        return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'.($paths[$name]??'').'</svg>';
+    }
+    static function story_recommendations(int $id,string $type,string $title,array $items): void {
+        if(!$items)return;
+        echo '<section class="cel-story-recs" data-story-recs><div class="cel-story-recs-heading"><h2>'.esc_html($title).'</h2><div class="cel-story-recs-nav" hidden><button type="button" data-rec-prev aria-label="Précédent">‹</button><button type="button" data-rec-next aria-label="Suivant">›</button></div></div><div class="cel-story-recs-track" tabindex="0" aria-label="'.esc_attr($title).'">';
+        foreach($items as $post){
+            if($post->ID===$id)continue;
+            $label=$type==='cel_coloriage'?Celestin_Fields::value($post->ID,'type'):'';
+            echo '<a class="cel-story-rec-card" href="'.esc_url(get_permalink($post)).'"><div class="cel-story-rec-art">'.self::illustration($post->ID,'medium').($type==='cel_histoire'?'<span class="cel-story-rec-play">'.self::story_icon('play').'</span>':'').'</div><div class="cel-story-rec-copy">'.($label?'<small>'.esc_html($label).'</small>':'').'<strong>'.esc_html(get_the_title($post)).'</strong></div></a>';
+        }
+        echo '</div></section>';
+    }
     static function story(int $id): void {
         $audio=Celestin_Fields::value($id,'audio');
         $texte=Celestin_Fields::value($id,'texte');
         $sync=Celestin_Fields::value($id,'synchronisation');
-        echo '<div class="cel-story-layout"><div class="cel-story-visual">'.self::illustration($id).'</div><div class="cel-story-main">';
         $resume=Celestin_Fields::value($id,'resume');
-        if($resume)echo '<p class="cel-story-resume">'.nl2br(esc_html($resume)).'</p>';
         $preview=Celestin_Fields::value($id,'resume_audio');
-        if($preview)echo '<div class="cel-listen cel-listen-preview"><h2>Écouter le résumé</h2><p>Un petit aperçu avant de découvrir toute l’aventure.</p><audio controls preload="metadata" data-cel-story-preview src="'.esc_url($preview).'"></audio></div>';
+        $title=get_the_title($id);
+        $permalink=get_permalink($id);
+        $art=get_the_post_thumbnail_url($id,'large')?:'';
+        echo '<p class="cel-breadcrumb"><a href="'.esc_url(home_url('/')).'">Accueil</a> › <a href="'.esc_url(get_post_type_archive_link('cel_histoire')).'">Mini-histoires audio</a> › '.esc_html($title).'</p>';
+        echo '<div class="cel-story-layout cel-story-new" data-story-page data-story-title="'.esc_attr($title).'" data-story-url="'.esc_url($permalink).'" data-story-art="'.esc_url($art).'" data-story-id="'.esc_attr((string)$id).'"><div class="cel-story-visual"><div class="cel-story-cover">'.self::illustration($id).'</div>';
         if($audio){
-            echo '<div class="cel-listen"><h2>Écouter l’histoire complète</h2><audio controls preload="metadata" data-cel-story-audio src="'.esc_url($audio).'"></audio><p>Tu peux mettre en pause ou avancer dans l’histoire.</p></div>';
+            echo '<div class="cel-story-player"><audio controls controlslist="nodownload" preload="metadata" data-cel-story-audio src="'.esc_url($audio).'"></audio><div class="cel-story-player-ui" hidden><button type="button" class="cel-story-main-play" data-story-play aria-label="Écouter l’histoire"><span data-play-symbol>'.self::story_icon('play').'</span><span data-pause-symbol hidden>'.self::story_icon('pause').'</span></button><div class="cel-story-player-progress"><input type="range" data-story-seek min="0" max="1000" value="0" disabled aria-label="Progression de l’histoire"><div class="cel-story-times"><span data-story-current>0:00</span><span data-story-duration>–:––</span></div></div><button type="button" class="cel-story-volume" data-story-mute aria-label="Couper le son" aria-pressed="false">'.self::story_icon('volume').'</button></div><p class="cel-story-audio-error" data-story-error hidden role="status">Audio indisponible.</p></div>';
         }else echo '<p class="cel-empty-info">La version audio sera bientôt disponible.</p>';
-        echo '<div class="cel-story-reading"><h2>Lire l’histoire</h2><p>Tu peux lire tranquillement, même sans lancer l’audio.</p>';
+        echo '</div><div class="cel-story-main"><p class="cel-kicker">Mini-histoire audio</p><div class="cel-story-heading"><h1>'.esc_html($title).'</h1>';
+        if($preview)echo '<div class="cel-story-teaser"><audio controls controlslist="nodownload" preload="none" data-cel-story-preview src="'.esc_url($preview).'"></audio><button type="button" data-story-teaser hidden aria-pressed="false"><span data-play-symbol>'.self::story_icon('play').'</span><span data-pause-symbol hidden>'.self::story_icon('pause').'</span><span data-teaser-label>Écouter le teaser</span></button></div>';
+        echo '</div><dl class="cel-story-meta">';
+        foreach(['collection'=>'Collection','mois'=>'Date de sortie','saison'=>'Saison','evenement'=>'Événement','age_lecture'=>'Âge','categorie'=>'Thèmes'] as $key=>$label){
+            $value=Celestin_Library::display($id,$key);
+            if($value!=='')echo '<div><dt>'.esc_html($label).'</dt><dd>'.esc_html($value).'</dd></div>';
+        }
+        if($audio)echo '<div data-story-duration-meta hidden><dt>Durée</dt><dd data-story-duration-label></dd></div>';
+        echo '</dl>';
+        if($resume)echo '<div class="cel-story-resume">'.wpautop(esc_html($resume)).'</div>';
+        echo '<div class="cel-story-actions">';
+        if($audio)echo '<button type="button" data-story-start class="cel-story-primary" hidden>'.self::story_icon('play').'<span>Écouter l’histoire</span></button>';
+        if($texte)echo '<a class="cel-story-action" data-story-read href="#cel-story-reading">'.self::story_icon('book').'<span>Lire l’histoire</span></a>';
+        echo '<button type="button" class="cel-story-action" data-story-favorite hidden aria-pressed="false">'.self::story_icon('heart').'<span>Ajouter aux favoris</span></button><button type="button" class="cel-story-action" data-story-share hidden>'.self::story_icon('share').'<span>Partager</span></button></div><p data-story-status role="status" class="cel-story-status" hidden></p></div></div>';
         if($texte){
-            $lines=preg_split('/(?<=[.!?…])\s+|\R+/u',trim($texte),-1,PREG_SPLIT_NO_EMPTY);
             $timings=[];
             foreach(preg_split('/\R/u',$sync) as $line)if(preg_match('/^\s*(\d+(?:[.,]\d+)?)\s*\|(.*)$/u',trim($line),$m))$timings[]=floatval(str_replace(',','.',$m[1]));
-            echo '<div class="cel-story-transcript" data-cel-story-transcript aria-label="Texte de la mini-histoire">';
-            foreach($lines as $idx=>$line){
-               $time=isset($timings[$idx])?' data-start="'.esc_attr((string)$timings[$idx]).'"':'';
-               echo '<span class="cel-story-sentence"'.$time.'>'.esc_html(trim($line)).' </span>';
+            echo '<details id="cel-story-reading" class="cel-story-reading cel-story-reading-new"><summary>Lire l’histoire</summary><div class="cel-story-transcript" data-cel-story-transcript aria-label="Texte de la mini-histoire">';
+            $idx=0;
+            foreach(preg_split('/\R+/u',trim($texte),-1,PREG_SPLIT_NO_EMPTY) as $paragraph){
+                echo '<p>';
+                foreach(preg_split('/(?<=[.!?…])\s+/u',trim($paragraph),-1,PREG_SPLIT_NO_EMPTY) as $line){
+                    $time=isset($timings[$idx])?' data-start="'.esc_attr((string)$timings[$idx]).'"':'';
+                    echo '<span class="cel-story-sentence"'.$time.'>'.esc_html(trim($line)).' </span>';$idx++;
+                }
+                echo '</p>';
             }
+            echo '</div></details>';
+        }
+        $collection=wp_get_object_terms($id,Celestin_Library::TAX['collection'],['fields'=>'ids']);
+        $themes=wp_get_object_terms($id,Celestin_Library::TAX['categorie'],['fields'=>'ids']);
+        $stories=[];
+        if(!is_wp_error($collection)&&$collection)$stories=get_posts(['post_type'=>'cel_histoire','post_status'=>'publish','posts_per_page'=>12,'post__not_in'=>[$id],'orderby'=>'date','order'=>'DESC','tax_query'=>[['taxonomy'=>Celestin_Library::TAX['collection'],'field'=>'term_id','terms'=>$collection]]]);
+        $activities=[];
+        foreach(Celestin_Fields::linked($id,'cel_coloriage') as $item)$activities[$item->ID]=$item;
+        if(!is_wp_error($themes)&&$themes){
+            $matches=get_posts(['post_type'=>'cel_coloriage','post_status'=>'publish','posts_per_page'=>12,'orderby'=>'date','order'=>'DESC','tax_query'=>[['taxonomy'=>Celestin_Library::TAX['categorie'],'field'=>'term_id','terms'=>$themes]]]);
+            foreach($matches as $item)if(!isset($activities[$item->ID]))$activities[$item->ID]=$item;
+        }
+        if($stories||$activities){
+            echo '<div class="cel-story-recs-grid'.($stories&&$activities?' has-two':'').'">';
+            self::story_recommendations($id,'cel_histoire','Dans la même collection',$stories);
+            self::story_recommendations($id,'cel_coloriage','Les activités liées',array_slice(array_values($activities),0,12));
             echo '</div>';
-        }else echo '<p class="cel-empty-info">Le texte de cette histoire sera bientôt disponible.</p>';
-        echo '</div></div></div>';
+        }
         echo self::related($id,'cel_personnage','Les personnages de cette histoire');
         echo self::related($id,'cel_livre','Livres associés');
+        echo self::related($id,'cel_lieu','Les lieux de cette histoire');
     }
     static function simple(int $id,string $type): void {
         echo '<div class="cel-detail-two"><div class="cel-cover">'.self::illustration($id).'</div><div class="cel-summary">';

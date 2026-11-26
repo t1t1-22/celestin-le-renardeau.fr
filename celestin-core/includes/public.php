@@ -22,6 +22,7 @@ final class Celestin_Public {
         if(is_feed()||is_embed())return;
         wp_enqueue_style('celestin-home',plugins_url('../assets/home.css',__FILE__),[],(string)filemtime(__DIR__.'/../assets/home.css'));
         wp_enqueue_style('cel-content',plugins_url('../assets/content.css',__FILE__),['celestin-home'],(string)filemtime(__DIR__.'/../assets/content.css'));
+        if(is_post_type_archive('cel_histoire'))wp_enqueue_script('celestin-home',plugins_url('../assets/home.js',__FILE__),[],(string)filemtime(__DIR__.'/../assets/home.js'),true);
         if(is_front_page()||is_singular('cel_livre')){
             wp_enqueue_script('cel-pdfjs','https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',[],'3.11.174',true);
             wp_enqueue_script('cel-reader',plugins_url('../assets/reader.js',__FILE__),['cel-pdfjs'],(string)filemtime(__DIR__.'/../assets/reader.js'),true);

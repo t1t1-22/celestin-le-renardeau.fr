@@ -219,3 +219,11 @@ body.cel-content-page .cel-story-player-progress input[data-story-seek]::-moz-ra
 body.cel-content-page .cel-story-player-progress input[data-story-seek]:focus-visible{outline:2px solid #a85e20;outline-offset:3px;border-radius:8px}
 body.cel-content-page .cel-story-player-progress input[data-story-seek]:disabled{opacity:.6;cursor:default}
 .cel-story-player-progress .cel-story-times{color:#7a4a2a;margin-top:0;font-size:12px}
+
+/* Le haut-parleur conserve les couleurs de Célestin dans tous ses états, sans jaune du thème. */
+body.cel-content-page .cel-story-new button.cel-story-volume,
+body.cel-content-page .cel-story-new button.cel-story-volume[aria-pressed=true]{color:#7a4a2a!important;background:transparent!important;border:0;box-shadow:none;opacity:1;border-radius:50%}
+body.cel-content-page .cel-story-new button.cel-story-volume:hover,
+body.cel-content-page .cel-story-new button.cel-story-volume:focus-visible{color:#7a4a2a!important;background:#f3dec8!important;box-shadow:none}
+body.cel-content-page .cel-story-new button.cel-story-volume:active{color:#7a4a2a!important;background:#ebc8a7!important;box-shadow:none}
+body.cel-content-page .cel-story-new button.cel-story-volume svg{color:inherit!important;stroke:currentColor!important}

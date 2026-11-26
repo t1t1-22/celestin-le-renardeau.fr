@@ -22,6 +22,7 @@ document.querySelectorAll('.cel-book-reader').forEach(reader=>{
    const sides=single()?1:2;
    const pageSize=Math.min(width/sides,available);
    const size=Math.round(pageSize*zoom);
+   viewport.classList.toggle('is-zoomed',zoom>1);
    spread.style.width=(size*sides)+'px';
    spread.style.height=size+'px';
    spread.style.setProperty('--cel-page-size',size+'px');

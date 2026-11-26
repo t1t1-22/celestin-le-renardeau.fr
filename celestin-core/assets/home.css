@@ -638,3 +638,6 @@ body.cel-page :is(h1,h2,h3,h4,h5,h6){font-family:'Baloo 2',sans-serif!important;
 
 /* Keep card titles clean on hover. */
 body.cel-page :is(.cel-audio-card,.cel-news-card,.cel-book-description) a:hover,body.cel-page :is(.cel-audio-card,.cel-news-card,.cel-book-description) a:hover :is(h2,h3){text-decoration:none!important}
+
+/* Swipe featured news horizontally while preserving vertical scrolling and pinch zoom. */
+@media (any-pointer:coarse){.cel-feature-slider{touch-action:pan-y pinch-zoom}.cel-feature-slider img{-webkit-user-drag:none;user-select:none}}

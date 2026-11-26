@@ -89,7 +89,23 @@ final class Celestin_Library {
   $compact=in_array($key,['categorie','collection','evenement'],true);
   echo '<div class="cel-field cel-tax-picker" data-key="'.esc_attr($key).'" data-nonce="'.esc_attr(wp_create_nonce('cel_library_term')).'"><label>'.esc_html(self::LABELS[$key]).'</label>';
   if($key==='categorie')echo '<input type="hidden" name="cel_theme_order" class="cel-theme-order" value="'.esc_attr(implode(',',self::ordered_theme_ids($id))).'"><p class="description cel-theme-order-help">Déplace les thèmes pour définir leur ordre. Le premier est affiché sur la carte de l’accueil.</p>';
-  if($compact)echo '<div class="cel-tax-selected"></div><details class="cel-tax-details"><summary>Rechercher et sélectionner <span class="cel-tax-count"></span></summary><input type="search" class="cel-tax-search" maxlength="150" placeholder="Rechercher ou créer…" aria-label="Rechercher dans '.esc_attr(self::LABELS[$key]).'">';
+  if($compact){
+   $by_id=[];foreach($terms as $term)$by_id[(int)$term->term_id]=$term->name;
+   $chosen=$key==='categorie'?self::ordered_theme_ids($id):array_map('intval',$selected);
+   $chosen=array_values(array_filter($chosen,fn($term_id)=>isset($by_id[$term_id])));
+   echo '<div class="cel-tax-selected" aria-label="Valeurs sélectionnées">';
+   foreach($chosen as $index=>$term_id){
+    $name=$by_id[$term_id];
+    if($key==='categorie'){
+     echo '<span class="cel-tax-chip cel-theme-chip'.($index===0?' is-primary':'').'" data-term-id="'.(int)$term_id.'" draggable="true"><span class="cel-theme-grip" aria-hidden="true">⠿</span><span class="cel-theme-name">'.esc_html($name).'</span>';
+     if($index===0)echo '<small class="cel-theme-primary">Principal</small>';
+     echo '<button type="button" class="cel-theme-move" data-step="-1" aria-label="'.esc_attr('Avancer '.$name).'"'.disabled($index===0,true,false).'>←</button><button type="button" class="cel-theme-move" data-step="1" aria-label="'.esc_attr('Reculer '.$name).'"'.disabled($index===count($chosen)-1,true,false).'>→</button><button type="button" class="cel-theme-remove" aria-label="'.esc_attr('Retirer '.$name).'">×</button></span>';
+    }else echo '<button type="button" class="cel-tax-chip" data-term-id="'.(int)$term_id.'" aria-label="'.esc_attr('Retirer '.$name).'">'.esc_html($name).' ×</button>';
+   }
+   if(!$chosen)echo '<span class="description">Aucune sélection</span>';
+   $count=count($chosen);
+   echo '</div><details class="cel-tax-details"><summary>Rechercher et sélectionner <span class="cel-tax-count">('.$count.' sélectionné'.($count>1?'s':'').')</span></summary><input type="search" class="cel-tax-search" maxlength="150" placeholder="Rechercher ou créer…" aria-label="Rechercher dans '.esc_attr(self::LABELS[$key]).'">';
+  }
   echo '<div class="cel-lib-choices">';
   foreach($terms as $t)echo '<label><input type="checkbox" name="cel_lib['.esc_attr($key).'][]" value="'.(int)$t->term_id.'"'.checked(in_array((int)$t->term_id,array_map('intval',$selected),true),true,false).'> <span>'.esc_html($t->name).'</span></label>';
   echo '</div>';

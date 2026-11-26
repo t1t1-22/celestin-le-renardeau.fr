@@ -144,6 +144,7 @@ final class Celestin_Fields {
         }
         wp_enqueue_style('cel-fields',plugins_url('../assets/fields.css',__FILE__),[],(string)filemtime(__DIR__.'/../assets/fields.css'));
         wp_enqueue_script('cel-fields',plugins_url('../assets/fields.js',__FILE__),['jquery'],(string)filemtime(__DIR__.'/../assets/fields.js'),true);
+        wp_enqueue_script('cel-tax-picker',plugins_url('../assets/tax-picker.js',__FILE__),[],(string)filemtime(__DIR__.'/../assets/tax-picker.js'),true);
         if($screen->post_type==='cel_coloriage'){
             wp_add_inline_style('cel-fields','
 .post-type-cel_coloriage #wpcontent{background:#fcf7ef}

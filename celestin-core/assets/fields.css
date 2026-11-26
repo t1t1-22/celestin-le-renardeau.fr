@@ -129,3 +129,11 @@ body.cel-book-custom-editor #wpcontent{background:#fcf7ef}
 .cel-theme-chip .cel-theme-move,.cel-theme-chip .cel-theme-remove{border:0;background:transparent;color:#74421f;cursor:pointer;padding:1px 3px;line-height:1.3;font-size:14px;min-width:16px}
 .cel-theme-chip .cel-theme-move:disabled{opacity:.3;cursor:default}
 .cel-theme-chip.is-dragging{opacity:.5}.cel-theme-chip.is-drop-target{outline:2px dashed #e98932;outline-offset:2px}
+
+/* Les vignettes sélectionnées sont toujours hors du panneau repliable. */
+.cel-tax-picker>.cel-tax-selected{display:flex!important;flex-wrap:wrap;align-items:center;gap:8px;min-height:0;margin:10px 0 14px}
+.cel-tax-picker>.cel-tax-selected>.cel-theme-chip{flex-wrap:nowrap;gap:6px;max-width:100%;padding:5px 9px;border-radius:20px}
+.cel-tax-picker .cel-theme-name{overflow-wrap:anywhere;min-width:0}
+.cel-tax-picker .cel-theme-chip button{flex:none;min-width:17px;width:auto;box-shadow:none}
+.cel-tax-picker .cel-theme-chip button:focus-visible{outline:2px solid #e98932;outline-offset:1px}
+.cel-tax-picker .cel-theme-chip .cel-theme-grip{cursor:grab}

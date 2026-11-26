@@ -64,10 +64,28 @@ document.addEventListener('DOMContentLoaded',()=>{
  slides.forEach((s,i)=>{palette(s);s.inert=i!==0;s.setAttribute('aria-hidden',String(i!==0))});
  function show(n){if(n===current)return;const old=slides[current];old.querySelectorAll('audio').forEach(a=>{a.pause();try{a.currentTime=0}catch(e){}});current=(n+slides.length)%slides.length;slides.forEach((s,i)=>{s.hidden=i!==current;s.inert=i!==current;s.setAttribute('aria-hidden',String(i!==current))});dots.forEach((d,i)=>d.setAttribute('aria-current',String(i===current)));}
  dots.forEach((b,i)=>b.onclick=()=>show(i));
+ // Touch navigation on phones and tablets, without blocking vertical scrolling.
+ let touchStart=null,touching=false,lastTouch=0,lastSwipe=0;
+ root.addEventListener('touchstart',e=>{
+   if(e.touches.length!==1){touchStart=null;return;}
+   const t=e.touches[0];touchStart={x:t.clientX,y:t.clientY};touching=true;
+ },{passive:true});
+ root.addEventListener('touchend',e=>{
+   touching=false;lastTouch=Date.now();
+   if(!touchStart||!e.changedTouches.length){touchStart=null;return;}
+   const t=e.changedTouches[0],dx=t.clientX-touchStart.x,dy=t.clientY-touchStart.y;
+   touchStart=null;
+   if(Math.abs(dx)>=45&&Math.abs(dx)>Math.abs(dy)*1.3&&slides.length>1){
+     lastSwipe=Date.now();show(current+(dx<0?1:-1));
+   }
+ },{passive:true});
+ root.addEventListener('touchcancel',()=>{touchStart=null;touching=false;lastTouch=Date.now();},{passive:true});
+ root.addEventListener('click',e=>{if(Date.now()-lastSwipe<400){e.preventDefault();e.stopImmediatePropagation();}},true);
+
  function sync(){if(pause){pause.textContent=stopped?'▷':'Ⅱ';pause.setAttribute('aria-label',stopped?'Reprendre le défilement':'Mettre le défilement en pause')}}
  if(pause)pause.onclick=()=>{stopped=!stopped;sync()};sync();
  root.addEventListener('mouseenter',()=>hover=true);root.addEventListener('mouseleave',()=>hover=false);
- if(slides.length>1)setInterval(()=>{if(!stopped&&!hover&&!document.hidden&&!root.contains(document.activeElement)&&!root.querySelector('.cel-audio-toggle[aria-pressed="true"]'))show(current+1)},6500);
+ if(slides.length>1)setInterval(()=>{if(!stopped&&!hover&&!touching&&Date.now()-lastTouch>6500&&!document.hidden&&!root.contains(document.activeElement)&&!root.querySelector('.cel-audio-toggle[aria-pressed="true"]'))show(current+1)},6500);
 });
 
 document.addEventListener('DOMContentLoaded',()=>{

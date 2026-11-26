@@ -1,7 +1,7 @@
 <?php
 if (!defined('ABSPATH')) exit;
 $options=Celestin_Home::options();
-$stories=Celestin_Home::featured('cel_histoire',3);
+$stories=Celestin_Home::story_cards();
 $book=Celestin_Home::latest('cel_livre');
 $character=Celestin_Home::latest('cel_personnage');
 $city=Celestin_Home::latest('cel_lieu');
@@ -177,7 +177,17 @@ body.cel-page .cel-audio-feature .cel-audio-inner{padding-top:8px;padding-bottom
 body.cel-page .cel-audio-feature .cel-section-title{margin-top:0;margin-bottom:7px}
 body.cel-page .cel-audio-feature .cel-audio-intro{margin-bottom:clamp(24px,3vw,42px)}
 
-/* Ombre chaude et douce sous les cartes, même sans survol. */
+/* Carrousel des histoires : défilement manuel, tactile et clavier. */
+body.cel-page .cel-audio-feature .cel-audio-grid.cel-story-track{display:flex;flex-wrap:nowrap;justify-content:flex-start;gap:22px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:thin;max-width:850px;margin:auto;padding:12px 16px 24px;box-sizing:border-box}
+body.cel-page .cel-audio-feature .cel-story-track.is-fit{justify-content:center}
+body.cel-page .cel-audio-feature .cel-story-track>.cel-audio-card{flex:0 0 calc((100% - 44px)/3);max-width:none;scroll-snap-align:start}
+body.cel-page .cel-audio-feature .cel-story-controls{display:flex;gap:10px;justify-content:center;margin:5px auto 12px}
+body.cel-page .cel-audio-feature .cel-story-controls[hidden]{display:none!important}
+body.cel-page .cel-audio-feature .cel-story-controls button{border:1px solid #dfb584;background:#fffaf3;color:#633619;border-radius:50%;height:38px;width:38px;font-size:24px;line-height:1;padding:0;cursor:pointer}
+body.cel-page .cel-audio-feature .cel-story-controls button:disabled{opacity:.4;cursor:default}
+body.cel-page .cel-audio-feature .cel-audio-inner>.cel-audio-cta{display:flex;justify-content:center;max-width:none;width:100%;margin:10px auto 0}
+@media(max-width:720px){body.cel-page .cel-audio-feature .cel-audio-grid.cel-story-track{gap:12px;padding-inline:12px}body.cel-page .cel-audio-feature .cel-story-track>.cel-audio-card{flex-basis:calc((100% - 12px)/2)}}
+ /* Ombre chaude et douce sous les cartes, même sans survol. */
 body.cel-page .cel-audio-feature .cel-audio-grid>.cel-audio-card{box-shadow:0 5px 10px rgba(99,54,25,.16),0 12px 25px rgba(99,54,25,.22)}
 body.cel-page .cel-audio-feature .cel-audio-grid>.cel-audio-card:hover,body.cel-page .cel-audio-feature .cel-audio-grid>.cel-audio-card:focus-within{box-shadow:0 0 0 3px #ffd08a,0 8px 14px rgba(99,54,25,.20),0 18px 30px rgba(99,54,25,.30)!important}
 
@@ -508,7 +518,8 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
  <div class="cel-audio-inner">
  <h2 id="cel-story-title" class="cel-section-title">Les mini-histoires du moment</h2>
  <p class="cel-audio-intro">Installe-toi confortablement et laisse-toi raconter une histoire.</p>
- <div class="cel-audio-grid">
+ <div class="cel-story-carousel" aria-label="Histoires à écouter" aria-roledescription="carrousel">
+ <div class="cel-audio-grid cel-story-track" tabindex="0" aria-label="Cartes des mini-histoires">
  <?php foreach($stories as $story):
  $title=get_the_title($story);$mp3=Celestin_Fields::value($story->ID,'resume_audio')?:Celestin_Fields::value($story->ID,'audio');
  $terms=get_the_terms($story->ID,Celestin_Library::TAX['categorie']);$theme=($terms&&!is_wp_error($terms))?$terms[0]->name:'';
@@ -528,8 +539,10 @@ $cta=['cel_histoire'=>'Découvrir cette mini-histoire','cel_livre'=>'Découvrir 
  </div><h3><a href="<?php echo esc_url(get_permalink($story)); ?>"><?php echo esc_html($title); ?></a></h3>
  </article>
  <?php endforeach; ?>
- <div class="cel-audio-cta"><a class="cel-audio-all" href="<?php echo esc_url(Celestin_Home::url('cel_histoire')); ?>">Découvrir toutes les mini-histoires →</a></div>
  </div>
+ <div class="cel-story-controls" hidden><button type="button" data-story-prev aria-label="Histoires précédentes">‹</button><button type="button" data-story-next aria-label="Histoires suivantes">›</button></div>
+ </div>
+ <div class="cel-audio-cta"><a class="cel-audio-all" href="<?php echo esc_url(Celestin_Home::url('cel_histoire')); ?>">Découvrir toutes les mini-histoires →</a></div>
  </div>
  <svg class="cel-audio-wave" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0 32Q360 -12 720 32T1440 15V60H0Z" fill="#fcf7ef"/></svg>
 </section>

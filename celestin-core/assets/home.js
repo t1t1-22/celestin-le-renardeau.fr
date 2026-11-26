@@ -78,3 +78,15 @@ document.addEventListener('DOMContentLoaded',()=>{
  ['loadedmetadata','durationchange','emptied'].forEach(e=>audio.addEventListener(e,update));update();
  });
 });
+
+// Les mini-histoires se parcourent sans interrompre la lecture audio.
+document.addEventListener('DOMContentLoaded',()=>{
+ document.querySelectorAll('.cel-story-carousel').forEach(root=>{
+  const track=root.querySelector('.cel-story-track'),controls=root.querySelector('.cel-story-controls'),prev=root.querySelector('[data-story-prev]'),next=root.querySelector('[data-story-next]');
+  if(!track||!controls||!prev||!next)return;
+  const sync=()=>{const max=track.scrollWidth-track.clientWidth;controls.hidden=max<=2;prev.disabled=track.scrollLeft<=2;next.disabled=track.scrollLeft>=max-2;};
+  const resize=()=>{track.classList.remove('is-fit');track.classList.toggle('is-fit',track.scrollWidth<=track.clientWidth+2);sync();};
+  const step=d=>{const card=track.querySelector('.cel-audio-card');if(!card)return;const gap=parseFloat(getComputedStyle(track).columnGap)||0;track.scrollBy({left:d*(card.getBoundingClientRect().width+gap),behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});};
+  prev.onclick=()=>step(-1);next.onclick=()=>step(1);track.addEventListener('scroll',sync,{passive:true});window.addEventListener('resize',resize);resize();
+ });
+});

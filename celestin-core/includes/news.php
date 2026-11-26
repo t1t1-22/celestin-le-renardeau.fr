@@ -12,7 +12,7 @@ final class Celestin_News {
  }
  static function selection(){
   if(!current_user_can('manage_options'))return;
-  $order=array_values(array_map(fn($p)=>(int)$p->ID,Celestin_Home::cards()));
+  $order=array_values(array_map(fn($p)=>(int)$p->ID,Celestin_Home::cards(true)));
   ?>
   <style>
   .cel-news-admin{color:#633619}.cel-news-admin h2,.cel-news-admin h3{color:#633619}
@@ -33,9 +33,9 @@ final class Celestin_News {
   @media(max-width:900px){.cel-news-layout{grid-template-columns:1fr}}
   </style>
   <div class="cel-news-admin">
-  <h2>Les nouveautés de l’accueil</h2><p>Compose ton carrousel et choisis dans quel ordre les contenus apparaissent.</p>
+  <h2>Les nouveautés de l’accueil</h2><p><label><strong>Mode d’affichage</strong> <select name="cel_news_mode"><option value="auto" <?php selected(get_option('cel_home_news_mode','auto'),'auto'); ?>>Automatique — huit dernières publications</option><option value="manual" <?php selected(get_option('cel_home_news_mode','auto'),'manual'); ?>>Manuel — sélection ci-dessous</option></select></label></p><p>En mode automatique, les contenus publiés apparaissent sans intervention. La sélection manuelle ci-dessous est conservée pour le mode manuel.</p>
   <div class="cel-news-layout">
-  <section class="cel-news-order"><h3>Slides affichés <span id="cel-news-count"></span></h3><p>Déplace les lignes avec la poignée ou les flèches.</p>
+  <section class="cel-news-order"><h3>Slides de la sélection manuelle <span id="cel-news-count"></span></h3><p>Déplace les lignes avec la poignée ou les flèches.</p>
   <input type="hidden" name="cel_news_order" id="cel-news-order-value" value="<?php echo esc_attr(implode(',',$order)); ?>">
   <div id="cel-news-order-list"></div><p id="cel-news-order-empty">Ajoute des contenus depuis la bibliothèque.</p>
   <button type="submit" class="button button-primary cel-news-save">Enregistrer les nouveautés</button></section>
@@ -114,6 +114,7 @@ final class Celestin_News {
   wp_safe_redirect(admin_url('admin.php?page=celestin-design&tab=nouveautes&saved=1'));exit;
  }
  static function save_selection(array $selected): void {
+  if(isset($_POST['cel_news_mode']))update_option('cel_home_news_mode',$_POST['cel_news_mode']==='manual'?'manual':'auto',false);
   $ids=array_values(array_unique(array_filter(array_map('absint',$selected))));
   if(isset($_POST['cel_news_order'])&&is_string($_POST['cel_news_order'])){
    $order=array_values(array_unique(array_filter(array_map('absint',explode(',',wp_unslash($_POST['cel_news_order']))))));

@@ -48,8 +48,8 @@ final class Celestin_Home {
     static function admin_assets($hook): void {
         if (sanitize_key($_GET['page'] ?? '') !== 'celestin-design' || !current_user_can('manage_options')) return;
         wp_enqueue_media();
-        wp_enqueue_script('celestin-media', plugins_url('../assets/admin.js',__FILE__), ['jquery'], '0.4.83', true);
-        wp_enqueue_style('celestin-admin', plugins_url('../assets/admin.css',__FILE__), [], '0.4.83');
+        wp_enqueue_script('celestin-media', plugins_url('../assets/admin.js',__FILE__), ['jquery'], '0.4.84', true);
+        wp_enqueue_style('celestin-admin', plugins_url('../assets/admin.css',__FILE__), [], '0.4.84');
     }
     static function image_setting(string $key, string $label, array $options): void {
         $id = absint($options[$key] ?? 0);
@@ -196,13 +196,16 @@ final class Celestin_Home {
         return get_posts($args);
     }
     static function featured_settings(): void {
-        echo '<h2 style="margin-top:32px">Contenus mis en avant</h2><p>Choisis les contenus publiés, jusqu’à trois mini-histoires et quatre activités dans leur ordre d’affichage. Tous les personnages publiés sont affichés automatiquement dans un ordre aléatoire. Les nouveautés sont gérées dans leur propre onglet.</p><div class="cel-feature-settings">';
+        echo '<h2 style="margin-top:32px">Contenus mis en avant</h2><p>Les mini-histoires affichent automatiquement les huit dernières publications, ou jusqu’à trois histoires choisies en mode manuel. Choisis également jusqu’à quatre activités dans leur ordre d’affichage. Tous les personnages publiés sont affichés automatiquement dans un ordre aléatoire. Les nouveautés sont gérées dans leur propre onglet.</p><div class="cel-feature-settings">';
         foreach(Celestin_Core::TYPES as $type=>$config){
             if($type==='cel_personnage')continue;
             $current=self::featured($type,$type==='cel_histoire'?3:($type==='cel_personnage'?8:($type==='cel_coloriage'?4:1)));
             $id=$current?(int)$current[0]->ID:0;
             $posts=get_posts(['post_type'=>$type,'post_status'=>'publish','posts_per_page'=>-1,'orderby'=>'title','order'=>'ASC']);
             echo '<div class="cel-feature-setting"><label for="featured_'.esc_attr($type).'"><strong>'.esc_html($config[0]).'</strong></label>';
+            if($type==='cel_histoire'){
+                echo '<p><label>Mode d’affichage <select name="design[story_mode]"><option value="auto"'.selected(get_option('cel_home_story_mode','auto'),'auto',false).'>Automatique — dernières publications</option><option value="manual"'.selected(get_option('cel_home_story_mode','auto'),'manual',false).'>Manuel — sélection ci-dessous</option></select></label></p><p>La sélection ci-dessous est conservée et utilisée en mode manuel.</p>';
+            }
             if(in_array($type,['cel_histoire','cel_personnage','cel_coloriage'],true)){
                 $max=$type==='cel_histoire'?3:($type==='cel_coloriage'?4:8);
                 for($i=0;$i<$max;$i++){
@@ -340,6 +343,7 @@ final class Celestin_Home {
             }
         }
         update_option(self::OPTION,$out);
+        if(isset($raw['story_mode']))update_option('cel_home_story_mode',$raw['story_mode']==='manual'?'manual':'auto',false);
         if(isset($_POST['cel_event'])&&is_array($_POST['cel_event']))self::save_events(wp_unslash($_POST['cel_event']));
         if(isset($_POST['cel_news_present']))Celestin_News::save_selection((array)($_POST['cel_news_ids']??[]));
         $allowed_tabs = ['identite', 'reseaux', 'accueil', 'rubriques', 'nouveautes', 'evenements', 'fleuriville', 'newsletter'];
@@ -388,10 +392,17 @@ final class Celestin_Home {
         }
         return $items?$items[0]:null;
     }
-    // Accueil : uniquement les fiches explicitement cochées dans leur administration.
-    // Les quatre types de contenus sont mélangés et triés par date de publication.
-    static function cards(): array {
-        $event=self::event_posts('news',8);if($event)return $event;
+    // La publication alimente automatiquement l’accueil standard. Le mode événement reste prioritaire.
+    static function story_cards(): array {
+        $event=self::event_posts('cel_histoire',3);if($event)return $event;
+        if(get_option('cel_home_story_mode','auto')==='manual')return self::featured('cel_histoire',3);
+        return get_posts(['post_type'=>'cel_histoire','post_status'=>'publish','posts_per_page'=>8,'orderby'=>['date'=>'DESC','ID'=>'DESC']]);
+    }
+    static function cards(bool $manual=false): array {
+        if(!$manual){
+            $event=self::event_posts('news',8);if($event)return $event;
+            if(get_option('cel_home_news_mode','auto')!=='manual')return get_posts(['post_type'=>['cel_coloriage','cel_personnage','cel_livre','cel_histoire'],'post_status'=>'publish','posts_per_page'=>8,'orderby'=>['date'=>'DESC','ID'=>'DESC'],'suppress_filters'=>false]);
+        }
         $posts=get_posts([
             'post_type' => ['cel_coloriage', 'cel_personnage', 'cel_livre', 'cel_histoire'],
             'post_status' => 'publish',

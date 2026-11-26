@@ -9,6 +9,7 @@ final class Celestin_Home {
     const OPTION = 'celestin_home_design';
     static function init(): void {
         add_filter('template_include', [__CLASS__, 'template'], 99);
+        add_filter('get_site_icon_url',[__CLASS__,'site_icon'],20,3);
         add_action('admin_menu', [__CLASS__, 'admin'], 20);
         add_action('admin_enqueue_scripts', [__CLASS__, 'admin_assets']);
         add_action('wp_enqueue_scripts', [__CLASS__, 'assets']);
@@ -18,6 +19,7 @@ final class Celestin_Home {
         return [
             'logo'=>0, 'footer_logo'=>0, 'hero'=>0, 'footer'=>0, 'story'=>0, 'book'=>0,
             'character'=>0, 'city'=>0, 'activity'=>0,
+            'favicon_spring'=>0, 'favicon_summer'=>0, 'favicon_autumn'=>0, 'favicon_winter'=>0,
             'headline'=>'Pars à l’aventure à Fleuriville',
             'hero_title_size'=>64, 'hero_text_size'=>18, 'hero_x'=>50, 'hero_y'=>50, 'hero_width'=>680, 'hero_text_location'=>'overlay',
             'hero_intro'=>'Bienvenue dans l’univers de Célestin', 'hero_description'=>'Des histoires à lire, des aventures à écouter et plein de petites activités à découvrir.', 'hero_button'=>'Découvrir l’univers', 'hero_link'=>'#cel-decouvrir',
@@ -31,6 +33,32 @@ final class Celestin_Home {
     static function options(): array {
         $saved = get_option(self::OPTION, []);
         return wp_parse_args(is_array($saved)?$saved:[], self::defaults());
+    }
+    // Le portrait original de la fiche personnage reste la référence.
+    static function portrait_icon_id(): int {
+        static $id=null;
+        if($id!==null)return $id;
+        $id=0;
+        $posts=get_posts(['post_type'=>'cel_personnage','post_status'=>'publish','posts_per_page'=>-1,'orderby'=>'ID','order'=>'ASC']);
+        foreach($posts as $post){
+            $first=strtolower(trim(remove_accents((string)get_post_meta($post->ID,'_cel_f_prenom',true))));
+            $title=strtolower(trim(remove_accents($post->post_title)));
+            if($first!=='celestin'&&($first!==''||!preg_match('/^celestin(?:\\s|$)/',$title)))continue;
+            $portrait=absint(get_post_meta($post->ID,'_cel_section_image_identite',true))?:get_post_thumbnail_id($post->ID);
+            if($portrait&&wp_attachment_is_image($portrait)){$id=(int)$portrait;break;}
+        }
+        return $id;
+    }
+    static function site_icon($url,$size,$blog_id=0): string {
+        if($blog_id&&(int)$blog_id!==get_current_blog_id())return (string)$url;
+        $month=(int)wp_date('n');
+        $season=$month>=3&&$month<=5?'spring':($month>=6&&$month<=8?'summer':($month>=9&&$month<=11?'autumn':'winter'));
+        $options=self::options();
+        $attachment=absint($options['favicon_'.$season]??0);
+        if(!$attachment||!wp_attachment_is_image($attachment))$attachment=self::portrait_icon_id();
+        if(!$attachment)return (string)$url;
+        $image=wp_get_attachment_image_url($attachment,[(int)$size,(int)$size]);
+        return $image?esc_url_raw($image):(string)$url;
     }
     static function image(string $key, string $size='full'): string {
         $o = self::options();
@@ -259,6 +287,11 @@ final class Celestin_Home {
         echo '<h2>Identité visuelle</h2><p>Le logo en haut du site est aussi utilisé dans le pied de page si aucun autre n’est sélectionné.</p>';
         self::image_setting('logo', 'Logo principal (haut du site)', $o);
         self::image_setting('footer_logo', 'Logo alternatif pour le pied de page (facultatif)', $o);
+        echo '<h2>Icône du site</h2><p>Par défaut, la photo d’identité de la fiche personnage de Célestin est utilisée automatiquement. Tu peux ajouter tes propres illustrations saisonnières (facultatif). L’icône change selon le mois et conserve le portrait original si aucune variante n’est choisie.</p>';
+        $portrait=self::portrait_icon_id();
+        if($portrait)echo '<div style="margin:12px 0">'.wp_get_attachment_image($portrait,[80,80],false,['alt'=>'Portrait de référence de Célestin']).'<p>Portrait utilisé par défaut</p></div>';
+        else echo '<p>Le portrait sera utilisé dès que la fiche de Célestin sera publiée avec une photo d’identité.</p>';
+        foreach(['spring'=>'Printemps','summer'=>'Été','autumn'=>'Automne','winter'=>'Hiver'] as $season=>$label)self::image_setting('favicon_'.$season,'Icône — '.$label.' (facultatif)',$o);
         echo '</section>';
         echo '<section id="cel-panel-reseaux" class="cel-design-panel" role="tabpanel" aria-labelledby="cel-tab-reseaux"' . ($active !== 'reseaux' ? ' hidden' : '') . '>';
         echo '<h2>Réseaux sociaux</h2><p>Les liens renseignés sont utilisés dans l’en-tête du site.</p>';
@@ -319,6 +352,12 @@ final class Celestin_Home {
         $raw=isset($_POST['design'])&&is_array($_POST['design'])?wp_unslash($_POST['design']):[];
         $out=self::options();
         foreach(['logo','footer_logo','hero','footer','story','book','character','city','activity'] as $key) $out[$key]=absint($raw[$key]??$out[$key]??0);
+        foreach(['spring','summer','autumn','winter'] as $season){
+            $key='favicon_'.$season;
+            if(!array_key_exists($key,$raw))continue;
+            $image=absint($raw[$key]);
+            $out[$key]=$image&&wp_attachment_is_image($image)?$image:0;
+        }
         foreach(['headline','welcome','hero_intro','hero_description','hero_button','origin_title','origin_description','origin_button'] as $key) $out[$key]=sanitize_textarea_field($raw[$key]??$out[$key]);
         $out['origin_link']=esc_url_raw($raw['origin_link']??$out['origin_link']);
         $out['hero_link']=esc_url_raw($raw['hero_link']??'#cel-decouvrir');

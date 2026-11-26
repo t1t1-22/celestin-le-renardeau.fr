@@ -55,9 +55,16 @@ final class Celestin_Public {
     static function related(int $id,string $type,string $title): string {
         $items=Celestin_Fields::linked($id,$type);
         if(!$items)return '';
-        $out='<section class="cel-related"><h2>'.esc_html($title).'</h2><div class="cel-related-list">';
+        $out='<section class="cel-related"><h2>'.esc_html($title).'</h2><div class="cel-related-list'.($type==='cel_personnage'?' cel-related-characters':'').'">';
         foreach($items as $post){
-            $out.='<a href="'.esc_url(get_permalink($post)).'">'.self::illustration($post->ID,'thumbnail').'<span>'.esc_html($post->post_title).'</span></a>';
+            if($type==='cel_personnage'){
+                $first=trim(Celestin_Fields::value($post->ID,'prenom'));
+                $last=trim(Celestin_Fields::value($post->ID,'nom'));
+                if($first===''){$first=$last?:$post->post_title;$last='';}
+                $out.='<a class="cel-related-character" href="'.esc_url(get_permalink($post)).'"><div class="cel-related-character-art">'.self::illustration($post->ID,'medium').'</div><div class="cel-related-character-name"><strong>'.esc_html($first).'</strong>'.($last!==''?'<small>'.esc_html($last).'</small>':'').'</div></a>';
+            }else{
+                $out.='<a href="'.esc_url(get_permalink($post)).'">'.self::illustration($post->ID,'thumbnail').'<span>'.esc_html($post->post_title).'</span></a>';
+            }
         }
         return $out.'</div></section>';
     }

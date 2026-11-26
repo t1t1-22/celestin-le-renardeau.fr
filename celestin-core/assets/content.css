@@ -228,13 +228,14 @@ body.cel-content-page .cel-story-new button.cel-story-volume:focus-visible{color
 body.cel-content-page .cel-story-new button.cel-story-volume:active{color:#7a4a2a!important;background:#ebc8a7!important;box-shadow:none}
 body.cel-content-page .cel-story-new button.cel-story-volume svg{color:inherit!important;stroke:currentColor!important}
 
-/* Cartes carrées des personnages associés, nom sur deux lignes. */
-body.cel-content-page .cel-related-list.cel-related-characters{grid-template-columns:repeat(auto-fill,minmax(min(100%,150px),1fr));align-items:start}
-body.cel-content-page .cel-related-characters .cel-related-character{display:grid;grid-template-rows:minmax(0,1fr) auto;aspect-ratio:1/1;min-width:0;padding:7px;box-sizing:border-box;text-decoration:none!important;text-align:center;border-radius:17px}
-.cel-related-characters .cel-related-character-art{min-height:0;min-width:0;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:10px}
-body.cel-content-page .cel-related-characters .cel-related-character-art img{display:block;width:100%;height:100%;min-height:0;max-height:100%;object-fit:contain;object-position:center;margin:0}
-body.cel-content-page .cel-related-characters .cel-related-character-art .cel-content-placeholder{width:100%;height:100%;min-height:0;font-size:25px}
-.cel-related-characters .cel-related-character-name{min-width:0;min-height:3.1em;padding:6px 3px 1px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:0;line-height:1.15;color:#633619;overflow-wrap:anywhere}
-.cel-related-characters .cel-related-character-name strong{display:block;font:700 clamp(16px,1.8vw,20px)/1.15 'Baloo 2',sans-serif}
-.cel-related-characters .cel-related-character-name small{display:block;font:600 clamp(12px,1.3vw,15px)/1.2 'Baloo 2',sans-serif;color:#80532b}
-@media(max-width:420px){body.cel-content-page .cel-related-list.cel-related-characters{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}}
+/* Cartes personnages : portrait carré bord à bord, cartouche nom en dessous. */
+body.cel-content-page .cel-related-list.cel-related-characters{grid-template-columns:repeat(auto-fill,minmax(min(100%,190px),225px));gap:18px;align-items:start;justify-content:start}
+body.cel-content-page .cel-related-characters .cel-related-character{display:flex;flex-direction:column;aspect-ratio:auto;min-width:0;padding:0;box-sizing:border-box;text-decoration:none!important;text-align:center;border-radius:17px;overflow:hidden}
+.cel-related-characters .cel-related-character-art{width:100%;aspect-ratio:1/1;min-height:0;min-width:0;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:0}
+body.cel-content-page .cel-related-characters .cel-related-character-art img{display:block;width:100%;height:100%;min-height:0;max-height:100%;object-fit:contain;object-position:center;margin:0;padding:0;border:0;border-radius:0}
+body.cel-content-page .cel-related-characters .cel-related-character-art .cel-content-placeholder{width:100%;height:100%;min-height:0;font-size:25px;border-radius:0}
+.cel-related-characters .cel-related-character-name{min-width:0;min-height:74px;padding:10px 8px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2px;line-height:1.15;color:#633619;overflow-wrap:anywhere;box-sizing:border-box}
+.cel-related-characters .cel-related-character-name strong{display:block;font:700 clamp(19px,2vw,24px)/1.15 'Baloo 2',sans-serif}
+.cel-related-characters .cel-related-character-name small{display:block;font:600 clamp(14px,1.5vw,17px)/1.2 'Baloo 2',sans-serif;color:#80532b}
+@media(max-width:520px){body.cel-content-page .cel-related-list.cel-related-characters{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.cel-related-characters .cel-related-character-name{min-height:66px;padding:8px 5px}}
+

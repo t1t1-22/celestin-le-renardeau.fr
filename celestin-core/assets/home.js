@@ -122,5 +122,5 @@ document.addEventListener('DOMContentLoaded',()=>{
    },{once:true});
    media.addEventListener('error',cleanup,{once:true});media.src=el.dataset.celDurationUrl;
  };
- if('IntersectionObserver' in window){const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){obs.unobserve(e.target);load(e.target)}}));items.forEach(el=>obs.observe(el));}else items.forEach(load);
+ if('IntersectionObserver' in window){const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){obs.unobserve(e.target);const el=e.target.querySelector('[data-cel-duration-url]');if(el)load(el)}}));items.forEach(el=>obs.observe(el.closest('.cel-story-list-card')));}else items.forEach(load);
 });

@@ -256,3 +256,13 @@ body.cel-content-page .cel-archive-card:hover,body.cel-content-page .cel-archive
 .cel-reader-section:fullscreen{background:#fff1df;overflow:auto;padding:12px;box-sizing:border-box}
 .cel-reader-section:fullscreen .cel-book-reader{padding:10px}
 @media(max-width:720px){.cel-reader-section .cel-reader-thumbs{max-height:95px;max-width:100%;overflow-x:auto;overflow-y:hidden}.cel-reader-section .cel-reader-layout{align-items:stretch}.cel-reader-section .cel-reader-counter{flex:1 1 100%;text-align:center;order:-1}}
+
+/* Explicit physical page slots: front cover right, back cover left. */
+.cel-reader-section .cel-reader-spread{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto;align-items:start;gap:0;direction:ltr}
+.cel-reader-section .cel-reader-spread>canvas.cel-reader-left,.cel-reader-section .cel-reader-spread>canvas.cel-reader-right{grid-row:1;width:100%!important;max-width:100%;height:auto;aspect-ratio:1;min-width:0;margin:0;display:block!important}
+.cel-reader-section .cel-reader-spread>canvas.cel-reader-left{grid-column:1}
+.cel-reader-section .cel-reader-spread>canvas.cel-reader-right{grid-column:2}
+.cel-reader-section .cel-reader-spread>canvas.cel-reader-blank{visibility:hidden!important}
+.cel-reader-section .cel-reader-spread.single{grid-template-columns:minmax(0,1fr)}
+.cel-reader-section .cel-reader-spread.single>canvas.cel-reader-left{display:none!important}
+.cel-reader-section .cel-reader-spread.single>canvas.cel-reader-right{grid-column:1}

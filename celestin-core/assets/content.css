@@ -278,3 +278,27 @@ body.cel-content-page .cel-archive-card:hover,body.cel-content-page .cel-archive
 .cel-reader-section .cel-reader-controls{flex-wrap:wrap;justify-content:center}
 .cel-reader-section .cel-reader-progress{flex:1 1 100px;width:100px;min-width:60px;max-width:100%;accent-color:#e98932}
 .cel-reader-section .cel-reader-counter{white-space:normal}
+
+/* Story catalogue: square original covers, compact metadata and independent teaser. */
+body.cel-content-page .cel-story-list{grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;align-items:stretch}
+body.cel-content-page .cel-story-list-card{display:flex;flex-direction:column;min-width:0;max-width:none;width:100%;box-sizing:border-box;overflow:hidden;background:#fffdfa}
+.cel-story-list-art{position:relative;aspect-ratio:1;width:100%;background:#fff3df;overflow:hidden}
+.cel-story-list-art>a{display:block;width:100%;height:100%}
+.cel-story-list-art>a>img{display:block;width:100%;height:100%;object-fit:contain}
+.cel-story-list-theme,.cel-story-list-duration{position:absolute;background:#fffaf3f5;color:#633619;border-radius:20px;padding:5px 10px;font:700 13px/1.3 Nunito,sans-serif;max-width:calc(100% - 24px);overflow-wrap:anywhere;box-shadow:0 2px 8px #63361922}
+.cel-story-list-theme{top:12px;left:12px;background:#e98932;color:#fff;max-width:calc(100% - 24px)}
+.cel-story-list-duration{bottom:12px;left:12px;max-width:calc(100% - 90px)}
+.cel-story-list-duration[hidden],.cel-story-list-card .cel-audio-error[hidden]{display:none!important}
+.cel-story-list-card .cel-audio-toggle{z-index:2;width:52px;height:52px;right:12px;bottom:12px}
+.cel-story-list-card .cel-audio-error{position:absolute;bottom:70px;right:8px;max-width:90%;background:#fffaf3;padding:6px;border-radius:6px;font-size:12px}
+body.cel-content-page .cel-story-list-card .cel-archive-description{display:flex;flex:1;flex-direction:column;gap:12px;padding:16px;min-width:0}
+body.cel-content-page .cel-story-list-card h2{font:700 21px/1.2 'Baloo 2',sans-serif;color:#633619;margin:0;overflow-wrap:anywhere}
+body.cel-content-page .cel-story-list-card h2 a{color:inherit;text-decoration:none!important}
+.cel-story-list-meta{display:grid;gap:6px;font:600 13px/1.4 Nunito,sans-serif;color:#633619;min-width:0}
+.cel-story-list-meta>div{display:flex;flex-wrap:wrap;align-items:baseline;gap:3px 8px;min-width:0;overflow-wrap:anywhere}
+.cel-story-list-meta strong{color:#94603c;font-size:12px}
+.cel-story-list-meta span{font-size:13px;font-weight:600;min-width:0}
+.cel-story-list-link{margin-top:auto;font-weight:700;font-size:14px;text-decoration:none!important}
+body.cel-content-page .cel-story-list-card:hover{border-color:#e98932;box-shadow:0 6px 18px #7c52292b}
+@media(max-width:850px){body.cel-content-page .cel-story-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}}
+@media(max-width:430px){body.cel-content-page .cel-story-list{grid-template-columns:minmax(0,1fr);gap:14px}}

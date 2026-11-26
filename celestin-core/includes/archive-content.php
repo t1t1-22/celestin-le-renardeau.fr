@@ -29,7 +29,7 @@ body.cel-content-page .cel-bookshelf .cel-archive-card:focus-visible{outline:2px
 @media(max-width:520px){body.cel-content-page .cel-bookshelf{grid-template-columns:repeat(2,minmax(0,1fr));padding:12px 12px 8px;gap:22px 14px}body.cel-content-page .cel-bookshelf .cel-archive-thumb{padding:8px 9px 13px}body.cel-content-page .cel-bookshelf .cel-archive-thumb:before{height:14px;left:-4px;right:-4px}body.cel-content-page .cel-bookshelf .cel-archive-description h2{font-size:16px}}
 @media(prefers-reduced-motion:reduce){body.cel-content-page .cel-bookshelf .cel-archive-thumb img{transition:none}}
 </style><?php endif; ?><?php if($type==='cel_histoire'): ?><style id="cel-story-catalogue-layout">
-body.cel-content-page .cel-archive-grid.cel-story-list{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px!important;align-items:stretch;width:100%;max-width:100%;margin:0 auto}
+body.cel-content-page .cel-archive-grid.cel-story-list{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(min(100%,258px),258px));gap:22px!important;align-items:stretch;justify-content:center;width:100%;max-width:100%;margin:0 auto}
 body.cel-content-page .cel-story-list article.cel-story-list-card{position:relative;display:flex!important;flex-direction:column;min-width:0;width:100%;max-width:none!important;margin:0!important;overflow:hidden;border:1px solid #ecd6b9;border-radius:18px;background:#fffdfa;box-sizing:border-box}
 body.cel-content-page .cel-story-list .cel-story-list-art{position:relative!important;isolation:isolate;display:block;width:100%;aspect-ratio:1;overflow:hidden;background:#fff3df}
 body.cel-content-page .cel-story-list .cel-story-list-art>a{display:block;width:100%;height:100%}
@@ -50,8 +50,7 @@ body.cel-content-page .cel-story-list .cel-story-list-meta strong{font:700 12px/
 body.cel-content-page .cel-story-list .cel-story-list-meta span{font:600 13px/1.4 Nunito,sans-serif;color:#633619}
 body.cel-content-page .cel-story-list .cel-story-list-link{margin-top:auto;font-size:14px;font-weight:700;color:#a76129;text-decoration:none!important}
 body.cel-content-page .cel-story-list a:hover{text-decoration:none!important}
-@media(max-width:850px){body.cel-content-page .cel-archive-grid.cel-story-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px!important}}
-@media(max-width:430px){body.cel-content-page .cel-archive-grid.cel-story-list{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:720px){body.cel-content-page .cel-archive-grid.cel-story-list{grid-template-columns:repeat(2,minmax(0,258px));gap:12px!important}body.cel-content-page .cel-story-list .cel-archive-description{padding:10px;gap:8px}body.cel-content-page .cel-story-list .cel-archive-description h2{font-size:17px!important}body.cel-content-page .cel-story-list .cel-audio-toggle{width:42px!important;height:42px!important}}
 </style><?php endif; ?></head>
 <body <?php body_class('cel-content-page'); ?>><?php wp_body_open(); ?>
 <?php require __DIR__.'/interior-header.php'; ?>

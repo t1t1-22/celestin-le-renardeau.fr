@@ -9,10 +9,6 @@ document.querySelectorAll('.cel-book-reader').forEach(reader=>{
  const touchScreen=matchMedia('(pointer: coarse), (max-width: 720px)');
  const single=()=>!landscape.matches&&matchMedia('(max-width: 720px)').matches;
  const fullButton=controlsRoot.querySelector('.cel-reader-full');
- const hint=document.createElement('p');
- hint.className='cel-reader-rotate-hint';
- hint.textContent='Tourne ton téléphone pour lire les deux pages côte à côte.';
- controlsRoot.querySelector('.cel-reader-controls').before(hint);
  let modal=null,placeholder=null,autoModal=false,wasLandscape=landscape.matches,wasVisible=false,previousOverflow='';
  function visible(){
    const rect=reader.getBoundingClientRect();

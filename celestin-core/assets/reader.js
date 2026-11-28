@@ -4,20 +4,68 @@ document.querySelectorAll('.cel-book-reader').forEach(reader=>{
  const controlsRoot=reader.closest('.cel-reader-section')||reader;
  const prev=controlsRoot.querySelector('.cel-reader-prev'),next=controlsRoot.querySelector('.cel-reader-next'),range=controlsRoot.querySelector('.cel-reader-progress'),counter=controlsRoot.querySelector('.cel-reader-counter'),thumbs=reader.querySelector('.cel-reader-thumbs'),error=controlsRoot.querySelector('.cel-reader-error');
  if(!spread||!left||!right||!prev||!next||!range||!counter||!error)return;
- let pdf,page=1,busy=false,zoom=1,resizeTimer;
- const single=()=>matchMedia('(max-width: 720px)').matches;
+ let pdf,page=1,busy=false,zoom=1,resizeTimer,anchorPage=1;
+ const landscape=matchMedia('(orientation: landscape) and (max-height: 600px) and (pointer: coarse), (orientation: landscape) and (max-height: 600px) and (max-width: 1024px)');
+ const touchScreen=matchMedia('(pointer: coarse), (max-width: 720px)');
+ const single=()=>!landscape.matches&&matchMedia('(max-width: 720px)').matches;
+ const fullButton=controlsRoot.querySelector('.cel-reader-full');
+ const hint=document.createElement('p');
+ hint.className='cel-reader-rotate-hint';
+ hint.textContent='Tourne ton téléphone pour lire les deux pages côte à côte.';
+ controlsRoot.querySelector('.cel-reader-controls').before(hint);
+ let modal=null,placeholder=null,autoModal=false,wasLandscape=landscape.matches,wasVisible=false,previousOverflow='';
+ function visible(){
+   const rect=reader.getBoundingClientRect();
+   const header=document.querySelector('.cel-interior-header')?.getBoundingClientRect().bottom||0;
+   return rect.bottom>Math.max(0,header)+80&&rect.top<window.innerHeight-80;
+ }
+ function trackVisibility(){if(!modal&&!landscape.matches)wasVisible=visible()}
+ function openModal(automatic=false){
+   if(modal||document.fullscreenElement||typeof HTMLDialogElement==='undefined'||!HTMLDialogElement.prototype.showModal)return false;
+   placeholder=document.createElement('div');placeholder.style.height=controlsRoot.offsetHeight+'px';
+   controlsRoot.before(placeholder);
+   modal=document.createElement('dialog');modal.className='cel-book-fullscreen';modal.setAttribute('aria-label','Lecture du livre en plein écran');
+   document.body.append(modal);modal.append(controlsRoot);
+   autoModal=automatic;previousOverflow=document.body.style.overflow;
+   document.body.style.overflow='hidden';
+   fullButton.textContent='×';fullButton.setAttribute('aria-label','Quitter le plein écran');
+   modal.addEventListener('cancel',e=>{e.preventDefault();closeModal()});
+   modal.showModal();layout();return true;
+ }
+ function closeModal(){
+   if(!modal)return;
+   const old=modal;modal=null;autoModal=false;
+   placeholder.replaceWith(controlsRoot);placeholder=null;old.close();old.remove();
+   document.body.style.overflow=previousOverflow;
+   fullButton.textContent='⛶';fullButton.setAttribute('aria-label','Plein écran');
+   layout();fullButton.focus({preventScroll:true});
+ }
+ function orientationChanged(){
+   const now=landscape.matches;
+   if(now!==wasLandscape){
+     if(now&&wasVisible&&!modal&&pdf)openModal(true);
+     if(!now&&modal&&autoModal)closeModal();
+     wasLandscape=now;
+   }
+   layout();if(lastMobile!==single())show(anchorPage,0,true);
+   trackVisibility();
+ }
+ window.addEventListener('scroll',trackVisibility,{passive:true});
+ trackVisibility();
  const viewport=reader.querySelector('.cel-reader-viewport');
  const normal=n=>single()||n===1||n===pdf.numPages?n:n-n%2;
  function layout(){
-   const full=document.fullscreenElement===controlsRoot;
+   const full=!!modal||document.fullscreenElement===controlsRoot;
    const header=document.querySelector('.cel-interior-header');
    const headerHeight=full?0:(header?.offsetHeight||0);
    const compact=controlsRoot.classList.contains('cel-reader-compact');
    const controls=controlsRoot.querySelector('.cel-reader-controls');
-   const controlsHeight=Math.min(120,Math.max(52,controls?.offsetHeight||0));
-   const overhead=controlsHeight+85;
+   const controlsHeight=Math.min(120,Math.max(40,controls?.offsetHeight||0));
+   const overhead=controlsHeight+(full&&landscape.matches?32:85);
    const cap=full?Infinity:compact?340:480;
-   const available=Math.min(cap,Math.max(220,window.innerHeight-headerHeight-overhead));
+   const modalStyle=modal?getComputedStyle(modal):null;
+   const usableHeight=modal?modal.clientHeight-parseFloat(modalStyle.paddingTop)-parseFloat(modalStyle.paddingBottom):window.innerHeight;
+   const available=Math.min(cap,Math.max(full&&landscape.matches?80:220,usableHeight-headerHeight-overhead));
    const width=Math.max(1,viewport.clientWidth-10);
    const sides=single()?1:2;
    const pageSize=Math.min(width/sides,available);
@@ -37,7 +85,7 @@ document.querySelectorAll('.cel-book-reader').forEach(reader=>{
    await p.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;
  }
  let lastEnd=1, lastMobile=single();
- async function show(n,direction=0){
+ async function show(n,direction=0,keepAnchor=false){
    if(!pdf||busy)return;
    busy=true;prev.disabled=next.disabled=true;range.disabled=true;
    const target=normal(Math.max(1,Math.min(pdf.numPages,n)));
@@ -65,12 +113,12 @@ document.querySelectorAll('.cel-book-reader').forEach(reader=>{
          await leaf.animate([{transform:'rotateY(0deg)'},{transform:'rotateY('+(direction>0?-180:180)+'deg)'}],{duration:650,easing:'cubic-bezier(.42,0,.25,1)',fill:'forwards'}).finished;
        }finally{setSide(left,a);setSide(right,b);leaf.remove();}
      }else{setSide(left,a);setSide(right,b);}
-     page=target;lastEnd=end;lastMobile=mobile;
+     page=target;lastEnd=end;lastMobile=mobile;if(!keepAnchor)anchorPage=Math.max(1,Math.min(pdf.numPages,n));
      counter.textContent=page===1?'Première de couverture':page===pdf.numPages?'Quatrième de couverture':'Page'+(end!==page?'s '+page+' – '+end:' '+page)+' sur '+pdf.numPages;
      range.value=page;thumbs?.querySelectorAll('button').forEach(b=>b.classList.toggle('active',Number(b.dataset.page)>=page&&Number(b.dataset.page)<=end));
      error.hidden=true;
    }catch(e){fail()}
-   finally{busy=false;prev.disabled=page<=1;next.disabled=lastEnd>=pdf.numPages;range.disabled=false;if(lastMobile!==single())show(page);}
+   finally{busy=false;prev.disabled=page<=1;next.disabled=lastEnd>=pdf.numPages;range.disabled=false;if(lastMobile!==single()&&error.hidden)show(anchorPage,0,true);}
  }
  function turn(d){if(!pdf||busy||(d>0?lastEnd>=pdf.numPages:page<=1))return;show(d>0?lastEnd+1:Math.max(1,page-1),d)}
  let lastSwipe=0;
@@ -85,9 +133,17 @@ document.querySelectorAll('.cel-book-reader').forEach(reader=>{
  function changeZoom(d){zoom=Math.min(2,Math.max(.5,zoom+d));layout();}
  controlsRoot.querySelector('.cel-reader-zoom-in').onclick=()=>changeZoom(.25);
  controlsRoot.querySelector('.cel-reader-zoom-out').onclick=()=>changeZoom(-.25);
- controlsRoot.querySelector('.cel-reader-full').onclick=()=>{if(document.fullscreenElement)document.exitFullscreen?.();else if(controlsRoot.requestFullscreen)controlsRoot.requestFullscreen().catch(()=>{});else reader.classList.toggle('expanded')};
+ fullButton.onclick=()=>{
+   if(modal){closeModal();return}
+   if(document.fullscreenElement){document.exitFullscreen?.();return}
+   if(touchScreen.matches&&openModal())return;
+   if(controlsRoot.requestFullscreen)controlsRoot.requestFullscreen().catch(()=>openModal());
+   else openModal();
+ };
  let touchX=0;spread.addEventListener('touchstart',e=>{touchX=e.changedTouches[0].clientX},{passive:true});spread.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-touchX;if(Math.abs(dx)>65&&zoom<=1){lastSwipe=Date.now();turn(dx<0?1:-1)}},{passive:true});
- window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{layout();if(lastMobile!==single())show(page)},120)});
+ window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(orientationChanged,120)});
+ if(landscape.addEventListener)landscape.addEventListener('change',orientationChanged);
+ else landscape.addListener(orientationChanged);
  document.addEventListener('fullscreenchange',layout);
  if(window.ResizeObserver)new ResizeObserver(layout).observe(viewport.parentElement);
  if(!window.pdfjsLib){fail();return}

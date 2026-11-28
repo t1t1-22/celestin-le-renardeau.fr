@@ -696,3 +696,19 @@ body.cel-page :is(.cel-audio-card,.cel-news-card,.cel-book-description) a:hover,
  body.cel-page .cel-feature-slider .cel-feature-pagination button::after{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:9px;height:9px;border:1px solid #633619;border-radius:50%;background:#fffdfa}
  body.cel-page .cel-feature-slider .cel-feature-pagination button[aria-current=true]::after{background:#633619}
 }
+
+/* Smartphone featured carousel: teaser only, with full details on the content page. */
+@media (max-width:600px){
+ body.cel-page .cel-feature-slider .cel-feature-copy .cel-feature-summary{display:none!important}
+ body.cel-page .cel-feature-slider .cel-news-theme-label{display:none}
+ body.cel-page .cel-feature-slider .cel-news-theme-list>span:nth-child(n+3){display:none!important}
+ body.cel-page .cel-feature-slider .cel-news-theme-list>span{font-size:11px;line-height:1.2;padding:3px 7px;max-width:100%;overflow-wrap:anywhere}
+ body.cel-page .cel-feature-slider .cel-news-themes{margin:0 0 5px}
+ body.cel-page .cel-feature-slider .cel-feature-copy{width:100%;min-width:0}
+ body.cel-page .cel-feature-slider .cel-feature-layout{gap:7px}
+ body.cel-page .cel-feature-slider>.cel-feature-slide{padding-top:12px!important;padding-bottom:43px!important}
+ body.cel-page .cel-feature-slider .cel-feature-layout article.cel-news-card>.cel-news-badge{left:50%!important;transform:translateX(-50%)!important;width:max-content;max-width:calc(100vw - 32px)!important;text-align:center;border-radius:5px!important}
+ body.cel-page .cel-feature-slider .cel-feature-layout article.cel-news-card>.cel-news-badge::after{display:none}
+ body.cel-page .cel-feature-slider .cel-feature-copy .cel-feature-link{margin-top:5px;font-size:13px!important;padding:8px 14px!important}
+ body.cel-page .cel-feature-slider .cel-feature-pagination{bottom:11px!important}
+}

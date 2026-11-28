@@ -393,7 +393,7 @@ final class Celestin_Home {
     }
     static function assets(): void {
         if (!is_front_page()) return;
-        wp_enqueue_style('celestin-home', plugins_url('../assets/home.css',__FILE__), [], '0.4.85');
+        wp_enqueue_style('celestin-home', plugins_url('../assets/home.css',__FILE__), [], (string)filemtime(__DIR__.'/../assets/home.css'));
         wp_enqueue_script('celestin-home', plugins_url('../assets/home.js',__FILE__), [], (string)filemtime(__DIR__.'/../assets/home.js'), true);
     }
     static function template(string $template): string {
